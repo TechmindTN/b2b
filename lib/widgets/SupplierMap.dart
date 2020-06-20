@@ -283,7 +283,7 @@ Marker tunis1Marker = Marker(
   position: LatLng(36.847083, 10.198268),
   infoWindow: InfoWindow(title: 'Siyou Tunisia'),
   icon: BitmapDescriptor.defaultMarkerWithHue(
-    BitmapDescriptor.hueViolet,
+    BitmapDescriptor.hueRed,
   ),
 );
 Marker milano2Marker = Marker(

@@ -15,10 +15,11 @@ import 'package:siyou_b2b/screens/supplierSpace/catalogues/MyCatalogues.dart';
 import 'package:siyou_b2b/screens/supplierSpace/home/SupplierHomeScreen.dart';
 import 'package:siyou_b2b/screens/supplierSpace/orders/OrdersScreen.dart';
 import 'package:siyou_b2b/screens/supplierSpace/profile/MyProfile.dart';
-import 'package:siyou_b2b/screens/supplierSpace/stores/StoresListScreen.dart';
+
 import 'mapp.dart';
 import 'models/Theme.dart';
 import 'providers/HomeProvider.dart';
+import 'screens/SalesManager/home/SupplierHomeScreen.dart';
 import 'screens/Shopowner/Screens/orders/OrdersScreen.dart';
 import 'screens/Shopowner/src/pages/online.dart';
 import 'screens/supplierSpace/catalogues/ProductScreen.dart';
@@ -49,14 +50,15 @@ class MyApp extends StatelessWidget {
           child: MainScreen(),
         ),
   };
-
+//ManagerHomeScreen
   static final supplierRoutes = {
     "/supplier/home": (_) => LanguageProvider(
           child: SupplierHomeScreen(),
         ),
-    "/supplier/storesList": (_) => LanguageProvider(
-          child: StoresListScreen(),
+         "/manager/home": (_) => LanguageProvider(
+          child: ManagerHomeScreen(),
         ),
+    
         "/supplier/ProductList": (_) => LanguageProvider(
           child: ProductsListSScreen(),
         ),

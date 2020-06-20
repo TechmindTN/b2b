@@ -25,8 +25,10 @@ class Orders {
 
 class Order {
   int supplierId;
+  int paymentid;
   double orderTotalPrice;
   double orderWeight;
+  //DateTime date;
   int logisticCompanyId;
   int logisticTarif;
   List<Productlist> orderProductsList;
@@ -45,6 +47,7 @@ class Order {
     orderWeight = json['order_weight'];
     logisticCompanyId = json['logistic_company_id'];
     logisticTarif = json['logistic_tarif'];
+    
     if (json['order_products_list'] != null) {
       orderProductsList = new List<Productlist>();
       json['order_products_list'].forEach((Items v) {
@@ -60,6 +63,8 @@ class Order {
     data['order_weight'] = this.orderWeight;
     data['logistic_company_id'] = this.logisticCompanyId;
     data['logistic_tarif'] = this.logisticTarif;
+    data['required_date']=(DateTime.now().add(Duration(days: 30,))).toString();
+    data['payment_method_id']=this.paymentid;
     if (this.orderProductsList != null) {
       data['order_products_list'] =
           this.orderProductsList.map((v) => v.toJson()).toList();

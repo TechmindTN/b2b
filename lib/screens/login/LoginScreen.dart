@@ -45,9 +45,16 @@ class _LogInScreenState extends State<LogInScreen> {
         if (role == 3)
           Navigator.pushNamedAndRemoveUntil(
               context, "/owner/home", (Route<dynamic> route) => false);
-        else{
+        else if (role==2){
           Navigator.pushNamedAndRemoveUntil(
               context, "/supplier/home", (Route<dynamic> route) => false);
+         // print(token.toString());
+          //webwiew(token);
+          ///supplier/home
+        }
+        else {
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/manager/home", (Route<dynamic> route) => false);
          // print(token.toString());
           //webwiew(token);
           ///supplier/home
@@ -56,22 +63,7 @@ class _LogInScreenState extends State<LogInScreen> {
     });
   }
 
-  void webwiew(token) {
-    flutterWebViewPlugin
-        .launch(
-      "https://siyoub2s-prod.herokuapp.com/",
-      withLocalStorage: true,
-      withJavascript: true,
-    )
-        .whenComplete(() {
-          flutterWebViewPlugin.evalJavascript("window.localStorage.setItem('token', '$token')");
-      flutterWebViewPlugin.evalJavascript("alert(window.localStorage.getItem('token'))");
-      flutterWebViewPlugin.reload();
-  /*final res = flutterWebViewPlugin.evalJavascript("(function() { try { window.localStorage.setItem('token', $token); } catch (err) { return err; } })();");
-  // Wrapped `setItem` into a func that would return some helpful info in case it throws.
-  print("Eval result webview : ${res.toString()}");*/
-}); 
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +303,7 @@ class _LogInScreenState extends State<LogInScreen> {
         case 1:
           // Manager
           Navigator.pushNamedAndRemoveUntil(
-             context, "/supplier/home", (Route<dynamic> route) => false);
+             context, "/manager/home", (Route<dynamic> route) => false);
           // webwiew(map["token"]);
           break;
         case 2:

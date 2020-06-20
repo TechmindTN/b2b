@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:siyou_b2b/models/OrderList.dart';
+import 'package:siyou_b2b/models/PaymentMethod.dart';
 import 'package:siyou_b2b/models/Productitems.dart';
 import 'package:siyou_b2b/models/order.dart';
 import 'package:siyou_b2b/network/ApiProvider.dart';
@@ -19,6 +20,10 @@ class CartProvider extends ChangeNotifier {
   final List<OrderList> suppinvalidorders = [];
   final List<OrderList> suppvaildorders = [];
   final List<OrderList> supppaidorders = [];
+  final List<OrderList> managerinvalidorders = [];
+  final List<OrderList> managervaildorders = [];
+  final List<OrderList> manageraidorders = [];
+  //final List<PaymentList> paymentlist=[];
   num total = 0.0;
   bool error = false;
   bool loading = true;
@@ -247,6 +252,95 @@ class CartProvider extends ChangeNotifier {
     notify();
     return;
   }
+
+  Future<void> getManagerOrders(BuildContext context) async {
+    try {
+      final data = await _api.getManagerOrders();
+
+      if (checkServerResponse(data, context)) {
+        final List<OrderList> invalid = data["invalid_order"]
+            .map<OrderList>((item) => OrderList.fromJson(item))
+            .toList();
+        final List<OrderList> vaild = data["valid_order"]
+            .map<OrderList>((item) => OrderList.fromJson(item))
+            .toList();
+        final List<OrderList> paid = data["paid_order"]
+            .map<OrderList>((item) => OrderList.fromJson(item))
+            .toList();
+
+        if (invalid != null) suppinvalidorders.addAll(invalid);
+        if (vaild != null) suppvaildorders.addAll(vaild);
+        if (paid != null) supppaidorders.addAll(paid);
+
+        loading = false;
+        notify();
+        return;
+      } else {
+        errorMsg = getServerErrorMsg(data, context);
+        error = true;
+        loading = false;
+        notify();
+        return;
+      }
+    } catch (e) {
+      if (e.toString() == "No store selected") {
+        final lang = AppLocalizations.of(context);
+        errorMsg = lang.tr("serverError.store_error");
+      } else
+        errorMsg = e.toString();
+      error = true;
+      loading = false;
+      notify();
+    }
+
+    loading = false;
+    notify();
+    return;
+  }
+
+  /*Future<void> getPaymentList(BuildContext context) async {
+    try {
+      final data = await _api.getPaymentList();
+
+      if (checkServerResponse(data, context)) {
+        final List<PaymentList> payment = data["paymentList"]
+            .map<PaymentList>((item) => PaymentList.fromJson(item))
+            .toList();
+            if(payment!=null && payment.isNotEmpty)
+            {
+              paymentlist.clear();
+              paymentlist.addAll(payment);
+            }
+            
+       
+
+        
+
+        loading = false;
+        notify();
+        return;
+      } else {
+        errorMsg = getServerErrorMsg(data, context);
+        error = true;
+        loading = false;
+        notify();
+        return;
+      }
+    } catch (e) {
+      if (e.toString() == "No store selected") {
+        final lang = AppLocalizations.of(context);
+        errorMsg = lang.tr("serverError.store_error");
+      } else
+        errorMsg = e.toString();
+      error = true;
+      loading = false;
+      notify();
+    }
+
+    loading = false;
+    notify();
+    return;
+  }*/
 
   void notify() {
     try {

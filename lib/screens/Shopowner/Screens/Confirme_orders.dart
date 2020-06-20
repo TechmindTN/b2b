@@ -20,12 +20,21 @@ class ConOrder extends StatefulWidget {
 class _CartState extends State<ConOrder> {
   AppLocalizations lang;
   CartProvider _cartProvider;
-  int _total = 0;
+  //int _total = 0;
   String img =
       'https://manversusweb.com/wp-content/uploads/2019/03/checkout.png';
   // final ApiProvider _api = ApiProvider();
   //final ScrollController _scrollController = new ScrollController();
   final ApiProvider _api = ApiProvider();
+  List<String> payments = [
+    'Credit Card',
+    'Paypal',
+    'Bank Transfers',
+    'Bank check',
+    'payment on delivery',
+  ];
+
+  String currentpayment = '';
 
   @override
   void initState() {
@@ -100,6 +109,7 @@ class _CartState extends State<ConOrder> {
             loadingDialog(context, lang);
             try {
               final d = order.toJson();
+              print(d);
               final data = await _api.addOrder(d);
 
               if (checkorder(
@@ -129,7 +139,7 @@ class _CartState extends State<ConOrder> {
           }
 
           return Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -180,7 +190,6 @@ class _CartState extends State<ConOrder> {
                                                     fontWeight:
                                                         FontWeight.w700),
                                               ),
-                                              
                                               Text(
                                                 "Order #1GF5D6H${provider.orders[i].supplierId}",
                                                 style: TextStyle(fontSize: 12),
@@ -216,90 +225,135 @@ class _CartState extends State<ConOrder> {
                                     ),
                                   ],
                                 ),
-
-                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0,
-                                  ),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: Text(
-                                            'Shipping Price :To be negotiated !' ),
-                                        flex: 3,
-                                      ),
-                                      
-                                    ],
-                                  ),
-                                  
-                                ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8.0,
+                                    vertical: 5,
                                   ),
                                   child: Row(
                                     children: <Widget>[
                                       Expanded(
                                         child: Text(
-                                            "Purchase date - ${DateTime.now()}"),
+                                            'Shipping Price :To be negotiated !'),
                                         flex: 3,
                                       ),
                                       Expanded(
                                           child: InkWell(
                                         onTap: () async {
-                                          if (provider.orders[i].orderTotalPrice>=100.00){
-                                            bool confirm = await addOrder(
-                                              provider.orders[i]);
-                                          if (confirm) {
-                                            provider.orders.removeAt(i);
-                                            provider.notify();
-                                          }
-                                          }
+                                          _onItemPressed(context, i);
                                         },
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: provider.orders[i].orderTotalPrice>=100.00?Color(0xff3ed3d3):Colors.grey,
+                                            color: provider.orders[i]
+                                                            .orderTotalPrice >=
+                                                        100.00 ||
+                                                    provider.orders[i]
+                                                            .paymentid !=
+                                                        null
+                                                ? Color(0xff3ed3d3)
+                                                : Colors.grey,
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(16.0)),
                                           ),
                                           child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0, vertical: 2.0),
-                                            child: Text(
-                                              "Confirm Order",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0,
+                                                      vertical: 5.0),
+                                              child: Icon(
+                                                Icons.payment,
+                                                color: Colors.white,
+                                                size: 35,
+                                              )),
                                         ),
-                                      ))
+                                      )),
                                     ],
                                   ),
-                                  
                                 ),
-                               SizedBox(
-                                 height: 5,
-                               ),
-                               
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Text(
+                                            "Purchase date - ${DateTime.now().toString().substring(0, 10)}"),
+                                        flex: 3,
+                                      ),
+                                      Expanded(
+                                          child: InkWell(
+                                        onTap: () async {
+                                          if (provider.orders[i]
+                                                      .orderTotalPrice >=
+                                                  100.00 &&
+                                              provider.orders[i].paymentid !=
+                                                  null) {
+                                            bool confirm = await addOrder(
+                                                provider.orders[i]);
+                                            if (confirm) {
+                                              provider.orders.removeAt(i);
+                                              provider.notify();
+                                            }
+                                          }
+                                        },
+                                        child: Container(
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              color: provider.orders[i]
+                                                              .orderTotalPrice >=
+                                                          100.00 ||
+                                                      provider.orders[i]
+                                                              .paymentid !=
+                                                          null
+                                                  ? Color(0xff3ed3d3)
+                                                  : Colors.grey,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(16.0)),
+                                            ),
+                                            child: Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0,
+                                                        vertical: 2.0),
+                                                child: Text(
+                                                  "Confirm Order",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                            )),
+                                      )),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8.0,
                                   ),
                                   child: Text(
-                                            "Minimum Order Amount: € 100.00",
-                                            style: TextStyle(color: Colors.red),),
+                                    "Minimum Order Amount: € 100.00",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
                                 ),
-                                SizedBox(height: 5,),
+                                SizedBox(
+                                  height: 5,
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8.0,
                                   ),
                                   child: Text(
-                                            "The Supplier didn't set up the logistics and shipping fee. Please create an order first and contact the supplier to discuss shipping detaiils.",
-                                            style: TextStyle(fontSize: 10,color: Colors.grey),),
+                                    "The Supplier didn't set up the logistics and shipping fee. Please create an order first and contact the supplier to discuss shipping detaiils.",
+                                    style: TextStyle(
+                                        fontSize: 10, color: Colors.grey),
+                                  ),
                                 ),
-
                                 ScrollOnExpand(
                                   scrollOnExpand: true,
                                   scrollOnCollapse: false,
@@ -325,17 +379,23 @@ class _CartState extends State<ConOrder> {
                                         for (var x in provider
                                             .orders[i].orderProductsList)
                                           Padding(
-                                            padding:
-                                                EdgeInsets.only(bottom: 10),
+                                            padding: EdgeInsets.only(bottom: 5),
                                             child: Row(
                                               children: <Widget>[
                                                 Expanded(
                                                   flex: 4,
                                                   child: ListTile(
                                                     title: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
                                                       children: <Widget>[
-                                                        Text(x.productname,style: TextStyle(fontSize: 15 )),
-                                                        Text(x.itemBarcode,style: TextStyle(fontSize: 12 ))
+                                                        Text(x.productname,
+                                                            style: TextStyle(
+                                                                fontSize: 12)),
+                                                        Text(x.itemBarcode,
+                                                            style: TextStyle(
+                                                                fontSize: 12))
                                                       ],
                                                     ),
                                                     leading: SizedBox(
@@ -485,5 +545,87 @@ class _CartState extends State<ConOrder> {
           );
       },
     );
+  }
+
+  void _onItemPressed(BuildContext context, int i) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Scaffold(
+            body: Center(
+              child: Stack(children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8.0)),
+                  padding: EdgeInsets.all(32.0),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 24.0, left: 24.0, right: 24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            'Set Payment Method',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0),
+                          ),
+                        ),
+                        Container(
+                          height: 300,
+                          child: ListView.builder(
+                            itemCount: payments.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                onTap: () {
+                                  setState(() {
+                                    currentpayment = payments[index];
+                                    _cartProvider.orders[i].paymentid=index+1;
+                                  });
+                                  print(index);
+                                  Navigator.pop(context);
+                                },
+                                title: Text(
+                                  payments[index],
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                trailing: payments[index] == currentpayment
+                                    ? Icon(
+                                        Icons.check_circle,
+                                        color: yellow,
+                                        size: 16,
+                                      )
+                                    : SizedBox(),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 4.0,
+                  right: 4.0,
+                  child: GestureDetector(
+                    child: Container(
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                      decoration: BoxDecoration(
+                          color: Colors.black87, shape: BoxShape.circle),
+                    ),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                ),
+              ]),
+            ),
+          );
+        });
   }
 }

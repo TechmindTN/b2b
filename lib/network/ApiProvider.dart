@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:siyou_b2b/utlis/utils.dart';
@@ -93,6 +92,144 @@ class ApiProvider {
           "category_id": category,
           "brand_id": brand,
           "page": page
+        },
+        //data: data
+      );
+      //print(res.data);
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+
+  Future<Map<String, dynamic>> getManagerProducts(
+      {@required int page, int supplierid ,int brand, int category}) async {
+    final String token = await getUserToken();
+   // final int supplierid = await getUserid();
+    //Map data = {'supplier_id': supplierid, "page": page};
+
+    try {
+      final res = await dio.request(
+        "/products/salesmanager",
+        queryParameters: {
+          "token": token,
+          "supplier_id": supplierid,
+          "category_id": category,
+          "brand_id": brand,
+          "page": page
+        },
+        
+      );
+      
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+
+  Future<Map<String, dynamic>> getSupplierProfilItems() async {
+    final String token = await getUserToken();
+
+    try {
+      final res = await dio.request(
+        "/profil",
+        queryParameters: {
+          "token": token,
+        },
+        //data: data
+      );
+      //print(res.data);
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+
+  Future<Map<String, dynamic>> getShopList() async {
+    final String token = await getUserToken();
+
+    try {
+      final res = await dio.request(
+        "/dashboard/shops",
+        queryParameters: {
+          "token": token,
+        },
+        //data: data
+      );
+      //print(res.data);
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+  Future<Map<String, dynamic>> getManagerShopList() async {
+    final String token = await getUserToken();
+
+    try {
+      final res = await dio.request(
+        "/salesmanager/shops",
+        queryParameters: {
+          "token": token,
+        },
+        //data: data
+      );
+      //print(res.data);
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+
+  Future<Map<String, dynamic>> getPaymentList() async {
+    final String token = await getUserToken();
+
+    try {
+      final res = await dio.request(
+        "/payment/list",
+        queryParameters: {
+          "token": token,
+        },
+      );
+       print(res.data);
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+
+  Future<Map<String, dynamic>> getSalesManagerList() async {
+    final String token = await getUserToken();
+
+    try {
+      final res = await dio.request(
+        "/supplier/salesmanager",
+        queryParameters: {
+          "token": token,
+        },
+        //data: data
+      );
+      //print(res.data);
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+
+  Future<Map<String, dynamic>> getSManagerSuppliersList() async {
+    final String token = await getUserToken();
+
+    try {
+      final res = await dio.request(
+        "/salesmanager/suppliers",
+        queryParameters: {
+          "token": token,
         },
         //data: data
       );
@@ -202,6 +339,20 @@ class ApiProvider {
     }
   }
 
+  Future<Map<String, dynamic>> getManagerOrders() async {
+    final String token = await getUserToken();
+
+    try {
+      final res = await dio
+          .request("/orders/salesmanager", queryParameters: {"token": token});
+
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+
   Future<Map<String, dynamic>> getWishList() async {
     final String token = await getUserToken();
 
@@ -235,8 +386,6 @@ class ApiProvider {
 
   Future<Map<String, dynamic>> confirmRejectOrder(orderid, status) async {
     final String token = await getUserToken();
-
-    
 
     try {
       final res = await dio.request(

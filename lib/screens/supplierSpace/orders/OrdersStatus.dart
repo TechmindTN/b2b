@@ -2,7 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
 import 'package:provider/provider.dart';
+import 'package:siyou_b2b/network/ApiProvider.dart';
 import 'package:siyou_b2b/providers/CartProvider.dart';
+import 'package:siyou_b2b/utlis/utils.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 
@@ -15,6 +17,7 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
   AppLocalizations lang;
   CartProvider _orderProvide;
   ScrollController _scrollController = new ScrollController();
+  final ApiProvider _api = ApiProvider();
 
   @override
   void didChangeDependencies() {
@@ -44,7 +47,7 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
               return InkWell(
                 child: _getItemWidget(index),
                 onTap: () => _onItemPressed(
-                    context, provider.suppinvalidorders[index].id),
+                    context, index, provider.suppinvalidorders[index].id),
               );
             },
           );
@@ -58,8 +61,33 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
     );
   }
 
-  void _onItemPressed(BuildContext context, int orderid) {
-    print(orderid);
+  orderCR(int id, String status) async {
+    loadingDialog(context, lang);
+    try {
+      final data = await _api.confirmRejectOrder(id, status);
+
+      if (checkorder(data)) {
+        try {
+          Navigator.pop(context);
+          return true;
+        } catch (e) {
+          Navigator.pop(context);
+          showAlertDialog(context, " Error", e);
+          print(e);
+          return false;
+        }
+      } else {
+        Navigator.pop(context);
+        showAlertDialog(context, "", 'error');
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      print(e);
+      showAlertDialog(context, "Error", e.toString());
+    }
+  }
+
+  void _onItemPressed(BuildContext context, int i, int orderid) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -83,7 +111,14 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                             color: Colors.green, // button color
                             child: InkWell(
                               splashColor: Colors.white, // splash color
-                              onTap: () {}, // button pressed
+                              onTap: () {
+                                if (orderCR(orderid, 'confirm')) {
+                                  Navigator.pop(context);
+                                  _orderProvide.invalidorders.removeAt(i);
+                                  _orderProvide.notify();
+                                  Navigator.pop(context);
+                                }
+                              }, // button pressed
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
@@ -95,7 +130,9 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       SizedBox.fromSize(
                         size: Size(86, 86), // button width and height
                         child: ClipOval(
@@ -103,7 +140,14 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                             color: Colors.red, // button color
                             child: InkWell(
                               splashColor: Colors.white, // splash color
-                              onTap: () {}, // button pressed
+                              onTap: () {
+                                if (orderCR(orderid, 'rejected')) {
+                                  Navigator.pop(context);
+                                  _orderProvide.invalidorders.removeAt(i);
+                                  _orderProvide.notify();
+                                  Navigator.pop(context);
+                                }
+                              }, // button pressed
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
@@ -114,7 +158,6 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                             ),
                           ),
                         ),
-                        
                       ),
                     ],
                   ),

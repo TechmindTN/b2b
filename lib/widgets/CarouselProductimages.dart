@@ -19,7 +19,7 @@ class _CarouselProductsListState extends State<CarouselProductsList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: widget.type == CarouselTypes.details ? 160 : 160,
+        height: widget.type == CarouselTypes.details ? 160 : 140,
         child: Stack(
           children: <Widget>[
             Column(
@@ -71,6 +71,7 @@ class _CarouselProductsListState extends State<CarouselProductsList> {
                 ),
               ],
             ),
+            if(widget.productsList.length>1)
             Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(

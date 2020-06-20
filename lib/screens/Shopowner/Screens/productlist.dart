@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/main.dart';
 import 'package:siyou_b2b/network/ApiProvider.dart';
@@ -78,18 +79,22 @@ class _ProductListState extends State<ProductList> {
         else if (provider.loading)
           return ProgressIndicatorWidget();
         else if (provider.products != null && provider.products.isNotEmpty) {
-          return GridView.builder(
+          return StaggeredGridView.countBuilder(
             shrinkWrap: true,
             controller: _scrollController,
             itemCount: provider.products.length,
             itemBuilder: (context, index) => _getItemWidget(index),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+            mainAxisSpacing: 0.0,
+            crossAxisSpacing: 0.0,
+            crossAxisCount: 4,
+            /*gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 2.0,
               mainAxisSpacing: 2.0,
               childAspectRatio: MediaQuery.of(context).size.width /
                   (MediaQuery.of(context).size.height * 0.70),
-            ),
+            ),*/
           );
         } else
           return Container(
@@ -119,24 +124,28 @@ class _ProductListState extends State<ProductList> {
         );
       },
       child: Card(
-        elevation: 5.0,
+        elevation: 0.0,
         //margin: EdgeInsets.all(value),
 
         child: Container(
-          padding: new EdgeInsets.all(5.0),
+          padding: new EdgeInsets.all(2.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
+                  SizedBox(
+                    width: 140,
+                      child: Text(
                     _productProvider.products[index].productName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 15.0,
                         fontWeight: FontWeight.bold),
-                  ),
+                  )),
                   SizedBox.fromSize(
                     size: Size(20, 20),
                     child: ClipOval(
@@ -168,12 +177,9 @@ class _ProductListState extends State<ProductList> {
                 height: 4.0,
               ),
               Center(
-                child: Material(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  // elevation: 10.0,
-                  child: ClipRRect(
+                child: ClipRRect(
                     borderRadius: BorderRadius.all(
-                      Radius.circular(200.0),
+                      Radius.circular(20.0),
                     ),
                     child: Container(
                       height: 125.0,
@@ -196,7 +202,6 @@ class _ProductListState extends State<ProductList> {
                             ),
                     ),
                   ),
-                ),
               ),
               SizedBox(
                 height: 15.0,

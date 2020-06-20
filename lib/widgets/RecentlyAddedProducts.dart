@@ -32,10 +32,10 @@ class _RecentlyAddedProductsState extends State<RecentlyAddedProducts> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Icon(
+                    /*Icon(
                       Icons.store,
                       color: Colors.blue,
-                    ),
+                    ),*/
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Text("Epson Printer"),
@@ -114,7 +114,7 @@ class _RecentlyAddedProductsState extends State<RecentlyAddedProducts> {
               ),
             ),
           ),
-          Expanded(
+          /*Expanded(
             flex: 1,
             child: Container(
               color: Colors.grey[50],
@@ -160,7 +160,7 @@ class _RecentlyAddedProductsState extends State<RecentlyAddedProducts> {
                 ],
               ),
             ),
-          ),
+          ),*/
         ],
       ),
     );

@@ -1,18 +1,188 @@
+import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:siyou_b2b/widgets/CatalogueItemWidget.dart';
-import 'package:siyou_b2b/widgets/ListViewBuilder.dart';
+import 'package:flutter_launch/flutter_launch.dart';
+import 'package:fluttericon/typicons_icons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:siyou_b2b/providers/HomeProvider.dart';
+import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
+import 'package:siyou_b2b/widgets/progressindwidget.dart';
+import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 
 class MyProfile extends StatefulWidget {
   @override
   _MyProfileState createState() => _MyProfileState();
 }
 
-class _MyProfileState extends State<MyProfile> {
+class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMixin {
+  AppLocalizations lang;
+  HomeProvider userProvider;
+  Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController mapController;
+  Animation<double> _animation;
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 250),
+    );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    lang = AppLocalizations.of(context);
+    userProvider = Provider.of<HomeProvider>(context, listen: false);
+    userProvider?.getUserinfo();
+    userProvider?.getSuppProfilItems(context);
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Consumer<HomeProvider>(
+      builder: (context, provider, widget) {
+        if (provider.error) {
+          //provider.resetsupp(context);
+          return ServerErrorWidget(
+            errorText: provider.errorMsg,
+          );
+        } else if (provider.loading)
+          return ProgressIndicatorWidget();
+        else if (provider.user != null) {
+          return profile(context);
+        } else
+          return Container(
+              // child: Text("No data found"),
+              );
+      },
+    );
+  }
+
+  Widget _buildGoogleMap(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.width / 1.9,
+      width: MediaQuery.of(context).size.width / 1.15,
+      child: GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: CameraPosition(
+            target: LatLng(double.parse(userProvider.user.lat),
+                double.parse(userProvider.user.long)),
+            zoom: 5),
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+        markers: {
+          Marker(
+            markerId: MarkerId(userProvider.user.userAccount),
+            position: LatLng(double.parse(userProvider.user.lat),
+                double.parse(userProvider.user.long)),
+            infoWindow: InfoWindow(
+                title: userProvider.user.userNickname +
+                    ' ' +
+                    userProvider.user.userAccount),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed,
+            ),
+          )
+        },
+      ),
+    );
+  }
+
+  Widget profile(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         title: Text("Supper Supplier's Profile"),
+      ),*/
+      floatingActionButton: FloatingActionBubble(
+        // Menu items
+        items: <Bubble>[
+          // Floating action menu item
+          Bubble(
+            title: "",
+            iconColor: Colors.white,
+            bubbleColor: Colors.red,
+            icon: Icons.email,
+            titleStyle: TextStyle(color: Colors.white),
+            onPress: () async {
+              await UrlLauncher.launch("mailto:support@siyoutech.tn");
+              _animationController.reverse();
+            },
+          ),
+          // Floating action menu item
+          Bubble(
+            title: "",
+            iconColor: Colors.white,
+            bubbleColor: Colors.red,
+            icon: Typicons.chat_alt,
+            titleStyle: TextStyle(color: Colors.white),
+            onPress: () {
+              //_shareText();
+              //_animationController.reverse();
+            },
+          ),
+          //Floating action menu item
+          Bubble(
+            title: "",
+            iconColor: Colors.white,
+            bubbleColor: Colors.green,
+            icon: FontAwesomeIcons.whatsapp,
+            titleStyle: TextStyle(color: Colors.white),
+            onPress: () async {
+              await FlutterLaunch.launchWathsApp(
+                  phone: "+393891081886",
+                  message: "Can Someone Help me Please !");
+              _animationController.reverse();
+            },
+          ),
+          /*Bubble(
+            title:"Wechat",
+            iconColor :Colors.white,
+            bubbleColor : Colors.blue,
+            icon:FontAwesomeIcons.wech,
+            titleStyle:TextStyle(fontSize: 16 , color: Colors.white),
+            onPress: () {
+              _animationController.reverse();
+            },
+          ),*/
+          Bubble(
+            title: "",
+            iconColor: Colors.white,
+            bubbleColor: Colors.blue,
+            icon: FontAwesomeIcons.facebookMessenger,
+            titleStyle: TextStyle(color: Colors.white),
+            onPress: () async {
+              await UrlLauncher.launch("http://m.me/siyou.technologyTN");
+              _animationController.reverse();
+            },
+          ),
+        ],
+
+        // animation controller
+        animation: _animation,
+
+        // On pressed change animation state
+        onPress: () {
+          _animationController.isCompleted
+              ? _animationController.reverse()
+              : _animationController.forward();
+        },
+
+        // Floating Action button Icon color
+        iconColor: Colors.red,
+
+        // Flaoting Action button Icon
+        icon: Typicons.chat,
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -54,15 +224,20 @@ class _MyProfileState extends State<MyProfile> {
                             width: 90.0,
                             child: CircleAvatar(
                               backgroundImage: NetworkImage(
-                                //widget.supplier['image'],
-                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X",
-                                /*"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X"*/
-                              ),
+                                  userProvider.user.avatar
+                                  //widget.supplier['image'],
+                                  //"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X",
+                                  /*"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X"*/
+                                  ),
                               backgroundColor: Colors.white,
                             ),
                           ),
                           Text(
-                            "Super Supplier",
+                            //"Siyou Supplier",
+                            userProvider.user.userNickname +
+                                ' ' +
+                                userProvider.user.userAccount,
+
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blueGrey[600]),
@@ -84,7 +259,7 @@ class _MyProfileState extends State<MyProfile> {
                           children: <Widget>[
                             Padding(
                               padding:
-                              const EdgeInsets.symmetric(vertical: 8.0),
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
                                 "About",
                                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -92,20 +267,22 @@ class _MyProfileState extends State<MyProfile> {
                             ),
                             Padding(
                               padding:
-                              const EdgeInsets.symmetric(vertical: 8.0),
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Row(
                                 children: <Widget>[
                                   Icon(
                                     Icons.store,
-                                    color: Colors.blue,
+                                    color: Colors.red,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        Text("Supper Supplier"),
+                                        Text(userProvider.user.userNickname +
+                                            ' ' +
+                                            userProvider.user.userAccount),
                                       ],
                                     ),
                                   )
@@ -114,18 +291,18 @@ class _MyProfileState extends State<MyProfile> {
                             ),
                             Padding(
                               padding:
-                              const EdgeInsets.symmetric(vertical: 8.0),
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Row(
                                 children: <Widget>[
                                   Icon(
                                     Icons.access_time,
-                                    color: Colors.blue,
+                                    color: Colors.red,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Row(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text("From: "),
                                         Text("6AM"),
@@ -139,22 +316,20 @@ class _MyProfileState extends State<MyProfile> {
                             ),
                             Padding(
                               padding:
-                              const EdgeInsets.symmetric(vertical: 8.0),
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Row(
                                 children: <Widget>[
                                   Icon(
-                                    Icons.location_on,
-                                    color: Colors.blue,
+                                    Icons.phone,
+                                    color: Colors.red,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        Text("3 Leonardo Davinci Boulevard,"),
-                                        Text("Rome 2405,"),
-                                        Text("Italy")
+                                        Text(userProvider.user.phonenum1),
                                       ],
                                     ),
                                   )
@@ -163,29 +338,54 @@ class _MyProfileState extends State<MyProfile> {
                             ),
                             Padding(
                               padding:
-                              const EdgeInsets.symmetric(vertical: 8.0),
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Row(
                                 children: <Widget>[
                                   Icon(
-                                    Icons.phone,
-                                    color: Colors.blue,
+                                    Icons.location_on,
+                                    color: Colors.red,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        Text("(+ 39) 125 147 541"),
+                                        Text(userProvider.user.adress + ', '),
+                                        Text(userProvider.user.region +
+                                            ' ' +
+                                            userProvider.user.postcode +
+                                            ', '),
+                                        Text(userProvider.user.country),
                                       ],
                                     ),
                                   )
                                 ],
                               ),
-                            )
+                            ),
+                            _buildGoogleMap(context),
                           ],
                         ),
                       ),
+                    ),
+                    getitem(),
+                    SizedBox(height: 5),
+                    getitem2()
+                    /*  Card(
+                      child: ListViewBuilder({
+                        'title': 'Recent Orders',
+                        'widgetName': 'RecentlyAddedProducts',
+                        'height': 180.0,
+                        'optionButton': {
+                          'title': 'View More',
+                          'route': '/supplier/myCatalogues',
+                        },
+                      }, [
+                        {},
+                        {},
+                        {},
+                        {},
+                      ]),
                     ),
                     Card(
                       child: ListViewBuilder({
@@ -203,7 +403,7 @@ class _MyProfileState extends State<MyProfile> {
                         {},
                       ]),
                     ),
-                    ListView(
+                     ListView(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       children: <Widget>[
@@ -238,7 +438,7 @@ class _MyProfileState extends State<MyProfile> {
                           "toDate": "12/10/2019",
                         }),
                       ],
-                    ),
+                    ),*/
                   ],
                 ),
               ),
@@ -247,5 +447,381 @@ class _MyProfileState extends State<MyProfile> {
         ),
       ),
     );
+  }
+
+  Widget getitem() {
+    return Card(
+        child: Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Text(
+                  'Recent added products',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16.0),
+                ),
+                FlatButton(
+                  onPressed: () =>
+                      null, //Navigator.pushNamed(context, map['route']),
+                  child: Text(
+                    'View More',
+                    style: TextStyle(
+                        fontSize: 13.0,
+                        color: Colors.blueGrey[400],
+                        decoration: TextDecoration.underline),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 140,
+            child: ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: userProvider.supplierlastadded.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.only(right: 8.0),
+                    width: 300.0,
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            color: Colors.grey[200],
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  /*Icon(
+                      Icons.store,
+                      color: Colors.blue,
+                    ),*/
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(userProvider
+                                                .supplierlastadded[index]
+                                                .product
+                                                .productName
+                                                .length >
+                                            40
+                                        ? userProvider.supplierlastadded[index]
+                                            .product.productName
+                                            .substring(0, 39)
+                                        : userProvider.supplierlastadded[index]
+                                            .product.productName),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            color: Colors.grey[100],
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          //image: NetworkImage(widget.catalogue['banner']
+                                          image: NetworkImage(
+                                            userProvider
+                                                .supplierlastadded[index]
+                                                .images[0]
+                                                .imageUrl,
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 3,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text('Online Price'),
+                                              Text('Offline Price'),
+                                              Text('Barcode'),
+                                              Text('Quantity'),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Text(
+                                                userProvider
+                                                    .supplierlastadded[index]
+                                                    .itemOnlinePrice
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                userProvider
+                                                    .supplierlastadded[index]
+                                                    .itemOfflinePrice
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                userProvider
+                                                    .supplierlastadded[index]
+                                                    .itemBarcode,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 10),
+                                              ),
+                                              Text(
+                                                userProvider
+                                                    .supplierlastadded[index]
+                                                    .itemQuantity
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+          ),
+        ],
+      ),
+    ));
+  }
+
+  Widget getitem2() {
+    return Card(
+        child: Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Text(
+                  'Recent Purchased Products',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16.0),
+                ),
+                FlatButton(
+                  onPressed: () =>
+                      null, //Navigator.pushNamed(context, map['route']),
+                  child: Text(
+                    'View More',
+                    style: TextStyle(
+                        fontSize: 13.0,
+                        color: Colors.blueGrey[400],
+                        decoration: TextDecoration.underline),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 140,
+            child: ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: userProvider.supplierpurchased.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: EdgeInsets.only(right: 8.0),
+                    width: 310.0,
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            color: Colors.grey[200],
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  /*Icon(
+                      Icons.store,
+                      color: Colors.blue,
+                    ),*/
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(userProvider
+                                                .supplierpurchased[index]
+                                                .product
+                                                .productName
+                                                .length >
+                                            40
+                                        ? userProvider.supplierpurchased[index]
+                                            .product.productName
+                                            .substring(0, 39)
+                                        : userProvider.supplierpurchased[index]
+                                            .product.productName),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            color: Colors.grey[100],
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          //image: NetworkImage(widget.catalogue['banner']
+                                          image: NetworkImage(
+                                            userProvider
+                                                .supplierpurchased[index]
+                                                .images[0]
+                                                .imageUrl,
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 3,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text('Online Price'),
+                                              Text('Offline Price'),
+                                              Text('Barcode'),
+                                              Text('Quantity'),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Text(
+                                                userProvider
+                                                    .supplierpurchased[index]
+                                                    .itemOnlinePrice
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                userProvider
+                                                    .supplierpurchased[index]
+                                                    .itemOfflinePrice
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                userProvider
+                                                    .supplierpurchased[index]
+                                                    .itemBarcode,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 10),
+                                              ),
+                                              Text(
+                                                userProvider
+                                                    .supplierpurchased[index]
+                                                    .itemQuantity
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+          ),
+        ],
+      ),
+    ));
   }
 }

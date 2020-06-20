@@ -98,7 +98,7 @@ class Items {
   dynamic productBaseId;
   List<CriteriaBase> criteriaBase;
   List<Images> images;
-  dynamic quantity;
+  num quantity;
   dynamic supplierid;
   String productname;
   Productitems product;
@@ -149,7 +149,7 @@ Map<String, dynamic> toMap() {
     itemWarnQuantity = json['item_warn_quantity'];
     itemQuantity = json['item_quantity'];
     itemDiscountType = json['item_discount_type'];
-    itemDiscountPrice = double.parse(json['item_discount_price']);
+    itemDiscountPrice = json['item_discount_price'];//double.parse();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     productBaseId = json['product_base_id'];

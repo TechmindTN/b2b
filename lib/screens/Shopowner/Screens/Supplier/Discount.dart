@@ -69,258 +69,254 @@ class _DiscountState extends State<Discount> {
   ) {
     return Column(
       children: <Widget>[
-        InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (ctx) => LanguageProvider(
-                    child: ChangeNotifierProvider(
-                      child: ItemDetailsScreen(
-                        product: newarrivals.discounts[index],
-                        supplierid: widget.supplierid,
+        Stack(
+          children: <Widget>[
+            Row(
+              //mainAxisAlignment:MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+
+              children: <Widget>[
+                Container(
+                  padding: new EdgeInsets.all(10.0),
+                  child: Material(
+                    // borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    // elevation: 10.0,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15.0),
                       ),
-                      create: (_) => ProductListProvider(),
+                      child: Container(
+                        height: 85.0,
+                        width: 80.0,
+                        child: newarrivals.discounts[index].images == null ||
+                                newarrivals.discounts[index].images.isEmpty
+                            ? Image.asset(
+                                "assets/png/empty_cart.png",
+                                fit: BoxFit.contain,
+                                alignment: Alignment.center,
+                              )
+                            : CachedNetworkImage(
+                                imageUrl: newarrivals
+                                    .discounts[index].images[0].imageUrl,
+                                fit: BoxFit.contain,
+                              ),
+                      ),
                     ),
                   ),
                 ),
-              );
-            },
-            child: Stack(
-              children: <Widget>[
                 Row(
-                  //mainAxisAlignment:MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
-                    Container(
-                      padding: new EdgeInsets.all(10.0),
-                      child: Material(
-                        // borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                        // elevation: 10.0,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15.0),
-                          ),
-                          child: Container(
-                            height: 85.0,
-                            width: 80.0,
-                            child: newarrivals.discounts[index].images ==
-                                        null ||
-                                    newarrivals.discounts[index].images.isEmpty
-                                ? Image.asset(
-                                    "assets/png/empty_cart.png",
-                                    fit: BoxFit.contain,
-                                    alignment: Alignment.center,
-                                  )
-                                : CachedNetworkImage(
-                                    imageUrl: newarrivals
-                                        .discounts[index].images[0].imageUrl,
-                                    fit: BoxFit.contain,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 15,
+                        ),
+                        SizedBox(
+                            width: 165,
+                            child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (ctx) => LanguageProvider(
+                                        child: ChangeNotifierProvider(
+                                          child: ItemDetailsScreen(
+                                            product:
+                                                newarrivals.discounts[index],
+                                            supplierid: widget.supplierid,
+                                          ),
+                                          create: (_) => ProductListProvider(),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  newarrivals
+                                      .discounts[index].product.productName,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
+                                    fontWeight: FontWeight.bold,
+                                    // fontFamily: 'NunitoSans',
+                                    fontSize: 16.0,
                                   ),
+                                ))),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: newarrivals.discounts[index].id
+                                          .toString() +
+                                      '/' +
+                                      newarrivals.discounts[index].itemBarcode
+                                          .toString(),
+                                  style: TextStyle(color: Colors.grey)),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
-                    Row(
-                      //mainAxisAlignment: MainAxisAlignment.s,
-                      // crossAxisAlignment: CrossAxisAlignment.end,
-
-                      children: <Widget>[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Text(
-                              newarrivals.discounts[index].product.productName,
-                              style: TextStyle(
-                                //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
-                                fontWeight: FontWeight.bold,
-                                // fontFamily: 'NunitoSans',
-                                fontSize: 17.0,
+                        SizedBox(height: 10),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: ' Box: ' +
+                                      newarrivals.discounts[index].itemBox
+                                          .toString() +
+                                      ' Package: ' +
+                                      newarrivals.discounts[index].itemPackage
+                                          .toString(),
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w500)),
+                              WidgetSpan(
+                                child: SizedBox(
+                                  width: 20,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text: newarrivals.discounts[index].id
-                                              .toString() +
-                                          '/' +
-                                          newarrivals
-                                              .discounts[index].itemBarcode
-                                              .toString(),
-                                      style: TextStyle(color: Colors.grey)),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text: ' Box: ' +
-                                          newarrivals.discounts[index].itemBox
-                                              .toString() +
-                                          ' Package: ' +
-                                          newarrivals
-                                              .discounts[index].itemPackage
-                                              .toString(),
-                                      style: TextStyle(
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.w500)),
-                                  WidgetSpan(
-                                    child: SizedBox(
-                                      width: 20,
-                                    ),
-                                  ),
-                                  /*TextSpan(
+                              /*TextSpan(
                           text: newarrivals.suppliers[index].country +
                               ',' +
                               newarrivals.suppliers[index].region,
                           style: TextStyle(color: Color(0xFF959ca6))),*/
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-                Positioned(
-                  child: Text(
-                    '€ ' +
-                        newarrivals.discounts[index].itemOfflinePrice
-                            .toString(),
-                    style: TextStyle(
-                      color: Colors.black, //Color(0xFFB7B7B7),
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.lineThrough,
-                      // fontFamily: 'NunitoSans',
-                      fontSize: 16.0,
-                    ),
-                  ),
-                  right: 15,
-                  top: 20,
-                ),
-                Positioned(
-                  child: Text(
-                    '€ ' +
-                        newarrivals.discounts[index].itemDiscountPrice
-                            .toString(),
-                    style: TextStyle(
-                      color:
-                          Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
-                      fontWeight: FontWeight.w500,
-
-                      // fontFamily: 'NunitoSans',
-                      fontSize: 16.0,
-                    ),
-                  ),
-                  right: 15,
-                  top: 0,
-                ),
-                Positioned(
-                  child: Container(
-                    height: 40,
-                    child: Row(
-                      children: <Widget>[
-                        SizedBox(width: 5),
-                        Container(
-                          //width: 135,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 3.0, vertical: 9.0),
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.transparent, width: 1),
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Center(
-                              child: Row(
-                            children: <Widget>[
-                              GestureDetector(
-                                child: Container(
-                                  padding: const EdgeInsets.all(5.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    color: Colors.red,
-                                  ),
-                                  child: Icon(
-                                    Icons.remove,
-                                    color: Colors.white,
-                                    size: 10,
-                                  ),
-                                ),
-                                onTap: () {
-                                  newarrivals.discounts[index].quantity -
-                                              newarrivals.discounts[index]
-                                                  .itemPackage >
-                                          0
-                                      ? newarrivals.discounts[index].quantity -=
-                                          newarrivals
-                                              .discounts[index].itemPackage
-                                      : newarrivals.discounts[index].quantity =
-                                          0;
-                                  newarrivals.notify();
-                                },
-                              ),
-                              SizedBox(width: 15),
-                              Text(
-                                newarrivals.discounts[index].quantity
-                                    .toString(),
-                                style: Theme.of(context).textTheme.title,
-                              ),
-                              SizedBox(width: 15),
-                              GestureDetector(
-                                child: Container(
-                                  padding: const EdgeInsets.all(5.0),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    color: Colors.red,
-                                  ),
-                                  child: Icon(
-                                    Icons.add,
-                                    color: Colors.white,
-                                    size: 10,
-                                  ),
-                                ),
-                                onTap: () {
-                                  newarrivals.discounts[index].quantity +=
-                                      newarrivals.discounts[index].itemPackage;
-                                  newarrivals.notify();
-                                  cartProvider.addCartItems(
-                                      newarrivals.discounts[index],
-                                      newarrivals.discounts[index].quantity,
-                                      widget.supplierid);
-                                },
-                              ),
                             ],
-                          )),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  right: 0,
-                  top: 40,
+                  ],
                 )
               ],
-            )),
-            Divider(
-              thickness: 2,
-              color: Colors.black12,
-              height: 5,
             ),
-            if (index==newarrivals.discounts.length-1)
-            SizedBox(
-              height: 60,
+            Positioned(
+              child: Text(
+                '€ ' + newarrivals.discounts[index].itemOfflinePrice.toString(),
+                style: TextStyle(
+                  color: Colors.black, //Color(0xFFB7B7B7),
+                  fontWeight: FontWeight.w500,
+                  decoration: TextDecoration.lineThrough,
+                  // fontFamily: 'NunitoSans',
+                  fontSize: 16.0,
+                ),
+              ),
+              right: 15,
+              top: 20,
+            ),
+            Positioned(
+              child: Text(
+                '€ ' +
+                    newarrivals.discounts[index].itemDiscountPrice.toString(),
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
+                  fontWeight: FontWeight.w500,
+
+                  // fontFamily: 'NunitoSans',
+                  fontSize: 16.0,
+                ),
+              ),
+              right: 15,
+              top: 0,
+            ),
+            Positioned(
+              child: Container(
+                height: 50,
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(width: 5),
+                    Container(
+                      //width: 135,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 3.0, vertical: 9.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.transparent, width: 1),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Center(
+                          child: Row(
+                        children: <Widget>[
+                          if (newarrivals.discounts[index].quantity > 0)
+                            GestureDetector(
+                              child: Container(
+                                padding: const EdgeInsets.all(5.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  color: Colors.red,
+                                ),
+                                child: Icon(
+                                  Icons.remove,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ),
+                              onTap: () {
+                                newarrivals.discounts[index].quantity -
+                                            newarrivals
+                                                .discounts[index].itemPackage >=
+                                        0
+                                    ? newarrivals.discounts[index].quantity -=
+                                        newarrivals.discounts[index].itemPackage
+                                    : newarrivals.discounts[index].quantity = 0;
+                                newarrivals.notify();
+                              },
+                            ),
+                          SizedBox(width: 15),
+                          Text(
+                            newarrivals.discounts[index].quantity.toString(),
+                            style: Theme.of(context).textTheme.title,
+                          ),
+                          SizedBox(width: 15),
+                          GestureDetector(
+                            child: Container(
+                              padding: const EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                color: Colors.red,
+                              ),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                            onTap: () {
+                              //newarrivals.discounts[index].quantity +=
+                              //  newarrivals.discounts[index].itemPackage;
+
+                              cartProvider.addCartItems(
+                                  newarrivals.discounts[index],
+                                  newarrivals.discounts[index].itemPackage,
+                                  widget.supplierid);
+                              newarrivals.notify();
+                            },
+                          ),
+                        ],
+                      )),
+                    ),
+                  ],
+                ),
+              ),
+              right: 0.5,
+              top: 50,
             )
+          ],
+        ),
+        Divider(
+          thickness: 2,
+          color: Colors.black12,
+          height: 5,
+        ),
+        if (index == newarrivals.discounts.length - 1)
+          SizedBox(
+            height: 60,
+          )
       ],
     );
   }
@@ -356,28 +352,15 @@ class _DiscountState extends State<Discount> {
                 )
               ],
             ),
-            onTap: () async { Navigator.push(
+            onTap: () async {
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (ctx) => LanguageProvider(
-                    child: CategoryView(id: widget.supplierid)
-                  ),
+                      child: CategoryView(id: widget.supplierid)),
                 ),
-              );},
-          ),
-          GestureDetector(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.filter_list),
-                Text('filter',
-                    style: Theme.of(context)
-                        .textTheme
-                        .body2
-                        .copyWith(color: Colors.black))
-              ],
-            ),
-            onTap: () async {},
+              );
+            },
           ),
           GestureDetector(
             child: Column(
@@ -391,11 +374,121 @@ class _DiscountState extends State<Discount> {
                         .copyWith(color: Colors.black))
               ],
             ),
+            onTap: () => _onSortPressed(context),
+          ),
+          GestureDetector(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.filter_list),
+                Text('Scan',
+                    style: Theme.of(context)
+                        .textTheme
+                        .body2
+                        .copyWith(color: Colors.black))
+              ],
+            ),
             onTap: () async {},
           ),
         ],
       ),
     );
+  }
+
+  void _onSortPressed(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Material(
+            child: Wrap(children: <Widget>[
+              Stack(children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(8.0)),
+                  padding: EdgeInsets.all(32.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      ListTile(
+                        title: Text(
+                          ' Name A-Z',
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          newarrivals.discounts.sort((a, b) =>
+                              Comparable.compare(a.product.productName,
+                                  b.product.productName));
+                          newarrivals.notify();
+                        },
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text(
+                          ' Name Z-A',
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          newarrivals.discounts.sort((b, a) =>
+                              Comparable.compare(a.product.productName,
+                                  b.product.productName));
+                          newarrivals.notify();
+                        },
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text(
+                          ' Price Low-High',
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          newarrivals.discounts.sort((b, a) =>
+                              Comparable.compare(
+                                  a.itemDiscountPrice, b.itemDiscountPrice));
+
+                          newarrivals.notify();
+                        },
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text(
+                          ' Price High-Low',
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          newarrivals.discounts.sort((a, b) =>
+                              Comparable.compare(
+                                  a.itemDiscountPrice, b.itemDiscountPrice));
+                          newarrivals.notify();
+                        },
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 4.0,
+                  right: 4.0,
+                  child: GestureDetector(
+                    child: Container(
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                      decoration: BoxDecoration(
+                          color: Colors.black87, shape: BoxShape.circle),
+                    ),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                ),
+              ]),
+            ]),
+          );
+        });
   }
 
   @override

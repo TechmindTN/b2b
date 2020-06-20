@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/orders/OrdersScreen.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/wishlist.dart';
@@ -10,9 +11,11 @@ import '../main.dart';
 import 'faq_page.dart';
 
 class ProfilePage extends StatelessWidget {
+   HomeProvider userProvider; 
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context);
+    userProvider = Provider.of<HomeProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Color(0xffF9F9F9),
       body: SafeArea(
@@ -23,17 +26,17 @@ class ProfilePage extends StatelessWidget {
                 EdgeInsets.only(left: 16.0, right: 16.0, top: 56),
             child: Column(
               children: <Widget>[
-                /* CircleAvatar(
+                 CircleAvatar(
                   maxRadius: 48,
-                  backgroundImage: AssetImage('assets/background.jpg'),
+                  backgroundImage: userProvider.user.avatar!=null?NetworkImage(userProvider.user.avatar):AssetImage('assets/background.jpg'),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Siyou Store',
+                    userProvider.user.userNickname.toUpperCase()+' '+userProvider.user.userNickname.toUpperCase(),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                ),*/
+                ),
                /* Container(
                   margin: EdgeInsets.symmetric(vertical: 16.0),
                   decoration: BoxDecoration(

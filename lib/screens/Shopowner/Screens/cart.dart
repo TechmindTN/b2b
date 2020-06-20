@@ -30,7 +30,7 @@ class _CartState extends State<Cart> {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
     _cartProvider = Provider.of<CartProvider>(context, listen: false);
-    //_productProvider?.getProducts(context);
+    //_cartProvider?.getPaymentList(context);
   }
 
   @override
@@ -74,7 +74,7 @@ class _CartState extends State<Cart> {
                     itemCount: provider.itmes.length,
                     itemBuilder: (ctx, i) {
                       return Container(
-                        margin: const EdgeInsets.only(bottom: 25),
+                        margin: const EdgeInsets.only(bottom: 5),
                         child: Row(
                           children: <Widget>[
                             Container(
@@ -112,7 +112,10 @@ class _CartState extends State<Cart> {
                                 children: <Widget>[
                                   Text(
                                     '${provider.itmes[i].product.productName}',
-                                    style: Theme.of(context).textTheme.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .title
+                                        .copyWith(fontSize: 14),
                                   ),
                                   Text(
                                     "${provider.itmes[i].itemBarcode}",
@@ -161,7 +164,7 @@ class _CartState extends State<Cart> {
                                           onTap: () {
                                             provider.itmes[i].quantity -
                                                         provider.itmes[i]
-                                                            .itemPackage >
+                                                            .quantity >=
                                                     0
                                                 ? provider.itmes[i].quantity -=
                                                     provider
@@ -171,9 +174,10 @@ class _CartState extends State<Cart> {
 
                                             provider.itmes[i].quantity -
                                                         provider.itmes[i]
-                                                            .itemPackage >0
-                                                    
-                                                ? provider.total = provider.total
+                                                            .itemPackage >
+                                                    0
+                                                ? provider.total =
+                                                    provider.total
                                                 : provider.total -= provider
                                                         .itmes[i]
                                                         .itemOnlinePrice *
@@ -221,6 +225,7 @@ class _CartState extends State<Cart> {
                           ],
                         ),
                       );
+                      Divider();
                     },
                   ),
                 ),
@@ -234,7 +239,7 @@ class _CartState extends State<Cart> {
                           Text("TOTAL",
                               style: Theme.of(context).textTheme.subtitle),
                           Text("€. ${provider.total.toStringAsFixed(2)}",
-                              style: Theme.of(context).textTheme.headline),
+                              style: Theme.of(context).textTheme.headline.copyWith(fontSize: 17)),
                         ],
                       ),
                     ),

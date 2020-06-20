@@ -70,6 +70,39 @@ class _DetailsScreenState extends State<SupplierScreen>
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        brightness: Brightness.light,
+         // backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          title: Row(children: <Widget>[
+            Spacer(),
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red[300],
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.shopping_cart,
+                            color: Colors.red,
+                            //size: 35,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (ctx) =>
+                                    LanguageProvider(child: Cart()),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+          ],),
+          elevation: 0,
+        ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(0.0),
@@ -85,7 +118,7 @@ class _DetailsScreenState extends State<SupplierScreen>
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Container(
+                     /* Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.transparent,
@@ -101,30 +134,8 @@ class _DetailsScreenState extends State<SupplierScreen>
                             Navigator.pop(context);
                           },
                         ),
-                      ),
-                      Spacer(),
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.transparent,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.shopping_cart,
-                            color: Colors.red,
-                            size: 35,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (ctx) =>
-                                    LanguageProvider(child: Cart()),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                      ),*/
+                      
                     ],
                   ),
                 ],
@@ -215,7 +226,7 @@ class _DetailsScreenState extends State<SupplierScreen>
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0),
-            height: MediaQuery. of(context). size.height-MediaQuery. of(context). size.height*1/2.96,
+            height: MediaQuery. of(context). size.height-MediaQuery. of(context). size.height*1/2.5788,
             child: TabBarView(
               controller: tabController,
               children: <Widget>[

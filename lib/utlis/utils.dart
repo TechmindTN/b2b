@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:siyou_b2b/widgets/progressindwidget.dart';
 
 import '../main.dart';
 import 'Keys.dart';
@@ -33,6 +34,17 @@ void saveUserToken(String token) async {
   final pref = await SharedPreferences.getInstance();
   await getUserPrefsUX();
   pref.setString(Keys.usertoken, token);
+}
+
+void saveUserInfo(String token) async {
+  final pref = await SharedPreferences.getInstance();
+  await getUserPrefsUX();
+  pref.setString('INFO', token);
+}
+
+Future<String> getUserInfo() async {
+  final pref = await SharedPreferences.getInstance();
+  return pref.getString('INFO');
 }
 
 Future<String> getUserToken() async {
@@ -93,7 +105,7 @@ Future<String> getCurrentShopFromPref() async {
 }
 
 bool checkServerResponse(Map<String, dynamic> data, BuildContext context) {
-  if (data["msg"] == '2') {
+  if (data["msg"] == '2'||data["msg"] == 'Unauthorized') {
     showLogoutDialog(context);
     return false;
   } else
@@ -289,7 +301,7 @@ void loadingDialog(BuildContext context, AppLocalizations lang) {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      // ProgressIndicatorWidget(),
+                       ProgressIndicatorWidget(),
                       Text(lang.tr("loading"))
                     ],
                   ),

@@ -49,12 +49,22 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
         body: Padding(
       padding: const EdgeInsets.all(5.0),
       child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            //crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
                 //crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  
+                 
+                 Text(
+                    lang.tr('shopOwner.Discover'),
+                    style: Theme.of(context).textTheme.display1.copyWith(
+                        fontWeight: FontWeight.bold, color: Colors.black,fontSize: 18),
+                  ),
+                  
+                  Spacer(),
+           
                   IconButton(
                     icon: Icon(
                       Icons.menu,
@@ -64,11 +74,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                       scaffoldKey.currentState.openDrawer();
                     },
                   ),
-                  Text(
-                    lang.tr('shopOwner.Category'),
-                    style: Theme.of(context).textTheme.display1.copyWith(
-                        fontWeight: FontWeight.bold, color: Colors.black),
-                  ),
+                  
                  /* SizedBox(
                     width: 65,
                   ),*/

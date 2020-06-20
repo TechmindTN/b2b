@@ -33,7 +33,7 @@ dependencies:
   expandable: ^3.0.0+1
   cached_network_image: ^2.0.0
   flutter_rating_bar: ^3.0.0
-  flutter_svg: ^0.14.1
+  flutter_svg: ^0.17.4
   flare_flutter: ^1.5.9
   bottom_navy_bar: ^5.2.0
   popup_menu: ^1.0.3
@@ -46,11 +46,13 @@ dependencies:
   geolocator: ^5.3.1
   auto_size_text: ^2.1.0   
   flutter_launch: "0.2.0"  
-  url_launcher: ^5.4.5   
+  url_launcher: ^5.4.10   
   floating_action_bubble: ^1.0.9
   fluttericon: ^1.0.7
   fluwx: ^2.1.0
   flutter_staggered_grid_view: ^0.3.0
+  fluid_bottom_nav_bar: ^1.0.1
+
 
 
   

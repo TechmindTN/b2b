@@ -1,10 +1,14 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:siyou_b2b/screens/supplierSpace/catalogues/MyCatalogues.dart';
-import 'package:siyou_b2b/screens/supplierSpace/stores/StoresListScreen.dart';
-import 'package:siyou_b2b/screens/supplierSpace/orders/SupplierOrdersScreen.dart';
+import 'package:fluttericon/iconic_icons.dart';
+import 'package:siyou_b2b/main.dart';
+import 'package:siyou_b2b/screens/supplierSpace/Shops/Shops&ManagersScreen.dart';
+import 'package:siyou_b2b/screens/supplierSpace/catalogues/ProductScreen.dart';
+import 'package:siyou_b2b/screens/supplierSpace/orders/OrdersScreen.dart';
+import 'package:siyou_b2b/screens/supplierSpace/profile/MyProfile.dart';
+import 'package:siyou_b2b/widgets/SupplierProfilPage.dart';
 
-import 'SupplierHomePage.dart';
+
 
 class SupplierHomeScreen extends StatefulWidget {
   @override
@@ -17,6 +21,7 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //extendBody: true,
       body: getWidget(),
       bottomNavigationBar: BottomNavyBar(
         selectedIndex: currentIndex,
@@ -31,17 +36,21 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen> {
             activeColor: Colors.red,
           ),
           BottomNavyBarItem(
-              icon: Icon(Icons.collections),
-              title: Text('My Catalogues'),
-              activeColor: Colors.lightGreen),
+              icon: Icon(Iconic.box),
+              title: Text('My Products'),
+              activeColor: Colors.red),
           BottomNavyBarItem(
               icon: Icon(Icons.view_list),
               title: Text('Orders'),
-              activeColor: Colors.orange),
+              activeColor: Colors.red),
           BottomNavyBarItem(
               icon: Icon(Icons.people),
               title: Text('Stores'),
-              activeColor: Colors.blue),
+              activeColor: Colors.red),
+          BottomNavyBarItem(
+              icon: Icon(Icons.more),
+              title: Text('More'),
+              activeColor: Colors.red),
         ],
       ),
     );
@@ -50,13 +59,17 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen> {
   getWidget() {
     switch (currentIndex) {
       case 0:
-        return SupplierHomePage();
+        return MyProfile(); //SupplierHomePage();
       case 1:
-        return MyCatalogues();
+        return ProductsListSScreen();
       case 2:
-        return SupplierOrdersScreen();
+        return SuppOrdersScreen();
       case 3:
-        return StoresListScreen();
+        return ShopsManagersScreen();//StoresListScreen();
+      case 4:
+        return Container(
+            color: Colors.white,
+            child: LanguageProvider(child: SupplierProfilePage()));
     }
   }
 }

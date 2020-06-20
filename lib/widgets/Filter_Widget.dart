@@ -347,6 +347,112 @@ class _FilterDialogsideState extends State<FilterDialogsideWidget> {
   }
 }
 
+class FilterDialogsideMWidget extends StatefulWidget {
+  final ProductListProvider productProvider;
+
+  const FilterDialogsideMWidget({Key key, this.productProvider})
+      : super(key: key);
+
+  @override
+  _FilterDialogsidemState createState() => _FilterDialogsidemState();
+}
+
+class _FilterDialogsidemState extends State<FilterDialogsideMWidget> {
+  //Suppliers _currentSupplier;
+
+  int categoryid;
+
+  AppLocalizations lang;
+
+  _FilterDialogsidemState();
+
+  @override
+  void initState() {
+    super.initState();
+    //widget.productProvider.getLists(context);
+    //intil();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    lang = AppLocalizations.of(context);
+
+    //widget.productProvider.getLists(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lang = AppLocalizations.of(context);
+
+    final edgeInsets = const EdgeInsets.all(8.0);
+    return new Drawer(
+        child: ListView(children: <Widget>[
+      Container(
+        padding: edgeInsets,
+        child: Text(lang.tr('shopOwner.Category'),
+            style: Theme.of(context).textTheme.display1.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 25)),
+      ),
+      ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: widget.productProvider.categories.length,
+          itemBuilder: (_, index) {
+            return (ExpansionTile(
+              title: Text(widget.productProvider.categories[index].categoryName,
+                  style: Theme.of(context).textTheme.subhead),
+              children: [
+                ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: widget
+                        .productProvider.categories[index].subCategories.length,
+                    itemBuilder: (_, i) {
+                      return (ListTile(
+                        onTap: () {
+                          setState(() {
+                            categoryid ==
+                                    widget.productProvider.categories[index]
+                                        .subCategories[i].id
+                                ? categoryid = null
+                                : categoryid = categoryid = widget
+                                    .productProvider
+                                    .categories[index]
+                                    .subCategories[i]
+                                    .id;
+                          });
+                          Navigator.pop(context);
+                          widget.productProvider.resetMList(
+                            context,
+                            category: categoryid,
+                          );
+                        },
+                        title: Text(
+                          widget.productProvider.categories[index]
+                              .subCategories[i].categoryName,
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        trailing: categoryid ==
+                                widget.productProvider.categories[index]
+                                    .subCategories[i].id
+                            ? Icon(
+                                Icons.check_circle,
+                                color: yellow,
+                                size: 23,
+                              )
+                            : SizedBox(),
+                      ));
+                    })
+              ],
+            ));
+          })
+    ]));
+  }
+}
+
 class FilterDialogsideSupplierWidget extends StatefulWidget {
   final ProductListProvider productProvider;
 

@@ -56,6 +56,7 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
     
     super.initState();
+    
 
   }
 
@@ -65,6 +66,7 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
     lang = AppLocalizations.of(context);
     _productProvide = Provider.of<HomeProvider>(context, listen: false);
     _productProvide?.getSuppliers(context);
+    _productProvide?.getUserinfo();
   }
 
   Widget search() {

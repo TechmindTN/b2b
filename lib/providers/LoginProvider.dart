@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:core';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
@@ -21,18 +22,17 @@ class LoginProvider extends ChangeNotifier {
     _status = Status.Authenticating;
     notifyListeners();
     try {
-     // final String chain = await getSelectedStoreFromPref();
-     // final int role = await getUserRole();
-     // final String chainId = chain != "0" && role == 2 ? chain : "";
-      var x=await getUserToken();
+      // final String chain = await getSelectedStoreFromPref();
+      // final int role = await getUserRole();
+      // final String chainId = chain != "0" && role == 2 ? chain : "";
+      var x = await getUserToken();
       await getUserPrefsUX();
-      if (x!=null&& x!='') {
-      
+      if (x != null && x != '') {
         _status = Status.Authenticated;
         notifyListeners();
         return true;
       }
-      throw "eroor";
+      throw "error";
     } catch (e) {
       await clearPref();
       _status = Status.Unauthenticated;
@@ -41,22 +41,25 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
-   Future<Map<String, dynamic>> signInUser(
+  Future<Map<String, dynamic>> signInUser(
       String username, String password) async {
     try {
       _status = Status.Authenticating;
       notifyListeners();
       final data = await api.signInUser(username, password);
-           // print(data);
+      var s = json.encode(data);
+      print(s);
 
-     if (data["user"] != null) {
+      if (data["user"] != null) {
+
         final user = User.fromJson(data["user"]);
         //await addCurrentShopToPref(user.storeId);
         //print(user.toString());
+        saveUserInfo(s);
         saveUserRole(user.role);
         saveUserid(int.parse(user.userId));
         saveUserToken(data["access_token"]);
-       // print(data["access_token"]);
+        // print(data["access_token"]);
         return {
           "status": true,
           "token": data["access_token"],
@@ -77,7 +80,7 @@ class LoginProvider extends ChangeNotifier {
         final DioError error = e;
         return {"status": false, "error": error.message};
       } else {
-       return {"status": false, "error": e.toString()};
+        return {"status": false, "error": e.toString()};
       }
     }
   }

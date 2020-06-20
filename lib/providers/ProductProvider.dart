@@ -13,6 +13,7 @@ import 'package:siyou_b2b/utlis/utils.dart';
 class ProductListProvider extends ChangeNotifier {
   final ApiProvider _api = ApiProvider();
   final List<Product> products = List<Product>();
+  
   final List<Productitems>supplierproducts=List<Productitems>();
   final List<Product> wishlist = List<Product>();
   final List<Items> itmes = List<Items>();
@@ -36,6 +37,7 @@ class ProductListProvider extends ChangeNotifier {
     error = false;
     errorMsg = "";
     products.clear();
+
     notify();
 
     await getProducts(context,
@@ -52,6 +54,19 @@ class ProductListProvider extends ChangeNotifier {
     notify();
 
     await getSupplierProducts(context,
+         category: category, brand: brand);
+  }
+
+  Future<void> resetMList(BuildContext context,
+      {int supplierid, int brand, int category}) async {
+    page = 1;
+    loading = true;
+    error = false;
+    errorMsg = "";
+    products.clear();
+    notify();
+
+    await getManagerProducts(context,
          category: category, brand: brand);
   }
   
@@ -143,7 +158,49 @@ class ProductListProvider extends ChangeNotifier {
     notify();
     return;
   }
+    Future<void> getManagerProducts(BuildContext context,
+      {int supplierid ,int brand, int category}) async {
+    if (page != -1) {
+      try {
+        final data = await _api.getManagerProducts(
+            page: page,
+            supplierid:supplierid,
+            category: category,
+            brand: brand);
 
+        if  (checkServerResponse(data, context)) {
+          final List<Product> prodlist = data["data"]
+              .map<Product>((item) => Product.fromJson(item))
+              .toList();
+          final _total = data["last_page"];
+          print("total Pages: $_total");
+          page = page + 1 <= _total ? page + 1 : -1;
+          if (prodlist != null) products.addAll(prodlist);
+          loading = false;
+          notify();
+          return;
+        } else {
+          errorMsg = getServerErrorMsg(data, context);
+          error = true;
+          loading = false;
+          notify();
+          return;
+        }
+      } catch (e) {
+        if (e.toString() == "No store selected") {
+          final lang = AppLocalizations.of(context);
+          errorMsg = lang.tr("serverError.store_error");
+        } else
+          errorMsg = e.toString();
+        error = true;
+        loading = false;
+        notify();
+      }
+    }
+    loading = false;
+    notify();
+    return;
+  }
   Future<void> getWishList(BuildContext context) async {
     try {
       final data = await _api.getWishList();

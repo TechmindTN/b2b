@@ -56,15 +56,17 @@ class _ProductsListScreenState extends State<ProductsListSScreen> {
                 //crossAxisAlignment: CrossAxisAlignment.start,
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  IconButton(
+                 /* IconButton(
                     icon: Icon(Icons.arrow_back, color: Colors.black),
                     onPressed: () => Navigator.of(context).pop(),
-                  ),
+                  ),*/
                   Text(
                     lang.tr('My Products'),
                     style: Theme.of(context).textTheme.display1.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
+                          fontSize: 18
+
                         ),
                   ),
                   Spacer(),

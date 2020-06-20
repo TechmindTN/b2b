@@ -2,6 +2,7 @@ class OrderList {
   int id;
   dynamic orderPrice;
   dynamic orderWeight;
+  String orderref;
   int supplierId;
   int statutId;
   Supplier supplier;
@@ -12,6 +13,7 @@ class OrderList {
   OrderList(
       {this.id,
       this.orderPrice,
+      this.orderref,
       this.orderWeight,
       this.supplierId,
       this.statutId,
@@ -22,6 +24,7 @@ class OrderList {
 
   OrderList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    orderref= json['order_ref'];
     orderPrice = json['order_price'];
     orderWeight = json['order_weight'];
     supplierId = json['supplier_id'];
@@ -91,9 +94,9 @@ class ShopOwner {
   int id;
   String firstName;
   String lastName;
-  Null adress;
-  Null country;
-  Null region;
+  String adress;
+  String country;
+  String region;
 
   ShopOwner(
       {this.id,
