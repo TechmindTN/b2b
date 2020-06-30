@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/orders/OrdersStatus.dart';
 
@@ -20,28 +19,35 @@ class OrdersScreen extends StatelessWidget {
           brightness: Brightness.light,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: Text("Orders",style: TextStyle(color: darkGrey)),
-          bottom: TabBar(tabs: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text("Invaild", style: TextStyle(fontSize: 18.0,color: darkGrey ),),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text("Vaild", style: TextStyle(fontSize: 18.0,color: darkGrey ),),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text("Paid", style: TextStyle(fontSize: 18.0,color: darkGrey ),),
-            )
-          ],),
+          title: Text("Orders", style: TextStyle(color: darkGrey)),
+          bottom: TabBar(
+            tabs: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Invalid",
+                  style: TextStyle(fontSize: 18.0, color: darkGrey),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "valid",
+                  style: TextStyle(fontSize: 18.0, color: darkGrey),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Paid",
+                  style: TextStyle(fontSize: 18.0, color: darkGrey),
+                ),
+              )
+            ],
+          ),
         ),
         body: TabBarView(
-          children: <Widget>[
-            OrdersStatus(),
-            ArchivedOrders(),
-            PaidOrders()
-          ],
+          children: <Widget>[OrdersStatus(), ArchivedOrders(), PaidOrders()],
         ),
       ),
     );

@@ -96,7 +96,7 @@ class _CartState extends State<ConOrder> {
 
   caltotal(List<Items> list) {
     double t;
-    list.forEach((e) => t += e.itemOnlinePrice);
+    list.forEach((e) => t += e.itemOfflinePrice);
     print(t);
     return t;
   }

@@ -193,8 +193,8 @@ class _ArchivedOrdersState extends State<ArchivedOrders> {
                               Expanded(
                                 flex: 3,
                                 child: ListTile(
-                                  title: Text(i.itemBarcode),
-                                  leading: Text(i.product.productName)
+                                 // title: Text(i.itemBarcode),
+                                  leading: Text(i.product.productName+" "+i.itemBarcode)
                                   /*CachedNetworkImage(
                                     imageUrl: i.product.productName,
                                   ),*/

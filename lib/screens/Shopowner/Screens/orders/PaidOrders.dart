@@ -12,7 +12,6 @@ class PaidOrders extends StatefulWidget {
 }
 
 class _OrdersStatusState extends State<PaidOrders> {
-
   AppLocalizations lang;
   CartProvider _orderProvide;
   ScrollController _scrollController = new ScrollController();
@@ -25,7 +24,6 @@ class _OrdersStatusState extends State<PaidOrders> {
     _orderProvide?.getOrders(context);
   }
 
- 
   Widget getWidget() {
     return Consumer<CartProvider>(
       builder: (context, provider, widget) {
@@ -88,7 +86,8 @@ class _OrdersStatusState extends State<PaidOrders> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              _orderProvide.paidorders[index].supplier.firstName,
+                              _orderProvide
+                                  .paidorders[index].supplier.firstName,
                               style: TextStyle(
                                   fontSize: 18.0, fontWeight: FontWeight.w700),
                             ),
@@ -107,7 +106,7 @@ class _OrdersStatusState extends State<PaidOrders> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                 /* if (item["orderStatus"] != "Done")
+                  /* if (item["orderStatus"] != "Done")
                     Expanded(
                       child: IconButton(
                         onPressed: () => null,
@@ -136,27 +135,25 @@ class _OrdersStatusState extends State<PaidOrders> {
                       child: Text("Purchase date - "),
                       flex: 3,
                     ),
-                    
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xff3ed3d3),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16.0)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 2.0),
-                            child: Text(
-                              _orderProvide.paidorders[index].statut.statutName,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.black,fontSize: 10),
-                            ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xff3ed3d3),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 2.0),
+                          child: Text(
+                            _orderProvide.paidorders[index].statut.statutName,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black, fontSize: 10),
                           ),
                         ),
-                      )
-                    
-                     /* Padding(
+                      ),
+                    )
+
+                    /* Padding(
                         child: Icon(
                           Icons.check_circle,
                           color: Color(0xff3ed3d3),
@@ -192,12 +189,14 @@ class _OrdersStatusState extends State<PaidOrders> {
                               Expanded(
                                 flex: 3,
                                 child: ListTile(
-                                  title: Text(i.itemBarcode),
-                                  leading: Text(i.product.productName)
-                                  /*CachedNetworkImage(
+                                    // title: Text(i.itemBarcode),
+                                    leading: Text(i.product.productName +
+                                        " " +
+                                        i.itemBarcode)
+                                    /*CachedNetworkImage(
                                     imageUrl: i.product.productName,
                                   ),*/
-                                ),
+                                    ),
                               ),
                               Expanded(
                                 child: Text("${i.pivot.quantity}"),
@@ -244,6 +243,3 @@ class _OrdersStatusState extends State<PaidOrders> {
     );*/
   }
 }
-
-
-

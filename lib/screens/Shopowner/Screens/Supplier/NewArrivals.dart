@@ -7,6 +7,7 @@ import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/widgets/CategoryFilter.dart';
+import 'package:siyou_b2b/widgets/appprop.dart';
 
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
@@ -26,6 +27,7 @@ class _NewArrivalsState extends State<NewArrivals> {
   AppLocalizations lang;
   HomeProvider newarrivals;
   CartProvider cartProvider;
+  int categoryid;
   ScrollController _scrollController = new ScrollController();
 
   @override
@@ -35,7 +37,7 @@ class _NewArrivalsState extends State<NewArrivals> {
     newarrivals = Provider.of<HomeProvider>(context, listen: false);
     cartProvider = Provider.of<CartProvider>(context);
 
-    //newarrivals?.getnewarrivals(context,widget.supplierid);
+    //newarrivals?.getnewarrivals(context,id:widget.supplierid);
   }
 
   Widget getWidget() {
@@ -69,31 +71,31 @@ class _NewArrivalsState extends State<NewArrivals> {
     int index,
   ) {
     return Column(children: <Widget>[
-      InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (ctx) => LanguageProvider(
-                  child: ChangeNotifierProvider(
-                    child: ItemDetailsScreen(
-                      product: newarrivals.lastadded[index],
-                      supplierid: widget.supplierid,
-                    ),
-                    create: (_) => ProductListProvider(),
-                  ),
-                ),
-              ),
-            );
-          },
-          child: Stack(
-            children: <Widget>[
-              Row(
-                //mainAxisAlignment:MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+      Stack(
+        children: <Widget>[
+          Row(
+            //mainAxisAlignment:MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-                children: <Widget>[
-                  Container(
+            children: <Widget>[
+              InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => LanguageProvider(
+                          child: ChangeNotifierProvider(
+                            child: ItemDetailsScreen(
+                              product: newarrivals.lastadded[index],
+                              supplierid: widget.supplierid,
+                            ),
+                            create: (_) => ProductListProvider(),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
                     padding: new EdgeInsets.all(10.0),
                     child: Material(
                       // borderRadius: BorderRadius.all(Radius.circular(20.0)),
@@ -120,179 +122,179 @@ class _NewArrivalsState extends State<NewArrivals> {
                         ),
                       ),
                     ),
-                  ),
-                  Row(
-                    //mainAxisAlignment: MainAxisAlignment.s,
-                    // crossAxisAlignment: CrossAxisAlignment.end,
+                  )),
+              Row(
+                //mainAxisAlignment: MainAxisAlignment.s,
+                // crossAxisAlignment: CrossAxisAlignment.end,
 
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(
-                            height: 15,
-                          ),
-                          SizedBox(
-                              width: 165,
-                              child: Text(
-                                newarrivals
-                                    .lastadded[index].product.productName,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
-                                  fontWeight: FontWeight.bold,
-                                  // fontFamily: 'NunitoSans',
-                                  fontSize: 16.0,
-                                ),
-                              )),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                    text: newarrivals.lastadded[index].id
-                                            .toString() +
+                      SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                          width: 165,
+                          child: Text(
+                            newarrivals.lastadded[index].product.productName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
+                              fontWeight: FontWeight.bold,
+                              // fontFamily: 'NunitoSans',
+                              fontSize: 16.0,
+                            ),
+                          )),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text:
+                                    newarrivals.lastadded[index].id.toString() +
                                         '/' +
                                         newarrivals.lastadded[index].itemBarcode
                                             .toString(),
-                                    style: TextStyle(color: Colors.grey)),
-                              ],
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: ' Box: ' +
+                                    newarrivals.lastadded[index].itemBox
+                                        .toString() +
+                                    ' Package: ' +
+                                    newarrivals.lastadded[index].itemPackage
+                                        .toString(),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500)),
+                            WidgetSpan(
+                              child: SizedBox(
+                                width: 20,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                    text: ' Box: ' +
-                                        newarrivals.lastadded[index].itemBox
-                                            .toString() +
-                                        ' Package: ' +
-                                        newarrivals.lastadded[index].itemPackage
-                                            .toString(),
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.w500)),
-                                WidgetSpan(
-                                  child: SizedBox(
-                                    width: 20,
-                                  ),
-                                ),
-                                /*TextSpan(
+                            /*TextSpan(
                           text: newarrivals.suppliers[index].country +
                               ',' +
                               newarrivals.suppliers[index].region,
                           style: TextStyle(color: Color(0xFF959ca6))),*/
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              Positioned(
-                child: Text(
-                  '€ ' +
-                      newarrivals.lastadded[index].itemOfflinePrice
-                          .toStringAsFixed(2),
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
-                    fontWeight: FontWeight.w500,
-                    // fontFamily: 'NunitoSans',
-                    fontSize: 17.0,
-                  ),
-                ),
-                right: 15,
-                top: 20,
-              ),
-              Positioned(
-                child: Container(
-                  height: 40,
-                  child: Row(
-                    children: <Widget>[
-                      SizedBox(width: 5),
-                      Container(
-                        //width: 135,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 3.0, vertical: 9.0),
-                        decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.transparent, width: 1),
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: Center(
-                            child: Row(
-                          children: <Widget>[
-                            GestureDetector(
-                              child: Container(
-                                padding: const EdgeInsets.all(5.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color: Colors.red,
-                                ),
-                                child: Icon(
-                                  Icons.remove,
-                                  color: Colors.white,
-                                  size: 10,
-                                ),
-                              ),
-                              onTap: () {
-                                newarrivals.lastadded[index].quantity -
-                                            newarrivals
-                                                .lastadded[index].itemPackage >=
-                                        0
-                                    ? newarrivals.lastadded[index].quantity -=
-                                        newarrivals.lastadded[index].itemPackage
-                                    : newarrivals.lastadded[index].quantity = 0;
-                                newarrivals.notify();
-                              },
-                            ),
-                            SizedBox(width: 15),
-                            Text(
-                              newarrivals.lastadded[index].quantity.toString(),
-                              style: Theme.of(context).textTheme.title,
-                            ),
-                            SizedBox(width: 15),
-                            GestureDetector(
-                              child: Container(
-                                padding: const EdgeInsets.all(5.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color: Colors.red,
-                                ),
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                  size: 10,
-                                ),
-                              ),
-                              onTap: () {
-                                newarrivals.lastadded[index].quantity +=
-                                    newarrivals.lastadded[index].itemPackage;
-                                newarrivals.notify();
-                                cartProvider.addCartItems(
-                                    newarrivals.lastadded[index],
-                                    newarrivals.lastadded[index].quantity,
-                                    widget.supplierid);
-                              },
-                            ),
                           ],
-                        )),
+                        ),
                       ),
                     ],
                   ),
-                ),
-                right: 0,
-                top: 40,
+                ],
               )
             ],
-          )),
+          ),
+          Positioned(
+            child: Text(
+              '€ ' +
+                  newarrivals.lastadded[index].itemOfflinePrice
+                      .toStringAsFixed(2),
+              style: TextStyle(
+                color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
+                fontWeight: FontWeight.w500,
+                // fontFamily: 'NunitoSans',
+                fontSize: 17.0,
+              ),
+            ),
+            right: 15,
+            top: 20,
+          ),
+          Positioned(
+            child: Container(
+              height: 90,
+              child: Row(
+                children: <Widget>[
+                  SizedBox(width: 5),
+                  Container(
+                    //width: 135,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 3.0, vertical: 9.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.transparent, width: 1),
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: Center(
+                        child: Row(
+                      children: <Widget>[
+                        if (newarrivals.lastadded[index].quantity > 0)
+                          GestureDetector(
+                            child: Container(
+                              padding: const EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                color: Colors.red,
+                              ),
+                              child: Icon(
+                                Icons.remove,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                            onTap: () {
+                              newarrivals.lastadded[index].quantity -
+                                          newarrivals
+                                              .lastadded[index].itemPackage >=
+                                      0
+                                  ? newarrivals.lastadded[index].quantity -=
+                                      newarrivals.lastadded[index].itemPackage
+                                  : newarrivals.lastadded[index].quantity = 0;
+                              newarrivals.notify();
+                            },
+                          ),
+                        SizedBox(width: 15),
+                        Text(
+                          newarrivals.lastadded[index].quantity.toString(),
+                          style: Theme.of(context).textTheme.title,
+                        ),
+                        SizedBox(width: 15),
+                        GestureDetector(
+                          child: Container(
+                            padding: const EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              color: Colors.red,
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                          onTap: () {
+                            //  newarrivals.lastadded[index].quantity +=
+                            //    newarrivals.lastadded[index].itemPackage;
+
+                            cartProvider.addCartItems(
+                                newarrivals.lastadded[index],
+                                newarrivals.lastadded[index].itemPackage,
+                                widget.supplierid);
+                            newarrivals.notify();
+                          },
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+            ),
+            right: 0,
+            top: 40,
+          )
+        ],
+      ),
       Divider(
         thickness: 2,
         color: Colors.black12,
@@ -431,15 +433,7 @@ class _NewArrivalsState extends State<NewArrivals> {
                 )
               ],
             ),
-            onTap: () async {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (ctx) => LanguageProvider(
-                      child: CategoryView(id: widget.supplierid)),
-                ),
-              );
-            },
+            onTap: () => categorypressed(widget.supplierid),
           ),
           GestureDetector(
             child: Column(
@@ -474,17 +468,92 @@ class _NewArrivalsState extends State<NewArrivals> {
     );
   }
 
+  void categorypressed(int id) {
+    final edgeInsets = const EdgeInsets.all(8.0);
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return ListView(children: <Widget>[
+            Container(
+              padding: edgeInsets,
+              child: Text(lang.tr('shopOwner.Category'),
+                  style: Theme.of(context).textTheme.display1.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontSize: 25)),
+            ),
+            ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: newarrivals.categories.length,
+                itemBuilder: (_, index) {
+                  return (ExpansionTile(
+                    title: Text(newarrivals.categories[index].categoryName,
+                        style: Theme.of(context).textTheme.subhead),
+                    children: [
+                      ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: newarrivals
+                              .categories[index].subCategories.length,
+                          itemBuilder: (_, i) {
+                            return (ListTile(
+                              onTap: () {
+                                /*setState(() {
+                                  categoryid ==
+                                          newarrivals.categories[index]
+                                              .subCategories[i].id
+                                      ? categoryid = null
+                                      : categoryid = categoryid =
+                                          newarrivals.categories[index]
+                                              .subCategories[i].id;
+                                });*/
+                                print(newarrivals
+                                    .categories[index].subCategories[i].id);
+                                Navigator.pop(context);
+                                newarrivals.resetList(
+                                  context,
+                                  supplierid: id,
+                                  category: newarrivals
+                                      .categories[index].subCategories[i].id,
+                                );
+                              },
+                              title: Text(
+                                newarrivals.categories[index].subCategories[i]
+                                    .categoryName,
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              trailing: categoryid ==
+                                      newarrivals
+                                          .categories[index].subCategories[i].id
+                                  ? Icon(
+                                      Icons.check_circle,
+                                      color: yellow,
+                                      size: 23,
+                                    )
+                                  : SizedBox(),
+                            ));
+                          })
+                    ],
+                  ));
+                })
+          ]);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        getWidget(),
-        Positioned(
-          child: filterWidget(),
-          bottom: 2,
-          left: 12,
-        )
-      ],
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          getWidget(),
+          Positioned(
+            child: filterWidget(),
+            bottom: 2,
+            left: 12,
+          )
+        ],
+      ),
     );
   }
 }

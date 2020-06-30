@@ -102,6 +102,7 @@ class Items {
   dynamic supplierid;
   String productname;
   Productitems product;
+  Supplier supplier;
 
 
   Items(
@@ -149,7 +150,7 @@ Map<String, dynamic> toMap() {
     itemWarnQuantity = json['item_warn_quantity'];
     itemQuantity = json['item_quantity'];
     itemDiscountType = json['item_discount_type'];
-    itemDiscountPrice = json['item_discount_price'];//double.parse();
+    itemDiscountPrice = json['item_discount_price']==null?itemDiscountPrice=null:double.parse(json['item_discount_price']);//double.parse();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     productBaseId = json['product_base_id'];
@@ -168,6 +169,9 @@ Map<String, dynamic> toMap() {
     }
     product=json['product'] != null ? new Productitems.fromJson(json['product']) : null;
     quantity=0;
+    supplier = json['supplier'] != null
+        ? new Supplier.fromJson(json['supplier'])
+        : null;
 
   }
 
@@ -300,6 +304,28 @@ class Images {
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['image_name'] = this.imageName;
+    return data;
+  }
+}
+
+class Supplier {
+  int id;
+  String firstName;
+  String lastName;
+
+  Supplier({this.id, this.firstName, this.lastName});
+
+  Supplier.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['first_name'] = this.firstName;
+    data['last_name'] = this.lastName;
     return data;
   }
 }

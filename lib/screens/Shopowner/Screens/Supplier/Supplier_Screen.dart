@@ -11,6 +11,7 @@ import 'package:siyou_b2b/screens/Shopowner/Screens/productlist.dart';
 import 'package:siyou_b2b/widgets/CarouselProductimages.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 
+import '../productlistScreenCategorie.dart';
 import 'Discount.dart';
 import 'NewArrivals.dart';
 
@@ -27,7 +28,7 @@ class _DetailsScreenState extends State<SupplierScreen>
   List<String> imglist = [
     'https://docs.google.com/uc?id=1KoP-HGb-Wys1sgR7p9jYZSTfKbvBdrYw'
   ];
-
+  TabController tabController;
   AppLocalizations lang;
   HomeProvider _productProvider;
   //CartProvider _cartProvider;
@@ -36,29 +37,34 @@ class _DetailsScreenState extends State<SupplierScreen>
   @override
   void initState() {
     super.initState();
+    tabController = new TabController(length: 4, vsync:this);
     id = widget.supplier.id;
     _productProvider = Provider.of<HomeProvider>(context, listen: false);
-    intil();
+     intil();
   }
 
   void intil() async {
-    await _productProvider.getProducts(context, id);
+    await _productProvider?.getProducts(context, id);
+    
+    await _productProvider?.getCategories(context, id);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
-    _productProvider = Provider.of<HomeProvider>(context, listen: false);
+    //_productProvider = Provider.of<HomeProvider>(context, listen: false);
+    //if (_productProvider.discounts.isEmpty||_productProvider.purchased.isEmpty)
+   // _productProvider?.getProducts(context, id);
 
     //_productProvider?.getProducts(context, id);
   }
 
-  @override
+  /*@override
   void dispose() {
     // _productProvider.lastadded.clear();
     super.dispose();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +184,7 @@ class _DetailsScreenState extends State<SupplierScreen>
   }*/
 
   _buildDetailsAndMaterialWidgets() {
-    TabController tabController = new TabController(length: 4, vsync: this);
+    //TabController tabController = new TabController(length: 4, vsync: this);
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,6 +245,7 @@ class _DetailsScreenState extends State<SupplierScreen>
                 Purchased(
                   supplierid: id,
                 ),
+               // ProductsListScreen()
                 ProductList(suppid: id,)
               ],
             ),
@@ -300,4 +307,5 @@ class _DetailsScreenState extends State<SupplierScreen>
           );
         });
   }
+  
 }

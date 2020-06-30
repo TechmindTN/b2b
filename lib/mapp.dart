@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siyou_b2b/models/Theme.dart';
 
-class FallbackCupertinoLocalisationsDelegate extends LocalizationsDelegate<CupertinoLocalizations> {
+class FallbackCupertinoLocalisationsDelegate
+    extends LocalizationsDelegate<CupertinoLocalizations> {
   const FallbackCupertinoLocalisationsDelegate();
 
   @override
@@ -31,16 +32,12 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     checkFirstStart();
-    
   }
- 
-
- 
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-   // getSavedTheme();
+    // getSavedTheme();
   }
 
   getSavedTheme() async {
@@ -71,7 +68,7 @@ class _MainScreenState extends State<MainScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: SafeArea(
                   child: Text(
-                    "All rights reserved. copyright © 2020",
+                    "All rights reserved. copyright © SIYOU 2020",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Theme.of(context).primaryColor,

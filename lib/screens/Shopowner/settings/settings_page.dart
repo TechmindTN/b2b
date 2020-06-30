@@ -11,8 +11,6 @@ import 'legal_about_page.dart';
 import 'notifications_settings_page.dart';
 
 class SettingsPage extends StatelessWidget {
-    
-
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context);
@@ -100,18 +98,20 @@ class SettingsPage extends StatelessWidget {
                                     fontSize: 18.0),
                               ),
                             ),
-                             ListTile(
-                    title: Text('Change Password'),
-                    leading: Image.asset('assets/icons/change_pass.png'),
-                    onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => ChangePasswordPage())),
-                  ),
+                            ListTile(
+                              title: Text('Change Password'),
+                              leading:
+                                  Image.asset('assets/icons/change_pass.png'),
+                              onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (_) => ChangePasswordPage())),
+                            ),
                             ListTile(
                                 title: Text(lang.tr('shopOwner.signout')),
                                 leading:
                                     Image.asset('assets/icons/sign_out.png'),
-                                onTap: ()  {logoutUser(context)
-                                  ;
+                                onTap: () {
+                                  logoutUser(context);
                                 }),
                           ],
                         ),

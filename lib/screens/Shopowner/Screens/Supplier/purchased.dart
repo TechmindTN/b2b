@@ -7,6 +7,7 @@ import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/widgets/CategoryFilter.dart';
+import 'package:siyou_b2b/widgets/appprop.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 import '../../../../main.dart';
@@ -24,6 +25,7 @@ class _PurchasedState extends State<Purchased> {
   AppLocalizations lang;
   HomeProvider purchased;
   CartProvider cartProvider;
+  int categoryid;
   ScrollController _scrollController = new ScrollController();
 
   @override
@@ -32,7 +34,7 @@ class _PurchasedState extends State<Purchased> {
     lang = AppLocalizations.of(context);
     purchased = Provider.of<HomeProvider>(context, listen: false);
     cartProvider = Provider.of<CartProvider>(context);
-    //Purchased?.getPurchased(context,widget.supplierid);
+    // purchased?.getpurchased(context,id:widget.supplierid);
   }
 
   Widget getWidget() {
@@ -66,31 +68,31 @@ class _PurchasedState extends State<Purchased> {
     int index,
   ) {
     return Column(children: <Widget>[
-      InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (ctx) => LanguageProvider(
-                  child: ChangeNotifierProvider(
-                    child: ItemDetailsScreen(
-                      product: purchased.purchased[index],
-                      supplierid: widget.supplierid,
-                    ),
-                    create: (_) => ProductListProvider(),
-                  ),
-                ),
-              ),
-            );
-          },
-          child: Stack(
-            children: <Widget>[
-              Row(
-                //mainAxisAlignment:MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+      Stack(
+        children: <Widget>[
+          Row(
+            //mainAxisAlignment:MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-                children: <Widget>[
-                  Container(
+            children: <Widget>[
+              InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => LanguageProvider(
+                          child: ChangeNotifierProvider(
+                            child: ItemDetailsScreen(
+                              product: purchased.purchased[index],
+                              supplierid: widget.supplierid,
+                            ),
+                            create: (_) => ProductListProvider(),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
                     padding: new EdgeInsets.all(10.0),
                     child: Material(
                       // borderRadius: BorderRadius.all(Radius.circular(20.0)),
@@ -117,177 +119,177 @@ class _PurchasedState extends State<Purchased> {
                         ),
                       ),
                     ),
-                  ),
-                  Row(
-                    //mainAxisAlignment: MainAxisAlignment.s,
-                    // crossAxisAlignment: CrossAxisAlignment.end,
+                  )),
+              Row(
+                //mainAxisAlignment: MainAxisAlignment.s,
+                // crossAxisAlignment: CrossAxisAlignment.end,
 
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(
-                            height: 15,
-                          ),
-                          SizedBox(
-                              width: 165,
-                              child: Text(
-                                purchased.purchased[index].product.productName,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
-                                  fontWeight: FontWeight.bold,
-                                  // fontFamily: 'NunitoSans',
-                                  fontSize: 16.0,
-                                ),
-                              )),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                    text: purchased.purchased[index].id
-                                            .toString() +
-                                        '/' +
-                                        purchased.purchased[index].itemBarcode
-                                            .toString(),
-                                    style: TextStyle(color: Colors.grey)),
-                              ],
+                      SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                          width: 165,
+                          child: Text(
+                            purchased.purchased[index].product.productName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
+                              fontWeight: FontWeight.bold,
+                              // fontFamily: 'NunitoSans',
+                              fontSize: 16.0,
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                    text: ' Box: ' +
-                                        purchased.purchased[index].itemBox
-                                            .toString() +
-                                        ' Package: ' +
-                                        purchased.purchased[index].itemPackage
-                                            .toString(),
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.w500)),
-                                WidgetSpan(
-                                  child: SizedBox(
-                                    width: 20,
-                                  ),
-                                ),
-                                /*TextSpan(
+                          )),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: purchased.purchased[index].id.toString() +
+                                    '/' +
+                                    purchased.purchased[index].itemBarcode
+                                        .toString(),
+                                style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: ' Box: ' +
+                                    purchased.purchased[index].itemBox
+                                        .toString() +
+                                    ' Package: ' +
+                                    purchased.purchased[index].itemPackage
+                                        .toString(),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500)),
+                            WidgetSpan(
+                              child: SizedBox(
+                                width: 20,
+                              ),
+                            ),
+                            /*TextSpan(
                           text: Purchased.suppliers[index].country +
                               ',' +
                               Purchased.suppliers[index].region,
                           style: TextStyle(color: Color(0xFF959ca6))),*/
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              Positioned(
-                child: Text(
-                  '€ ' + purchased.purchased[index].itemOfflinePrice.toString(),
-                  //.toStringAsFixed(2),
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
-                    fontWeight: FontWeight.w500,
-                    // fontFamily: 'NunitoSans',
-                    fontSize: 17.0,
-                  ),
-                ),
-                right: 15,
-                top: 20,
-              ),
-              Positioned(
-                child: Container(
-                  height: 40,
-                  child: Row(
-                    children: <Widget>[
-                      SizedBox(width: 5),
-                      Container(
-                        //width: 135,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 3.0, vertical: 9.0),
-                        decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.transparent, width: 1),
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: Center(
-                            child: Row(
-                          children: <Widget>[
-                            GestureDetector(
-                              child: Container(
-                                padding: const EdgeInsets.all(5.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color: Colors.red,
-                                ),
-                                child: Icon(
-                                  Icons.remove,
-                                  color: Colors.white,
-                                  size: 10,
-                                ),
-                              ),
-                              onTap: () {
-                                purchased.purchased[index].quantity -
-                                            purchased
-                                                .purchased[index].itemPackage >=
-                                        0
-                                    ? purchased.purchased[index].quantity -=
-                                        purchased.purchased[index].itemPackage
-                                    : purchased.purchased[index].quantity = 0;
-                                purchased.notify();
-                              },
-                            ),
-                            SizedBox(width: 15),
-                            Text(
-                              purchased.purchased[index].quantity.toString(),
-                              style: Theme.of(context).textTheme.title,
-                            ),
-                            SizedBox(width: 15),
-                            GestureDetector(
-                              child: Container(
-                                padding: const EdgeInsets.all(5.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color: Colors.red,
-                                ),
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                  size: 10,
-                                ),
-                              ),
-                              onTap: () {
-                                purchased.purchased[index].quantity +=
-                                    purchased.purchased[index].itemPackage;
-                                purchased.notify();
-                                cartProvider.addCartItems(
-                                    purchased.purchased[index],
-                                    purchased.purchased[index].quantity,
-                                    widget.supplierid);
-                              },
-                            ),
                           ],
-                        )),
+                        ),
                       ),
                     ],
                   ),
-                ),
-                right: 0,
-                top: 40,
+                ],
               )
             ],
-          )),
+          ),
+          Positioned(
+            child: Text(
+              '€ ' + purchased.purchased[index].itemOfflinePrice.toString(),
+              //.toStringAsFixed(2),
+              style: TextStyle(
+                color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
+                fontWeight: FontWeight.w500,
+                // fontFamily: 'NunitoSans',
+                fontSize: 17.0,
+              ),
+            ),
+            right: 15,
+            top: 20,
+          ),
+          Positioned(
+            child: Container(
+              height: 90,
+              child: Row(
+                children: <Widget>[
+                  SizedBox(width: 5),
+                  Container(
+                    //width: 135,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 3.0, vertical: 9.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.transparent, width: 1),
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: Center(
+                        child: Row(
+                      children: <Widget>[
+                        if (purchased.purchased[index].quantity > 0)
+                          GestureDetector(
+                            child: Container(
+                              padding: const EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                color: Colors.red,
+                              ),
+                              child: Icon(
+                                Icons.remove,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                            onTap: () {
+                              purchased.purchased[index].quantity -
+                                          purchased
+                                              .purchased[index].itemPackage >=
+                                      0
+                                  ? purchased.purchased[index].quantity -=
+                                      purchased.purchased[index].itemPackage
+                                  : purchased.purchased[index].quantity = 0;
+                              purchased.notify();
+                            },
+                          ),
+                        SizedBox(width: 15),
+                        Text(
+                          purchased.purchased[index].quantity.toString(),
+                          style: Theme.of(context).textTheme.title,
+                        ),
+                        SizedBox(width: 15),
+                        GestureDetector(
+                          child: Container(
+                            padding: const EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              color: Colors.red,
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                          onTap: () {
+                            //purchased.purchased[index].quantity +=
+                            //  purchased.purchased[index].itemPackage;
+
+                            cartProvider.addCartItems(
+                                purchased.purchased[index],
+                                purchased.purchased[index].itemPackage,
+                                widget.supplierid);
+                            purchased.notify();
+                          },
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+            ),
+            right: 0,
+            top: 40,
+          )
+        ],
+      ),
       Divider(
         thickness: 2,
         color: Colors.black12,
@@ -331,17 +333,8 @@ class _PurchasedState extends State<Purchased> {
                 )
               ],
             ),
-            onTap: () async {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (ctx) => LanguageProvider(
-                      child: CategoryView(id: widget.supplierid)),
-                ),
-              );
-            },
+            onTap: () => categorypressed(widget.supplierid),
           ),
-          
           GestureDetector(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -354,7 +347,9 @@ class _PurchasedState extends State<Purchased> {
                         .copyWith(color: Colors.black))
               ],
             ),
-            onTap: () async {_onSortPressed(context);},
+            onTap: () async {
+              _onSortPressed(context);
+            },
           ),
           GestureDetector(
             child: Column(
@@ -373,6 +368,79 @@ class _PurchasedState extends State<Purchased> {
         ],
       ),
     );
+  }
+
+  void categorypressed(int id) {
+    final edgeInsets = const EdgeInsets.all(8.0);
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return ListView(children: <Widget>[
+            Container(
+              padding: edgeInsets,
+              child: Text(lang.tr('shopOwner.Category'),
+                  style: Theme.of(context).textTheme.display1.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontSize: 25)),
+            ),
+            ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: purchased.categories.length,
+                itemBuilder: (_, index) {
+                  return (ExpansionTile(
+                    title: Text(purchased.categories[index].categoryName,
+                        style: Theme.of(context).textTheme.subhead),
+                    children: [
+                      ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount:
+                              purchased.categories[index].subCategories.length,
+                          itemBuilder: (_, i) {
+                            return (ListTile(
+                              onTap: () {
+                                /*setState(() {
+                                  categoryid ==
+                                          newarrivals.categories[index]
+                                              .subCategories[i].id
+                                      ? categoryid = null
+                                      : categoryid = categoryid =
+                                          newarrivals.categories[index]
+                                              .subCategories[i].id;
+                                });*/
+                                print(purchased
+                                    .categories[index].subCategories[i].id);
+                                Navigator.pop(context);
+                                purchased.resetList(
+                                  context,
+                                  supplierid: id,
+                                  category: purchased
+                                      .categories[index].subCategories[i].id,
+                                );
+                              },
+                              title: Text(
+                                purchased.categories[index].subCategories[i]
+                                    .categoryName,
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              trailing: categoryid ==
+                                      purchased
+                                          .categories[index].subCategories[i].id
+                                  ? Icon(
+                                      Icons.check_circle,
+                                      color: yellow,
+                                      size: 23,
+                                    )
+                                  : SizedBox(),
+                            ));
+                          })
+                    ],
+                  ));
+                })
+          ]);
+        });
   }
 
   void _onSortPressed(BuildContext context) {
@@ -398,9 +466,8 @@ class _PurchasedState extends State<Purchased> {
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          purchased.purchased.sort((a, b) =>
-                              Comparable.compare(a.product.productName,
-                                  b.product.productName));
+                          purchased.purchased.sort((a, b) => Comparable.compare(
+                              a.product.productName, b.product.productName));
                           purchased.notify();
                         },
                       ),
@@ -411,9 +478,8 @@ class _PurchasedState extends State<Purchased> {
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          purchased.purchased.sort((b, a) =>
-                              Comparable.compare(a.product.productName,
-                                  b.product.productName));
+                          purchased.purchased.sort((b, a) => Comparable.compare(
+                              a.product.productName, b.product.productName));
                           purchased.notify();
                         },
                       ),
@@ -424,9 +490,8 @@ class _PurchasedState extends State<Purchased> {
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          purchased.purchased.sort((a, b) =>
-                              Comparable.compare(
-                                  a.itemOfflinePrice, b.itemOfflinePrice));
+                          purchased.purchased.sort((a, b) => Comparable.compare(
+                              a.itemOfflinePrice, b.itemOfflinePrice));
 
                           purchased.notify();
                         },
@@ -438,9 +503,8 @@ class _PurchasedState extends State<Purchased> {
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          purchased.purchased.sort((b, a) =>
-                              Comparable.compare(
-                                  a.itemOfflinePrice, b.itemOfflinePrice));
+                          purchased.purchased.sort((b, a) => Comparable.compare(
+                              a.itemOfflinePrice, b.itemOfflinePrice));
                           purchased.notify();
                         },
                       ),

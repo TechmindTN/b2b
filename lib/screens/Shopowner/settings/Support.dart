@@ -1,25 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launch/flutter_launch.dart';
-import 'package:fluwx/fluwx.dart';
+
 import 'package:siyou_b2b/widgets/Costum_backgroud.dart';
 import 'package:siyou_b2b/widgets/appprop.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 class SupportPage extends StatelessWidget {
-  void _shareText() async {
-    await registerWxApi(
-        appId: "wxd930ea5d5a228f5f",
-        doOnAndroid: true,
-        doOnIOS: true,
-        universalLink: "https://your.univerallink.com/link/");
-    var result = await isWeChatInstalled;
-    print("is installed $result");
-    shareToWeChat(WeChatShareTextModel("_text", scene: WeChatScene.TIMELINE))
-        .then((data) {
-      print("-->$data");
-    });
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +78,7 @@ class SupportPage extends StatelessWidget {
                                     child: Image.asset(
                                         'assets/png/wechat-icon.png')),
                                 onTap: () async {
-                                   _shareText();
+                                  // _shareText();
                                 }),
                             ListTile(
                               title: Text(lang.tr('Facebook')),

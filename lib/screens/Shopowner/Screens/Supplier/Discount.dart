@@ -5,7 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
+
+import 'package:siyou_b2b/screens/Shopowner/Screens/Search_Item.dart';
 import 'package:siyou_b2b/widgets/CategoryFilter.dart';
+import 'package:siyou_b2b/widgets/appprop.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 import 'package:flutter_icons/flutter_icons.dart';
@@ -25,15 +28,21 @@ class _DiscountState extends State<Discount> {
   HomeProvider newarrivals;
   CartProvider cartProvider;
   ScrollController _scrollController = new ScrollController();
+  int categoryid;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
-    newarrivals = Provider.of<HomeProvider>(
-      context,
-    );
+    newarrivals = Provider.of<HomeProvider>(context, listen: false);
     cartProvider = Provider.of<CartProvider>(context);
+    //newarrivals?.getdiscounts(context,supplierid: widget.supplierid);
+
     //_newarrivals?.getnewarrivals(context,id);
   }
 
@@ -76,34 +85,52 @@ class _DiscountState extends State<Discount> {
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: <Widget>[
-                Container(
-                  padding: new EdgeInsets.all(10.0),
-                  child: Material(
-                    // borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                    // elevation: 10.0,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15.0),
-                      ),
-                      child: Container(
-                        height: 85.0,
-                        width: 80.0,
-                        child: newarrivals.discounts[index].images == null ||
-                                newarrivals.discounts[index].images.isEmpty
-                            ? Image.asset(
-                                "assets/png/empty_cart.png",
-                                fit: BoxFit.contain,
-                                alignment: Alignment.center,
-                              )
-                            : CachedNetworkImage(
-                                imageUrl: newarrivals
-                                    .discounts[index].images[0].imageUrl,
-                                fit: BoxFit.contain,
+                InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (ctx) => LanguageProvider(
+                            child: ChangeNotifierProvider(
+                              child: ItemDetailsScreen(
+                                product: newarrivals.discounts[index],
+                                supplierid: widget.supplierid,
                               ),
+                              create: (_) => ProductListProvider(),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: new EdgeInsets.all(10.0),
+                      child: Material(
+                        // borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        // elevation: 10.0,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.0),
+                          ),
+                          child: Container(
+                            height: 85.0,
+                            width: 80.0,
+                            child: newarrivals.discounts[index].images ==
+                                        null ||
+                                    newarrivals.discounts[index].images.isEmpty
+                                ? Image.asset(
+                                    "assets/png/empty_cart.png",
+                                    fit: BoxFit.contain,
+                                    alignment: Alignment.center,
+                                  )
+                                : CachedNetworkImage(
+                                    imageUrl: newarrivals
+                                        .discounts[index].images[0].imageUrl,
+                                    fit: BoxFit.contain,
+                                  ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
+                    )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -227,7 +254,7 @@ class _DiscountState extends State<Discount> {
             ),
             Positioned(
               child: Container(
-                height: 50,
+                height: 70,
                 child: Row(
                   children: <Widget>[
                     SizedBox(width: 5),
@@ -352,15 +379,7 @@ class _DiscountState extends State<Discount> {
                 )
               ],
             ),
-            onTap: () async {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (ctx) => LanguageProvider(
-                      child: CategoryView(id: widget.supplierid)),
-                ),
-              );
-            },
+            onTap: () => categorypressed(widget.supplierid),
           ),
           GestureDetector(
             child: Column(
@@ -388,11 +407,91 @@ class _DiscountState extends State<Discount> {
                         .copyWith(color: Colors.black))
               ],
             ),
-            onTap: () async {},
+            onTap: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) =>
+                        LanguageProvider(child: SearchItem(search: '')),
+                  ));
+            },
           ),
         ],
       ),
     );
+  }
+
+  void categorypressed(int id) {
+    final edgeInsets = const EdgeInsets.all(8.0);
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return ListView(children: <Widget>[
+            Container(
+              padding: edgeInsets,
+              child: Text(lang.tr('shopOwner.Category'),
+                  style: Theme.of(context).textTheme.display1.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontSize: 25)),
+            ),
+            ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: newarrivals.categories.length,
+                itemBuilder: (_, index) {
+                  return (ExpansionTile(
+                    title: Text(newarrivals.categories[index].categoryName,
+                        style: Theme.of(context).textTheme.subhead),
+                    children: [
+                      ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: newarrivals
+                              .categories[index].subCategories.length,
+                          itemBuilder: (_, i) {
+                            return (ListTile(
+                              onTap: () {
+                                /*setState(() {
+                                  categoryid ==
+                                          newarrivals.categories[index]
+                                              .subCategories[i].id
+                                      ? categoryid = null
+                                      : categoryid = categoryid =
+                                          newarrivals.categories[index]
+                                              .subCategories[i].id;
+                                });*/
+                                print(newarrivals
+                                    .categories[index].subCategories[i].id);
+                                Navigator.pop(context);
+                                newarrivals.resetList(
+                                  context,
+                                  supplierid: id,
+                                  category: newarrivals
+                                      .categories[index].subCategories[i].id,
+                                );
+                              },
+                              title: Text(
+                                newarrivals.categories[index].subCategories[i]
+                                    .categoryName,
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              trailing: categoryid ==
+                                      newarrivals
+                                          .categories[index].subCategories[i].id
+                                  ? Icon(
+                                      Icons.check_circle,
+                                      color: yellow,
+                                      size: 23,
+                                    )
+                                  : SizedBox(),
+                            ));
+                          })
+                    ],
+                  ));
+                })
+          ]);
+        });
   }
 
   void _onSortPressed(BuildContext context) {
@@ -493,15 +592,17 @@ class _DiscountState extends State<Discount> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        getWidget(),
-        Positioned(
-          child: filterWidget(),
-          bottom: 2,
-          left: 12,
-        )
-      ],
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          getWidget(),
+          Positioned(
+            child: filterWidget(),
+            bottom: 2,
+            left: 12,
+          )
+        ],
+      ),
     );
   }
 }

@@ -110,8 +110,15 @@ class _CartState extends State<Cart> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
+                                  provider.itmes[i].product!=null?
                                   Text(
                                     '${provider.itmes[i].product.productName}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .title
+                                        .copyWith(fontSize: 14),
+                                  ):Text(
+                                    '${provider.itmes[i].productname}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .title
@@ -123,7 +130,7 @@ class _CartState extends State<Cart> {
                                         color: Colors.grey, fontSize: 12),
                                   ),
                                   Text(
-                                    "€ ${provider.itmes[i].itemOnlinePrice} x ${provider.itmes[i].quantity} ",
+                                    "€ ${provider.itmes[i].itemOfflinePrice} x ${provider.itmes[i].quantity} ",
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12),
                                   ),
@@ -180,7 +187,7 @@ class _CartState extends State<Cart> {
                                                     provider.total
                                                 : provider.total -= provider
                                                         .itmes[i]
-                                                        .itemOnlinePrice *
+                                                        .itemOfflinePrice *
                                                     provider
                                                         .itmes[i].itemPackage;
                                             provider.notify();
@@ -210,7 +217,7 @@ class _CartState extends State<Cart> {
                                             provider.itmes[i].quantity +=
                                                 provider.itmes[i].itemPackage;
                                             provider.total += provider
-                                                    .itmes[i].itemOnlinePrice *
+                                                    .itmes[i].itemOfflinePrice *
                                                 provider.itmes[i].itemPackage;
 
                                             provider.notify();

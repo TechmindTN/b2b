@@ -4,29 +4,26 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launch/flutter_launch.dart';
 import 'package:fluttericon/typicons_icons.dart';
-import 'package:fluwx/fluwx.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 //import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/main.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
-import 'package:siyou_b2b/widgets/CarouselProductimages.dart';
 //import 'package:siyou_b2b/widgets/CarouselProductsWidget.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
-import 'package:siyou_b2b/widgets/Search_view.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:siyou_b2b/widgets/SupplierMap.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
+import 'Search_view.dart';
 import 'Supplier/Supplier_Screen.dart';
-
-
 
 class HomeScreen extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
+class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   List categories = new List();
 
   List photos = new List();
@@ -42,8 +39,8 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
     ..add("https://docs.google.com/uc?id=1vv0Ck3wy7tISG_DTIFPNkikk80LA0Elv")
     ..add("https://docs.google.com/uc?id=1rXMxdOkahrGR4KNt1uBH-Mx5QfLeupbQ")
     ..add("https://docs.google.com/uc?id=1WdJQml2kShNw7LiJSTYn_NQMiIhOP-Ww");
-     Animation<double> _animation;
-     AnimationController _animationController;
+  Animation<double> _animation;
+  AnimationController _animationController;
 
   @override
   void initState() {
@@ -52,12 +49,11 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
       duration: Duration(milliseconds: 260),
     );
 
-    final curvedAnimation = CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
-    
-    super.initState();
-    
 
+    super.initState();
   }
 
   @override
@@ -99,7 +95,7 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
           SizedBox(
             width: 10,
           ),
-           InkWell(
+          InkWell(
               onTap: () {
                 if (searchController.text != "") {
                   Navigator.push(
@@ -120,11 +116,20 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
               child: TextField(
                 controller: searchController,
                 decoration: InputDecoration(
-                    labelStyle:TextStyle(color: Color(0xffBEBEBE)),
+                    labelStyle: TextStyle(color: Color(0xffBEBEBE)),
                     hintText: lang.tr('Supplier'),
                     border: InputBorder.none),
+                onSubmitted: (_) {
+                  if (searchController.text != "") {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SearchView(
+                                  search: searchController.text,
+                                )));
+                  }
+                },
               )),
-         
         ],
       ),
     );
@@ -174,63 +179,65 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
             ),
           );
         },
-        child: Row(
-          //mainAxisAlignment:MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            //mainAxisAlignment:MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-          children: <Widget>[
-            Container(
-              padding: new EdgeInsets.all(10.0),
-              child: Material(
-                // borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                // elevation: 10.0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.0),
-                  ),
-                  child: Container(
-                    height: 85.0,
-                    width: 100.0,
-                    child: _productProvide.suppliers[index].image == null ||
-                            _productProvide.suppliers[index].image == ""
-                        ? Image.asset(
-                            "assets/png/empty_cart.png",
-                            fit: BoxFit.contain,
-                            alignment: Alignment.center,
-                          )
-                        : CachedNetworkImage(
-                            imageUrl: _productProvide.suppliers[index].image,
-                            fit: BoxFit.contain,
-                          ),
+            children: <Widget>[
+              Container(
+                // width: MediaQuery.of(context).size.width,
+                padding: new EdgeInsets.all(10.0),
+                child: Material(
+                  // borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  // elevation: 10.0,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(15.0),
+                    ),
+                    child: Container(
+                      height: 85.0,
+                      width: 100.0,
+                      child: _productProvide.suppliers[index].image == null ||
+                              _productProvide.suppliers[index].image == ""
+                          ? Image.asset(
+                              "assets/png/empty_cart.png",
+                              fit: BoxFit.contain,
+                              alignment: Alignment.center,
+                            )
+                          : CachedNetworkImage(
+                              imageUrl: _productProvide.suppliers[index].image,
+                              fit: BoxFit.contain,
+                            ),
+                    ),
                   ),
                 ),
               ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  _productProvide.suppliers[index].firstName +
-                      ' ' +
-                      _productProvide.suppliers[index].lastName,
-                  style: TextStyle(
-                    //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
-                    fontWeight: FontWeight.bold,
-                    // fontFamily: 'NunitoSans',
-                    fontSize: 17.0,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 15,
                   ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      /* WidgetSpan(
+                  Text(
+                    _productProvide.suppliers[index].firstName +
+                        ' ' +
+                        _productProvide.suppliers[index].lastName,
+                    style: TextStyle(
+                      //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        /* WidgetSpan(
                         child: Icon(
                           Icons.star,
                           size: 18,
@@ -244,47 +251,55 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
                           width: 20,
                         ),
                       ),*/
-                      if (_productProvide.suppliers[index].minorder > 0)
-                        TextSpan(
-                            text: "Min Order € " +
-                                _productProvide.suppliers[index].minorder
-                                    .toString(),
-                            style: TextStyle(color: Colors.red)),
-                    ],
+                        if (_productProvide.suppliers[index].minorder > 0)
+                          TextSpan(
+                              text: "Min Order € " +
+                                  _productProvide.suppliers[index].minorder
+                                      .toString(),
+                              style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      WidgetSpan(
-                        child: Icon(
-                          Icons.timer,
-                          size: 18,
-                          color: Colors.grey,
+                  SizedBox(height: 10),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 140,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              WidgetSpan(
+                                child: Icon(
+                                  Icons.timer,
+                                  size: 18,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              TextSpan(
+                                  text: _productProvide
+                                          .suppliers[index].distance +
+                                      " Km",
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                          text:
-                              _productProvide.suppliers[index].distance + " Km",
-                          style: TextStyle(
-                              color: Colors.grey, fontWeight: FontWeight.w500)),
-                      WidgetSpan(
-                        child: SizedBox(
-                          width: 20,
-                        ),
-                      ),
-                      TextSpan(
-                          text: _productProvide.suppliers[index].country +
-                              ',' +
-                              _productProvide.suppliers[index].region,
-                          style: TextStyle(color: Color(0xFF959ca6))),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          ],
+                        Spacer(),
+                        Text(
+                            _productProvide.suppliers[index].country +
+                                ',' +
+                                _productProvide.suppliers[index].region,
+                            style: TextStyle(color: Color(0xFF959ca6))),
+                      ],
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
         ));
   }
 
@@ -307,8 +322,13 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
               Expanded(child: search()),
               InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SupplierMap()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SupplierMap(
+                              suppliers: _productProvide.suppliers,
+                              currentpostion:
+                                  _productProvide.currentPosition)));
                 },
                 child: ImageIcon(
                   AssetImage("assets/png/location.png"),
@@ -318,43 +338,44 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
               ),
             ],
           )),
-          floatingActionButton:FloatingActionBubble(
+      floatingActionButton: FloatingActionBubble(
         // Menu items
         items: <Bubble>[
-
           // Floating action menu item
           Bubble(
-            title:"",
-            iconColor :Colors.white,
-            bubbleColor : Colors.red,
-            icon:Icons.email,
-            titleStyle:TextStyle(color: Colors.white),
-            onPress: ()async {
-             await UrlLauncher.launch("mailto:support@siyoutech.tn");
+            title: "",
+            iconColor: Colors.white,
+            bubbleColor: Colors.red,
+            icon: Icons.email,
+            titleStyle: TextStyle(color: Colors.white),
+            onPress: () async {
+              await UrlLauncher.launch("mailto:support@siyoutech.tn");
               _animationController.reverse();
             },
           ),
           // Floating action menu item
           Bubble(
-            title:"",
-            iconColor :Colors.white,
-            bubbleColor : Colors.red,
-            icon:Typicons.chat_alt,
-            titleStyle:TextStyle( color: Colors.white),
+            title: "",
+            iconColor: Colors.white,
+            bubbleColor: Colors.red,
+            icon: Typicons.chat_alt,
+            titleStyle: TextStyle(color: Colors.white),
             onPress: () {
-              _shareText();
+              //_shareText();
               //_animationController.reverse();
             },
           ),
           //Floating action menu item
           Bubble(
-            title:"",
-            iconColor :Colors.white,
-            bubbleColor : Colors.green,
-            icon:FontAwesomeIcons.whatsapp,
-            titleStyle:TextStyle( color: Colors.white),
-            onPress: ()async {
-              await FlutterLaunch.launchWathsApp(phone: "+393891081886", message: "Can Someone Help me Please !");
+            title: "",
+            iconColor: Colors.white,
+            bubbleColor: Colors.green,
+            icon: FontAwesomeIcons.whatsapp,
+            titleStyle: TextStyle(color: Colors.white),
+            onPress: () async {
+              await FlutterLaunch.launchWathsApp(
+                  phone: "+393891081886",
+                  message: "Can Someone Help me Please !");
               _animationController.reverse();
             },
           ),
@@ -369,12 +390,12 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
             },
           ),*/
           Bubble(
-            title:"",
-            iconColor :Colors.white,
-            bubbleColor : Colors.blue,
-            icon:FontAwesomeIcons.facebookMessenger,
-            titleStyle:TextStyle( color: Colors.white),
-            onPress: () async{
+            title: "",
+            iconColor: Colors.white,
+            bubbleColor: Colors.blue,
+            icon: FontAwesomeIcons.facebookMessenger,
+            titleStyle: TextStyle(color: Colors.white),
+            onPress: () async {
               await UrlLauncher.launch("http://m.me/siyou.technologyTN");
               _animationController.reverse();
             },
@@ -385,15 +406,16 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
         animation: _animation,
 
         // On pressed change animation state
-        onPress:(){ _animationController.isCompleted
-            ? _animationController.reverse()
-            : _animationController.forward();
+        onPress: () {
+          _animationController.isCompleted
+              ? _animationController.reverse()
+              : _animationController.forward();
         },
-        
+
         // Floating Action button Icon color
         iconColor: Colors.red,
 
-        // Flaoting Action button Icon 
+        // Flaoting Action button Icon
         icon: Typicons.chat,
       ),
       backgroundColor: Colors.white54,
@@ -401,10 +423,33 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
         child: Column(
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            CarouselProductsList(
-              productsList: imgList,
-              type: CarouselTypes.details,
-            ),
+            CarouselSlider(
+                items: imgList
+                    .map((item) => Container(
+                          child: Center(
+                              child: Image.network(
+                            item,
+                            fit: BoxFit.cover,
+                            width: 9000,
+                            height: 160,
+                          )),
+                        ))
+                    .toList(),
+                options: CarouselOptions(
+                  height: 150,
+                  aspectRatio: 16 / 10,
+                  viewportFraction: 1.0,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: true,
+                  autoPlayInterval: Duration(seconds: 4),
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enlargeCenterPage: true,
+                  //onPageChanged: callbackFunction,
+                  scrollDirection: Axis.horizontal,
+                )),
             SizedBox(
               height: 5,
             ),
@@ -413,19 +458,5 @@ class _HomeState extends State<HomeScreen>with SingleTickerProviderStateMixin {
         ),
       ),
     );
-  }
-   void _shareText() async {
-     String _text = "Can Someone Help me ";
-    await registerWxApi(
-        appId: "wxd930ea5d5a228f5f",
-        doOnAndroid: true,
-        doOnIOS: true,
-        universalLink: "https://your.univerallink.com/link/");
-    var result = await isWeChatInstalled;
-    print("is installed $result");
-    shareToWeChat(WeChatShareTextModel(_text, scene: WeChatScene.SESSION))
-        .then((data) {
-      print("-->$data");
-    });
   }
 }

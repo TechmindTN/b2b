@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/main.dart';
 import 'package:siyou_b2b/network/ApiProvider.dart';
@@ -61,7 +62,7 @@ class _WishListState extends State<WishList> {
           brightness: Brightness.light,
           backgroundColor: Colors.transparent,
           title: Text(
-             lang.tr('shopOwner.Wishlist'),
+            lang.tr('shopOwner.Wishlist'),
             style: TextStyle(color: darkGrey),
           ),
           elevation: 0,
@@ -84,18 +85,15 @@ class _WishListState extends State<WishList> {
         else if (provider.loading)
           return ProgressIndicatorWidget();
         else if (provider.wishlist != null && provider.wishlist.isNotEmpty) {
-          return GridView.builder(
+          return StaggeredGridView.countBuilder(
             shrinkWrap: true,
             controller: _scrollController,
             itemCount: provider.wishlist.length,
             itemBuilder: (context, index) => _getItemWidget(index),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 2.0,
-              mainAxisSpacing: 2.0,
-              childAspectRatio: MediaQuery.of(context).size.width /
-                  (MediaQuery.of(context).size.height * 0.6),
-            ),
+            staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+            mainAxisSpacing: 0.0,
+            crossAxisSpacing: 0.0,
+            crossAxisCount: 4,
           );
         } else
           return Container(
@@ -123,7 +121,7 @@ class _WishListState extends State<WishList> {
         );
       },
       child: Card(
-        elevation: 5.0,
+        elevation: 0.0,
         //margin: EdgeInsets.all(value),
 
         child: Container(
@@ -134,13 +132,17 @@ class _WishListState extends State<WishList> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
-                    _productProvider.wishlist[index].productName,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.bold),
-                  ),
+                  SizedBox(
+                      width: 130,
+                      child: Text(
+                        _productProvider.wishlist[index].productName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold),
+                      )),
                   SizedBox.fromSize(
                     size: Size(23, 23),
                     child: ClipOval(
@@ -151,7 +153,8 @@ class _WishListState extends State<WishList> {
                             onTap: () {
                               removeWishlist(
                                   _productProvider.wishlist[index].id);
-                                  _productProvider.wishlist.remove(_productProvider.wishlist[index]);
+                              _productProvider.wishlist
+                                  .remove(_productProvider.wishlist[index]);
                             },
                             child: Icon(
                               Icons.favorite,

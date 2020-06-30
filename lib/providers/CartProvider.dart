@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:siyou_b2b/models/OrderList.dart';
-import 'package:siyou_b2b/models/PaymentMethod.dart';
 import 'package:siyou_b2b/models/Productitems.dart';
 import 'package:siyou_b2b/models/order.dart';
 import 'package:siyou_b2b/network/ApiProvider.dart';
@@ -62,16 +61,16 @@ class CartProvider extends ChangeNotifier {
         if (check(i)) {
           itmes[getIndex(i)].quantity += quantity;
 
-          total += i.itemOnlinePrice * quantity;
+          total += i.itemOfflinePrice * quantity;
           //i.supplierId=id;
         } else {
-          total += i.itemOnlinePrice * quantity;
+          total += i.itemOfflinePrice * quantity;
           // i.supplierId = id;
           i.quantity = quantity;
           itmes.add(i);
         }
       } else {
-        total += i.itemOnlinePrice * quantity;
+        total += i.itemOfflinePrice * quantity;
 
         // i.supplierId = id;
         i.quantity = quantity;
@@ -101,7 +100,7 @@ class CartProvider extends ChangeNotifier {
             orders[x].orderWeight+=double.parse(v.criteriaBase[0].pivot.criteriaValue) * v.quantity;*/
             print("condition 1.0 ");
           } else {
-            orders[x].orderTotalPrice += v.itemOnlinePrice * v.quantity;
+            orders[x].orderTotalPrice += v.itemOfflinePrice * v.quantity;
             orders[x].orderWeight +=
                 double.parse(v.criteriaBase[0].pivot.criteriaValue) *
                     v.quantity;
@@ -114,7 +113,7 @@ class CartProvider extends ChangeNotifier {
           o.orderProductsList = [];
           o.orderProductsList.add(Productlist.fromJson(v.toMap()));
           o.supplierId = v.supplierid;
-          o.orderTotalPrice = v.itemOnlinePrice * v.quantity;
+          o.orderTotalPrice = v.itemOfflinePrice * v.quantity;
           o.orderWeight =
               double.parse(v.criteriaBase[0].pivot.criteriaValue) * v.quantity;
           o.logisticCompanyId = 2;

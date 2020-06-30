@@ -11,7 +11,7 @@ import 'package:siyou_b2b/screens/login/LoginPage.dart';
 import 'package:siyou_b2b/screens/login/LoginScreen.dart';
 import 'package:siyou_b2b/screens/login/Onbording.dart';
 import 'package:siyou_b2b/screens/supplierSpace/SupplierNotificationScreen.dart';
-import 'package:siyou_b2b/screens/supplierSpace/catalogues/MyCatalogues.dart';
+
 import 'package:siyou_b2b/screens/supplierSpace/home/SupplierHomeScreen.dart';
 import 'package:siyou_b2b/screens/supplierSpace/orders/OrdersScreen.dart';
 import 'package:siyou_b2b/screens/supplierSpace/profile/MyProfile.dart';
@@ -62,9 +62,9 @@ class MyApp extends StatelessWidget {
         "/supplier/ProductList": (_) => LanguageProvider(
           child: ProductsListSScreen(),
         ),
-    "/supplier/myCatalogues": (_) => LanguageProvider(
+    /*"/supplier/myCatalogues": (_) => LanguageProvider(
           child: MyCatalogues(),
-        ),
+        ),*/
     "/supplier/notification": (_) => LanguageProvider(
           child: SupplierNotificationScreen(),
         ),

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
 import 'package:siyou_b2b/providers/LoginProvider.dart';
 import 'package:siyou_b2b/utlis/utils.dart';
 
@@ -27,7 +27,7 @@ class _LogInScreenState extends State<LogInScreen> {
   final _formKey = GlobalKey<FormState>();
 
   LoginProvider loginModel;
-  final flutterWebViewPlugin = FlutterWebviewPlugin();
+ // final flutterWebViewPlugin = FlutterWebviewPlugin();
 
   @override
   void initState() {

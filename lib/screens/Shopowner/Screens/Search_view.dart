@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/Supplier/Supplier_Screen.dart';
-import '../main.dart';
-import 'progressindwidget.dart';
-import 'servererrorwidget.dart';
+import 'package:siyou_b2b/widgets/progressindwidget.dart';
+import 'package:siyou_b2b/widgets/servererrorwidget.dart';
+
+import '../../../main.dart';
+
 
 class SearchView extends StatefulWidget {
   final String search;
@@ -138,7 +140,7 @@ class _SearchViewState extends State<SearchView> {
                         child: TextField(
                       controller: searchController,
                       decoration: InputDecoration(
-                          hintText: "search Supplier",
+                          hintText: "Search Supplier By Name ",
                           border: InputBorder.none),
                     )),
                     InkWell(

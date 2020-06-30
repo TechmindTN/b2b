@@ -104,9 +104,9 @@ class ApiProvider {
   }
 
   Future<Map<String, dynamic>> getManagerProducts(
-      {@required int page, int supplierid ,int brand, int category}) async {
+      {@required int page, int supplierid, int brand, int category}) async {
     final String token = await getUserToken();
-   // final int supplierid = await getUserid();
+    // final int supplierid = await getUserid();
     //Map data = {'supplier_id': supplierid, "page": page};
 
     try {
@@ -119,9 +119,8 @@ class ApiProvider {
           "brand_id": brand,
           "page": page
         },
-        
       );
-      
+
       return res.data;
     } catch (e) {
       print(e);
@@ -166,6 +165,7 @@ class ApiProvider {
       return throw "Error - $e";
     }
   }
+
   Future<Map<String, dynamic>> getManagerShopList() async {
     final String token = await getUserToken();
 
@@ -195,7 +195,7 @@ class ApiProvider {
           "token": token,
         },
       );
-       print(res.data);
+      print(res.data);
       return res.data;
     } catch (e) {
       print(e);
@@ -410,6 +410,24 @@ class ApiProvider {
       final res = await dio.request("/products", queryParameters: {
         "token": token,
         "product_id": id,
+      });
+      print(res.data);
+      return res.data;
+    } catch (e) {
+      print(e);
+      return throw "Error - $e";
+    }
+  }
+
+  Future<Map<String, dynamic>> searchProductItems({
+    @required String barcode,
+  }) async {
+    final String token = await getUserToken();
+
+    try {
+      final res = await dio.request("/products/search/item", queryParameters: {
+        "token": token,
+        "barcode": barcode,
       });
       print(res.data);
       return res.data;

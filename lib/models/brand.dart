@@ -1,9 +1,9 @@
 class Brand {
-  int id;
-  String brandName;
+  dynamic id;
+  dynamic brandName;
   dynamic brandLogo;
-  String createdAt;
-  String updatedAt;
+  dynamic createdAt;
+  dynamic updatedAt;
 
   Brand(
       {this.id,

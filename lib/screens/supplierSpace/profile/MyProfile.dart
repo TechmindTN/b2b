@@ -584,7 +584,7 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
                                               Text(
                                                 userProvider
                                                     .supplierlastadded[index]
-                                                    .itemOnlinePrice
+                                                    .itemOfflinePrice
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontWeight:
@@ -772,7 +772,7 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
                                               Text(
                                                 userProvider
                                                     .supplierpurchased[index]
-                                                    .itemOnlinePrice
+                                                    .itemOfflinePrice
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontWeight:

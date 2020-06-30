@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:barcode_scan_fix/barcode_scan.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,10 +60,12 @@ void saveUserRole(int role) async {
   final pref = await SharedPreferences.getInstance();
   pref.setInt(Keys.userRole, role);
 }
+
 void saveUserid(int id) async {
   final pref = await SharedPreferences.getInstance();
   pref.setInt('id', id);
 }
+
 Future<int> getUserid() async {
   final pref = await SharedPreferences.getInstance();
   return pref.getInt('id');
@@ -105,11 +108,21 @@ Future<String> getCurrentShopFromPref() async {
 }
 
 bool checkServerResponse(Map<String, dynamic> data, BuildContext context) {
-  if (data["msg"] == '2'||data["msg"] == 'Unauthorized') {
+  if (data["msg"] == '2' || data["msg"] == 'Unauthorized') {
     showLogoutDialog(context);
     return false;
   } else
     return true;
+}
+
+Future<String> scanCode(BuildContext context, AppLocalizations lang) async {
+  try {
+    return await BarcodeScanner.scan();
+  } catch (e) {
+    showAlertDialog(context, lang.tr('scanScreen.barcodeError'),
+        lang.tr('scanScreen.barcodeErrorText'));
+    return null;
+  }
 }
 
 void showSnackBar(
@@ -265,7 +278,8 @@ bool checkwishlist(
 bool checkorder(
   Map<String, dynamic> data,
 ) {
-  if ((data["msg"] == "Order has been added Successfully !")||(data["msg"] == "Order Updated Succeffully !")) {
+  if ((data["msg"] == "Order has been added Successfully !") ||
+      (data["msg"] == "Order Updated Succeffully !")) {
     return true;
   }
   print(data["msg"]["errorInfo"]);
@@ -301,7 +315,7 @@ void loadingDialog(BuildContext context, AppLocalizations lang) {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                       ProgressIndicatorWidget(),
+                      ProgressIndicatorWidget(),
                       Text(lang.tr("loading"))
                     ],
                   ),

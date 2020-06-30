@@ -109,7 +109,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15.0, vertical: 1.0),
                 child: Text(
-                  "€. ${widget.product.itemOnlinePrice}",
+                  "€. ${widget.product.itemOfflinePrice}",
                   style: Theme.of(context).textTheme.display1.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,

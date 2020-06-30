@@ -11,8 +11,9 @@ import 'servererrorwidget.dart';
 
 class CategoryView extends StatefulWidget {
   final int id;
+  final HomeProvider categoryprovider;
 
-  CategoryView({@required this.id});
+  CategoryView({@required this.id, this.categoryprovider});
 
   @override
   _CategoryViewState createState() => _CategoryViewState();
@@ -26,6 +27,7 @@ class _CategoryViewState extends State<CategoryView> {
   int suppid;
   int brandid;
   int categoryid;
+  _CategoryViewState();
 
   /*getSearchWallpaper(String searchQuery) async {
 
@@ -198,7 +200,7 @@ class _CategoryViewState extends State<CategoryView> {
                           itemBuilder: (_, i) {
                             return (ListTile(
                               onTap: () {
-                                setState(() {
+                                /*setState(() {
                                   categoryid ==
                                           productProvider.categories[index]
                                               .subCategories[i].id
@@ -206,11 +208,14 @@ class _CategoryViewState extends State<CategoryView> {
                                       : categoryid = categoryid =
                                           productProvider.categories[index]
                                               .subCategories[i].id;
-                                });
+                                });*/
+                                print(productProvider.categories[index]
+                                              .subCategories[i].id);
                                 Navigator.pop(context);
                                 productProvider.resetList(
                                   context,
-                                  category: categoryid,
+                                  category: productProvider.categories[index]
+                                              .subCategories[i].id,
                                 );
                               },
                               title: Text(

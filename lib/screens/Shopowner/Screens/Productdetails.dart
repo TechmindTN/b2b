@@ -561,8 +561,10 @@ Widget _getItemWidget(int index,)
                               ),
                             ),
                             onTap: () {
-                              _productProvider.itmes[index].quantity +=
-                                  _productProvider.itmes[index].itemPackage;
+                              _cartProvider.addCartItems(
+                          _productProvider.itmes[index], _currentAmount,widget.product.supplierId);
+                      //_scaffoldKey.currentState.showSnackBar(
+                         // SnackBar(content: Text('Added To Cart.')));
                               _productProvider.notify();
                             },
                           ),
@@ -677,7 +679,7 @@ Widget _getItemWidget(int index,)
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    "€. ${_productProvider.itmes[index].itemOnlinePrice}",
+                    "€. ${_productProvider.itmes[index].itemOfflinePrice}",
                     style: Theme.of(context).textTheme.display1.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,

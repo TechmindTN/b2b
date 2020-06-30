@@ -22,6 +22,7 @@ class HomeProvider extends ChangeNotifier {
   final List<Items> supplierlastadded = List<Items>();
   final List<Items> supplierdiscounts = List<Items>();
   final List<Items> supplierpurchased = List<Items>();
+  final List<Items> searchitem = List<Items>();
   final List<Product> products = List<Product>();
   final List<Suppliers> suppliers = List<Suppliers>();
   final List<Suppliers> searchsuppliers = List<Suppliers>();
@@ -51,10 +52,9 @@ class HomeProvider extends ChangeNotifier {
     lastadded.clear();
     purchased.clear();
 
-    
-    await getdiscounts(context, supplierid: supplierid,category: category);
-    await getnewarrivals(context,id: supplierid,categoryid: category);
-    await getpurchased(context,id: supplierid,category: category);
+    await getdiscounts(context, supplierid: supplierid, category: category);
+    await getnewarrivals(context, id: supplierid, categoryid: category);
+    await getpurchased(context, id: supplierid, category: category);
     notify();
   }
 
@@ -141,11 +141,43 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
+  searchItems(BuildContext context, keyword) async {
+    try {
+      loading = true;
+      final data = await _api.searchProductItems(barcode: keyword);
+
+      if (checkServerResponse(data, context)) {
+        final List<Items> s =
+            data["items"].map<Items>((item) => Items.fromJson(item)).toList();
+        if (s != null && s.isNotEmpty) {
+          searchitem.clear();
+          for (var x in s) {
+            if (suppliers.contains(x) == false) searchitem.add(x);
+          }
+        }
+        loading = false;
+        notify();
+        return;
+      } else {
+        errorMsg = getServerErrorMsg(data, context);
+        error = true;
+        loading = false;
+        notify();
+        return;
+      }
+
+      // suppliers.clear();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   searchSuppliers(BuildContext context, keyword) async {
     try {
+      loading = true;
       await _initLastKnownLocation(context);
       await _initCurrentLocation();
-      loading = true;
+
       final data = await _api.searchSuppliers(keyword);
 
       if (checkServerResponse(data, context)) {
@@ -200,11 +232,11 @@ class HomeProvider extends ChangeNotifier {
             .map<Categories>((item) => Categories.fromJson(item))
             .toList();
         if (s != null && s.isNotEmpty) {
-          //categories.clear();
+          categories.clear();
           for (var x in s) {
             if (categories.contains(x) == false) categories.add(x);
           }
-          print('toule lista = ' + categories.length.toString());
+          // print('toule lista = ' + categories.length.toString());
         }
         loading = false;
         notify();
@@ -340,16 +372,20 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future<void> getProducts(BuildContext context, id) async {
-    await getdiscounts(context, supplierid: id);
-    await getnewarrivals(context, id:id);
-    await getpurchased(context, id:id);
-    await getCategories(context, id);
+    if (discounts.isEmpty) {
+      await getdiscounts(context, supplierid: id);
+      await getnewarrivals(context, id: id);
+      await getpurchased(context, id: id);
+      await getCategories(context, id);
+    }
   }
 
-  Future<void> getnewarrivals(BuildContext context,{ int id,int categoryid}) async {
+  Future<void> getnewarrivals(BuildContext context,
+      {int id, int categoryid}) async {
     try {
       loading = true;
-      final data = await _api.getnewarrivals(supplierid: id,category:categoryid );
+      final data =
+          await _api.getnewarrivals(supplierid: id, category: categoryid);
 
       if (checkServerResponse(data, context)) {
         //lastadded.clear();
@@ -393,6 +429,7 @@ class HomeProvider extends ChangeNotifier {
       loading = true;
       final data =
           await _api.getdiscounts(supplierid: supplierid, category: category);
+      print(data);
 
       if (checkServerResponse(data, context)) {
         //lastadded.clear();
@@ -400,8 +437,9 @@ class HomeProvider extends ChangeNotifier {
             .map<Items>((item) => Items.fromJson(item))
             .toList();
         if (prodlist.isNotEmpty && prodlist != null) {
-          //discounts.clear();
+          discounts.clear();
           discounts.addAll(prodlist);
+          //print('discount length'+discounts.length.toString());
         }
 
         loading = false;
@@ -415,6 +453,7 @@ class HomeProvider extends ChangeNotifier {
         return;
       }
     } catch (e) {
+      print(e);
       if (e.toString() == "No store selected") {
         final lang = AppLocalizations.of(context);
         errorMsg = lang.tr("serverError.store_error");
@@ -430,10 +469,11 @@ class HomeProvider extends ChangeNotifier {
     return;
   }
 
-  Future<void> getpurchased(BuildContext context, {int id,int category}) async {
+  Future<void> getpurchased(BuildContext context,
+      {int id, int category}) async {
     try {
       loading = true;
-      final data = await _api.getpurchased(supplierid: id,category: category);
+      final data = await _api.getpurchased(supplierid: id, category: category);
 
       if (checkServerResponse(data, context)) {
         //lastadded.clear();
