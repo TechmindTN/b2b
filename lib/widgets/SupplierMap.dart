@@ -84,15 +84,15 @@ class HomePageState extends State<SupplierMap> {
                                           child: Container(
                                             height: 85.0,
                                             width: 100.0,
-                                            child: value.image == null ||
-                                                    value.image == ""
+                                            child: value.imgUrl == null ||
+                                                    value.imgUrl == ""
                                                 ? Image.asset(
                                                     "assets/png/empty_cart.png",
                                                     fit: BoxFit.contain,
                                                     alignment: Alignment.center,
                                                   )
                                                 : CachedNetworkImage(
-                                                    imageUrl: value.image,
+                                                    imageUrl: value.imgUrl,
                                                     fit: BoxFit.contain,
                                                   ),
                                           ),
@@ -189,7 +189,7 @@ class HomePageState extends State<SupplierMap> {
                                 )
                               ]),
                         ),
-                       /* Positioned(
+                        /* Positioned(
                           top: 4.0,
                           right: 4.0,
                           child: GestureDetector(
@@ -306,6 +306,7 @@ class HomePageState extends State<SupplierMap> {
         CameraPosition(target: LatLng(36.847083, 10.198268), zoom: zoomVal)));
   }
 
+  // ignore: unused_element
   Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomLeft,

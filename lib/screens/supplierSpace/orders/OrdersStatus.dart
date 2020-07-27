@@ -46,8 +46,9 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
             itemBuilder: (context, index) {
               return InkWell(
                 child: _getItemWidget(index),
-                onTap: () => _onItemPressed(
-                    context, index, provider.suppinvalidorders[index].id),
+                onTap: () => _showDialog(
+                    index), /*_onItemPressed(
+                    context, index, provider.suppinvalidorders[index].id),*/
               );
             },
           );
@@ -61,33 +62,67 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
     );
   }
 
-  orderCR(int id, String status) async {
+  Future<bool> orderCR(int id, String status) async {
     loadingDialog(context, lang);
     try {
       final data = await _api.confirmRejectOrder(id, status);
 
       if (checkorder(data)) {
-        try {
-          Navigator.pop(context);
-          return true;
-        } catch (e) {
-          Navigator.pop(context);
-          showAlertDialog(context, " Error", e);
-          print(e);
-          return false;
-        }
+        Navigator.pop(context);
+        return true;
       } else {
         Navigator.pop(context);
         showAlertDialog(context, "", 'error');
+        return false;
       }
     } catch (e) {
       Navigator.pop(context);
       print(e);
-      showAlertDialog(context, "Error", e.toString());
+      showAlertDialog(context, e.toString(), e.toString());
+      return false;
     }
   }
 
-  void _onItemPressed(BuildContext context, int i, int orderid) {
+  void _showDialog(int index) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(lang.tr('supplier.confirme')),
+            content: Text(lang.tr('supplier.alert')),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () async {
+                    var confirm = await orderCR(
+                        _orderProvide.suppinvalidorders[index].id, "confirm");
+                    print(confirm);
+                    if (confirm == true) {
+                      _orderProvide.suppinvalidorders.clear();
+                      _orderProvide.suppinvalidorders.clear();
+                      _orderProvide.getSupplierOrders(context);
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text(lang.tr('supplier.Accept'))),
+              FlatButton(
+                  onPressed: () async {
+                    var confirm = await orderCR(
+                        _orderProvide.suppinvalidorders[index].id, "rejected");
+                    print(confirm);
+                    if (confirm == true) {
+                      _orderProvide.suppinvalidorders.clear();
+                      _orderProvide.suppinvalidorders.clear();
+                      _orderProvide.getSupplierOrders(context);
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text(lang.tr('supplier.reject'))),
+            ],
+          );
+        });
+  }
+
+  /*void _onItemPressed(BuildContext context, int i, int orderid) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -181,7 +216,7 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
             ]),
           );
         });
-  }
+  }*/
 
   Widget _getItemWidget(
     int index,
@@ -196,13 +231,17 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 4,
-                    child: Row(
-                      children: <Widget>[
-                        /*Padding(
+              Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 4,
+                        child: Row(
+                          children: <Widget>[
+                            /*Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: CachedNetworkImage(
                             alignment: Alignment.centerLeft,
@@ -213,31 +252,32 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                             imageUrl: "${item["image"]}",
                           ),
                         ),*/
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              _orderProvide
-                                  .suppinvalidorders[index].shopOwner.firstName,
-                              style: TextStyle(
-                                  fontSize: 18.0, fontWeight: FontWeight.w700),
-                            ),
-                            Text(
-                              "Order #1GF5D6HO${_orderProvide.suppinvalidorders[index].id.toString()}",
-                              style: TextStyle(fontSize: 12),
-                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  _orderProvide.suppinvalidorders[index]
+                                      .shopOwner.firstName,
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                Text(
+                                  "${_orderProvide.suppinvalidorders[index].orderRef}",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            )
                           ],
-                        )
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "\€${_orderProvide.suppinvalidorders[index].orderPrice}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  /* if (item["orderStatus"] != "Done")
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "\€${_orderProvide.suppinvalidorders[index].orderPrice}",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      /* if (item["orderStatus"] != "Done")
                     Expanded(
                       child: IconButton(
                         onPressed: () => null,
@@ -254,8 +294,8 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                         ),
                       ),
                     ),*/
-                ],
-              ),
+                    ],
+                  )),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 8.0,
@@ -263,7 +303,8 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: Text("Purchase date - "),
+                      child: Text(
+                          "Shop - ${_orderProvide.suppinvalidorders[index].shopOwner.firstName} ${_orderProvide.suppinvalidorders[index].shopOwner.lastName}"),
                       flex: 3,
                     ),
                     Expanded(
@@ -276,8 +317,7 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8.0, vertical: 2.0),
                           child: Text(
-                            _orderProvide
-                                .suppinvalidorders[index].statut.statutName,
+                            'Waiting for Your Validation',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: Colors.black, fontSize: 10),
                           ),
@@ -322,8 +362,8 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                               Expanded(
                                 flex: 3,
                                 child: ListTile(
-                                    title: Text(i.itemBarcode),
-                                    leading: Text(i.product.productName)
+                                    
+                                    leading: Text(i.product.productName+' '+i.itemBarcode)
                                     /*CachedNetworkImage(
                                     imageUrl: i.product.productName,
                                   ),*/

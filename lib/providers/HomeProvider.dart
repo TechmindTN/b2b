@@ -98,6 +98,7 @@ class HomeProvider extends ChangeNotifier {
       await _initCurrentLocation();
 
       final data = await _api.getSuppliers();
+      
 
       if (checkServerResponse(data, context)) {
         final List<Suppliers> s = data["suppliers"]
@@ -105,6 +106,7 @@ class HomeProvider extends ChangeNotifier {
             .toList();
         if (s != null && s.isNotEmpty) {
           suppliers.clear();
+          // s.removeAt(4);
           for (var x in s) {
             if (lastKnownPosition == null) {
               x.distance = calculateDistance(
@@ -257,7 +259,6 @@ class HomeProvider extends ChangeNotifier {
     try {
       loading = true;
       final data = await _api.getShopList();
-      print('wa33333333');
 
       if (data != null) {
         final List<UserProfil> s = data["shops"]
@@ -295,7 +296,7 @@ class HomeProvider extends ChangeNotifier {
             .map<UserProfil>((item) => UserProfil.fromJson(item))
             .toList();
         if (s != null && s.isNotEmpty) {
-          //shops.clear();
+          shops.clear();
           shops.addAll(s);
         }
         loading = false;
@@ -323,9 +324,9 @@ class HomeProvider extends ChangeNotifier {
             .map<UserProfil>((item) => UserProfil.fromJson(item))
             .toList();
         if (s != null && s.isNotEmpty) {
-          //categories.clear();
+          managers.clear();
           for (var x in s) {
-            if (managers.contains(x) == false) managers.add(x);
+            if (!managers.contains(x)) managers.add(x);
           }
         }
         loading = false;
@@ -353,7 +354,7 @@ class HomeProvider extends ChangeNotifier {
             .map<UserProfil>((item) => UserProfil.fromJson(item))
             .toList();
         if (s != null && s.isNotEmpty) {
-          //categories.clear();
+          managers.clear();
           for (var x in s) {
             if (managers.contains(x) == false) managers.add(x);
           }
@@ -429,7 +430,6 @@ class HomeProvider extends ChangeNotifier {
       loading = true;
       final data =
           await _api.getdiscounts(supplierid: supplierid, category: category);
-      print(data);
 
       if (checkServerResponse(data, context)) {
         //lastadded.clear();

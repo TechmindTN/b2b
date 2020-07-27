@@ -1,22 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:siyou_b2b/models/Categorys.dart';
+import 'package:siyou_b2b/models/suppliers.dart';
 import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
-import 'package:siyou_b2b/widgets/CategoryFilter.dart';
-import 'package:siyou_b2b/widgets/appprop.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/Product/Itemdetails.dart';
+import 'package:siyou_b2b/utlis/utils.dart';
+import 'package:siyou_b2b/widgets/ErrorWidget.dart';
+import 'package:siyou_b2b/widgets/ScanbarcodeWidget.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
-import 'package:siyou_b2b/widgets/servererrorwidget.dart';
+
 import '../../../../main.dart';
-import '../Itemdetails.dart';
 
 class Purchased extends StatefulWidget {
   final int supplierid;
-
-  const Purchased({Key key, this.supplierid}) : super(key: key);
+  final Suppliers supplier;
+  const Purchased({Key key, this.supplierid, this.supplier}) : super(key: key);
   @override
   _PurchasedState createState() => _PurchasedState();
 }
@@ -27,6 +31,13 @@ class _PurchasedState extends State<Purchased> {
   CartProvider cartProvider;
   int categoryid;
   ScrollController _scrollController = new ScrollController();
+  int id;
+
+  @override
+  void initState() {
+    super.initState();
+    id = widget.supplierid;
+  }
 
   @override
   void didChangeDependencies() {
@@ -41,8 +52,8 @@ class _PurchasedState extends State<Purchased> {
     return Consumer<HomeProvider>(
       builder: (context, provider, widget) {
         if (provider.error)
-          return ServerErrorWidget(
-            errorText: provider.errorMsg,
+          return OpssWidget(
+            onPress: purchased.resetList(context, supplierid: id),
           );
         else if (provider.loading)
           return ProgressIndicatorWidget();
@@ -85,6 +96,8 @@ class _PurchasedState extends State<Purchased> {
                             child: ItemDetailsScreen(
                               product: purchased.purchased[index],
                               supplierid: widget.supplierid,
+                              description: purchased
+                                  .purchased[index].product.productDescription,
                             ),
                             create: (_) => ProductListProvider(),
                           ),
@@ -198,96 +211,126 @@ class _PurchasedState extends State<Purchased> {
               '€ ' + purchased.purchased[index].itemOfflinePrice.toString(),
               //.toStringAsFixed(2),
               style: TextStyle(
-                color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
+                color: Theme.of(context).primaryColorDark, //Color(0xFFB7B7B7),
                 fontWeight: FontWeight.w500,
                 // fontFamily: 'NunitoSans',
                 fontSize: 17.0,
               ),
             ),
             right: 15,
-            top: 20,
+            top: 15,
           ),
-          Positioned(
-            child: Container(
-              height: 90,
-              child: Row(
-                children: <Widget>[
-                  SizedBox(width: 5),
-                  Container(
-                    //width: 135,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 3.0, vertical: 9.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.transparent, width: 1),
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: Center(
-                        child: Row(
+          purchased.purchased[index].itemQuantity > 0
+              ? Positioned(
+                  child: Container(
+                    //height: 90,
+                    child: Row(
                       children: <Widget>[
-                        if (purchased.purchased[index].quantity > 0)
-                          GestureDetector(
-                            child: Container(
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: Colors.red,
-                              ),
-                              child: Icon(
-                                Icons.remove,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                            onTap: () {
-                              purchased.purchased[index].quantity -
-                                          purchased
-                                              .purchased[index].itemPackage >=
-                                      0
-                                  ? purchased.purchased[index].quantity -=
-                                      purchased.purchased[index].itemPackage
-                                  : purchased.purchased[index].quantity = 0;
-                              purchased.notify();
-                            },
+                        SizedBox(width: 5),
+                        Container(
+                          //width: 135,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 3.0, vertical: 9.0),
+                          decoration: BoxDecoration(
+                            border:
+                                Border.all(color: Colors.transparent, width: 1),
+                            borderRadius: BorderRadius.circular(15.0),
                           ),
-                        SizedBox(width: 15),
-                        Text(
-                          purchased.purchased[index].quantity.toString(),
-                          style: Theme.of(context).textTheme.title,
-                        ),
-                        SizedBox(width: 15),
-                        GestureDetector(
-                          child: Container(
-                            padding: const EdgeInsets.all(5.0),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              color: Colors.red,
-                            ),
-                            child: Icon(
-                              Icons.add,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                          ),
-                          onTap: () {
-                            //purchased.purchased[index].quantity +=
-                            //  purchased.purchased[index].itemPackage;
+                          child: Center(
+                              child: Row(
+                            children: <Widget>[
+                              if (cartProvider
+                                      .checkinCart(purchased.purchased[index]) >
+                                  -1)
+                                GestureDetector(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(5.0),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Theme.of(context).primaryColorDark,
+                                    ),
+                                    child: cartProvider
+                                                .itmes[cartProvider.checkinCart(
+                                                    purchased.purchased[index])]
+                                                .quantity >
+                                            cartProvider
+                                                .itmes[cartProvider.checkinCart(
+                                                    purchased.purchased[index])]
+                                                .itemPackage
+                                        ? Icon(
+                                            Icons.remove,
+                                            color: Colors.white,
+                                            size: 18,
+                                          )
+                                        : Icon(
+                                            Icons.delete_forever,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                  ),
+                                  onTap: () => cartProvider.removeCartItem(
+                                      purchased.purchased[index]),
+                                ),
+                              SizedBox(width: 15),
+                              cartProvider.checkinCart(
+                                          purchased.purchased[index]) ==
+                                      -1
+                                  ? Text(
+                                      purchased.purchased[index].quantity
+                                          .toString(),
+                                      style: Theme.of(context).textTheme.title,
+                                    )
+                                  : Text(
+                                      cartProvider
+                                          .itmes[cartProvider.checkinCart(
+                                              purchased.purchased[index])]
+                                          .quantity
+                                          .toString(),
+                                      style: Theme.of(context).textTheme.title,
+                                    ),
+                              SizedBox(width: 15),
+                              GestureDetector(
+                                child: Container(
+                                  padding: const EdgeInsets.all(5.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                ),
+                                onTap: () {
+                                  //purchased.purchased[index].quantity +=
+                                  //  purchased.purchased[index].itemPackage;
 
-                            cartProvider.addCartItems(
-                                purchased.purchased[index],
-                                purchased.purchased[index].itemPackage,
-                                widget.supplierid);
-                            purchased.notify();
-                          },
+                                  cartProvider.addCartItems(
+                                      purchased.purchased[index],
+                                      purchased.purchased[index].itemPackage,
+                                      widget.supplierid,
+                                      widget.supplier);
+                                  purchased.notify();
+                                },
+                              ),
+                            ],
+                          )),
                         ),
                       ],
-                    )),
+                    ),
                   ),
-                ],
-              ),
-            ),
-            right: 0,
-            top: 40,
-          )
+                  right: 0,
+                  top: 40,
+                )
+              : Positioned(
+                  child: Text(
+                    lang.tr('shopOwner.outofstock'),
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
+                  ),
+                  right: 20,
+                  top: 60,
+                )
         ],
       ),
       Divider(
@@ -300,6 +343,14 @@ class _PurchasedState extends State<Purchased> {
           height: 65,
         )
     ]);
+  }
+
+  void _renderFilterDialog() async {
+    final Widget child = FilterDialogWidget1();
+    showPlatformDialog(
+      context,
+      child,
+    );
   }
 
   filterWidget() {
@@ -371,96 +422,234 @@ class _PurchasedState extends State<Purchased> {
   }
 
   void categorypressed(int id) {
-    final edgeInsets = const EdgeInsets.all(8.0);
+    final edgeInsets = const EdgeInsets.only(left: 8, right: 8, top: 15);
+    int _selectTempFirstLevelIndex = -1;
     showModalBottomSheet(
         context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        ),
         builder: (context) {
-          return ListView(children: <Widget>[
-            Container(
-              padding: edgeInsets,
-              child: Text(lang.tr('shopOwner.Category'),
-                  style: Theme.of(context).textTheme.display1.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 25)),
-            ),
-            ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: purchased.categories.length,
-                itemBuilder: (_, index) {
-                  return (ExpansionTile(
-                    title: Text(purchased.categories[index].categoryName,
-                        style: Theme.of(context).textTheme.subhead),
-                    children: [
-                      ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount:
-                              purchased.categories[index].subCategories.length,
-                          itemBuilder: (_, i) {
-                            return (ListTile(
-                              onTap: () {
-                                /*setState(() {
-                                  categoryid ==
-                                          newarrivals.categories[index]
-                                              .subCategories[i].id
-                                      ? categoryid = null
-                                      : categoryid = categoryid =
-                                          newarrivals.categories[index]
-                                              .subCategories[i].id;
-                                });*/
-                                print(purchased
-                                    .categories[index].subCategories[i].id);
-                                Navigator.pop(context);
-                                purchased.resetList(
-                                  context,
-                                  supplierid: id,
-                                  category: purchased
-                                      .categories[index].subCategories[i].id,
-                                );
-                              },
-                              title: Text(
-                                purchased.categories[index].subCategories[i]
-                                    .categoryName,
-                                style: TextStyle(fontSize: 15),
-                              ),
-                              trailing: categoryid ==
-                                      purchased
-                                          .categories[index].subCategories[i].id
-                                  ? Icon(
-                                      Icons.check_circle,
-                                      color: yellow,
-                                      size: 23,
-                                    )
-                                  : SizedBox(),
-                            ));
-                          })
-                    ],
+          return StatefulBuilder(
+              builder: (BuildContext context, setState) => Padding(
+                    padding: edgeInsets,
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: MediaQuery.of(context).size.width / 2.5,
+                          child: ListView(
+                            children: purchased.categories.map((item) {
+                              int index1 = purchased.categories.indexOf(item);
+                              return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectTempFirstLevelIndex = index1;
+                                    });
+                                  },
+                                  child: Container(
+                                      height: 50,
+                                      color:
+                                          _selectTempFirstLevelIndex == index1
+                                              ? Colors.grey[200]
+                                              : Colors.white,
+                                      alignment: Alignment.center,
+                                      child: _selectTempFirstLevelIndex ==
+                                              index1
+                                          ? Row(
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  height: 20,
+                                                  width: 40,
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: item.imgUrl,
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 50,
+                                                  width: 100,
+                                                  child: Text(
+                                                    '${textWidget(item)}',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .primaryColorDark,
+                                                        fontSize: 15),
+                                                    overflow: TextOverflow.fade,
+                                                    maxLines: 4,
+                                                  ),
+                                                )
+                                              ],
+                                            )
+                                          : Row(
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  height: 20,
+                                                  width: 40,
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: item.imgUrl,
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 50,
+                                                  width: 100,
+                                                  child: Text(
+                                                    '${textWidget(item)}',
+                                                    style:
+                                                        TextStyle(fontSize: 15),
+                                                    overflow: TextOverflow.fade,
+                                                    maxLines: 4,
+                                                  ),
+                                                )
+                                              ],
+                                            )));
+                            }).toList(),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            color: Colors.grey[200],
+                            child: _selectTempFirstLevelIndex == -1
+                                ? Container()
+                                : ListView(
+                                    children: purchased
+                                        .categories[_selectTempFirstLevelIndex]
+                                        .subCategories
+                                        .map((item) {
+                                      int index = purchased
+                                          .categories[
+                                              _selectTempFirstLevelIndex]
+                                          .subCategories
+                                          .indexOf(item);
+                                      return GestureDetector(
+                                          onTap: () {
+                                            /* _selectSecondLevelIndex = index;
+                                  _selectFirstLevelIndex =
+                                      _selectTempFirstLevelIndex;
+                                  if (_selectSecondLevelIndex == 0) {
+                                    itemOnTap(
+                                        firstLevels[_selectFirstLevelIndex]);
+                                  } else {
+                                    itemOnTap(item);
+                                  }*/
+                                            Navigator.pop(context);
+                                            purchased.resetList(context,
+                                                supplierid: id,
+                                                category: purchased
+                                                    .categories[
+                                                        _selectTempFirstLevelIndex]
+                                                    .subCategories[index]
+                                                    .id);
+                                          },
+                                          child: Container(
+                                            height: 40,
+                                            alignment: Alignment.centerLeft,
+                                            child: Row(children: <Widget>[
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              //_selectFirstLevelIndex ==
+                                              //      _selectTempFirstLevelIndex &&
+                                              //    _selectSecondLevelIndex == index
+                                              Row(
+                                                children: <Widget>[
+                                                  SizedBox(
+                                                    height: 20,
+                                                    width: 40,
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: item.imgUrl
+                                                              .toString() ??
+                                                          ' ',
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 50,
+                                                    width: 100,
+                                                    child: Text(
+                                                      '${textSubWidget(item)}',
+                                                      style: TextStyle(
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .primaryColorDark,
+                                                          fontSize: 15),
+                                                      overflow:
+                                                          TextOverflow.fade,
+                                                      maxLines: 4,
+                                                    ),
+                                                  )
+                                                ],
+                                              )
+                                              //: Text('${item.categoryName}'),
+                                            ]),
+                                          ));
+                                    }).toList(),
+                                  ),
+                          ),
+                        )
+                      ],
+                    ),
                   ));
-                })
-          ]);
         });
   }
 
+  String textWidget(Categories categories) {
+    if (lang.locale.languageCode.toUpperCase() == 'EN')
+      return categories.categoryName.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'ZH' &&
+        categories.categoryCn != null)
+      return categories.categoryCn.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'FR' &&
+        categories.categoryFr != null)
+      return categories.categoryFr.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'IT' &&
+        categories.categoryIt != null)
+      return categories.categoryIt.toString();
+    else
+      return categories.categoryName.toString();
+  }
+
+  String textSubWidget(SubCategories categories) {
+    if (lang.locale.languageCode.toUpperCase() == 'EN')
+      return categories.categoryName.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'ZH' &&
+        categories.categoryCn != null)
+      return categories.categoryCn.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'FR' &&
+        categories.categoryFr != null)
+      return categories.categoryFr.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'IT' &&
+        categories.categoryIt != null)
+      return categories.categoryIt.toString();
+    else
+      return categories.categoryName.toString();
+  }
+
   void _onSortPressed(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        ),
         context: context,
         builder: (BuildContext context) {
           return Material(
+            shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(25.0))),
             child: Wrap(children: <Widget>[
               Stack(children: <Widget>[
                 Container(
                   decoration: BoxDecoration(
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(8.0)),
-                  padding: EdgeInsets.all(32.0),
+                  padding: EdgeInsets.all(8.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       ListTile(
+                        leading: Icon(FontAwesome.sort_alpha_asc),
                         title: Text(
                           ' Name A-Z',
                         ),
@@ -473,6 +662,7 @@ class _PurchasedState extends State<Purchased> {
                       ),
                       Divider(),
                       ListTile(
+                        leading: Icon(FontAwesome.sort_alpha_desc),
                         title: Text(
                           ' Name Z-A',
                         ),
@@ -485,12 +675,13 @@ class _PurchasedState extends State<Purchased> {
                       ),
                       Divider(),
                       ListTile(
+                        leading: Icon(FontAwesome.sort_amount_asc),
                         title: Text(
                           ' Price Low-High',
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          purchased.purchased.sort((a, b) => Comparable.compare(
+                          purchased.purchased.sort((b, a) => Comparable.compare(
                               a.itemOfflinePrice, b.itemOfflinePrice));
 
                           purchased.notify();
@@ -498,13 +689,14 @@ class _PurchasedState extends State<Purchased> {
                       ),
                       Divider(),
                       ListTile(
+                        leading: Icon(FontAwesome.sort_amount_desc),
                         title: Text(
                           ' Price High-Low',
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          purchased.purchased.sort((b, a) => Comparable.compare(
-                              a.itemOfflinePrice, b.itemOfflinePrice));
+                          purchased.purchased.sort((a, b) => Comparable.compare(
+                              a.itemOfflinePrice, b.itemOnlinePrice));
                           purchased.notify();
                         },
                       ),
@@ -512,21 +704,6 @@ class _PurchasedState extends State<Purchased> {
                         width: 10,
                       ),
                     ],
-                  ),
-                ),
-                Positioned(
-                  top: 4.0,
-                  right: 4.0,
-                  child: GestureDetector(
-                    child: Container(
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                      ),
-                      decoration: BoxDecoration(
-                          color: Colors.black87, shape: BoxShape.circle),
-                    ),
-                    onTap: () => Navigator.pop(context),
                   ),
                 ),
               ]),
@@ -537,15 +714,49 @@ class _PurchasedState extends State<Purchased> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        getWidget(),
-        Positioned(
-          child: filterWidget(),
-          bottom: 2,
-          left: 12,
-        )
-      ],
+    return Scaffold(
+      extendBody: true,
+      bottomNavigationBar: FloatingNavbar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.red,
+        //itemBorderRadius:200,
+        iconSize: 20,
+        borderRadius: 20,
+        onTap: (int val) {
+          switch (val) {
+            case 0:
+              {
+                categorypressed(widget.supplierid);
+              }
+              break;
+
+            case 1:
+              {
+                _onSortPressed(context);
+              }
+              break;
+            case 2:
+              {
+                _renderFilterDialog();
+              }
+              break;
+          }
+        },
+        currentIndex: -1,
+        items: [
+          FloatingNavbarItem(
+              icon: MaterialCommunityIcons.format_list_bulleted_type,
+              title: lang.tr('shopOwner.Category')),
+          FloatingNavbarItem(
+            icon: Icons.sort,
+            title: lang.tr('shopOwner.Sort'),
+          ),
+          FloatingNavbarItem(
+              icon: FontAwesome.barcode, title: lang.tr('shopOwner.Scan')),
+        ],
+      ),
+      body: getWidget(),
     );
   }
 }

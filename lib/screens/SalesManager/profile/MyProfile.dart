@@ -17,7 +17,8 @@ class ManagerMyProfile extends StatefulWidget {
   _MyProfileState createState() => _MyProfileState();
 }
 
-class _MyProfileState extends State<ManagerMyProfile> with SingleTickerProviderStateMixin {
+class _MyProfileState extends State<ManagerMyProfile>
+    with SingleTickerProviderStateMixin {
   AppLocalizations lang;
   HomeProvider userProvider;
   Completer<GoogleMapController> _controller = Completer();
@@ -68,6 +69,7 @@ class _MyProfileState extends State<ManagerMyProfile> with SingleTickerProviderS
     );
   }
 
+  // ignore: unused_element
   Widget _buildGoogleMap(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.width / 1.9,
@@ -182,7 +184,8 @@ class _MyProfileState extends State<ManagerMyProfile> with SingleTickerProviderS
         iconColor: Colors.red,
 
         // Flaoting Action button Icon
-        icon: Typicons.chat,
+        iconData: Typicons.chat,
+        backGroundColor: Theme.of(context).primaryColorDark,
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -224,7 +227,9 @@ class _MyProfileState extends State<ManagerMyProfile> with SingleTickerProviderS
                             width: 90.0,
                             child: CircleAvatar(
                               backgroundImage: NetworkImage(
-                                  userProvider.user.avatar
+                                  userProvider.user.avatar == null
+                                      ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X"
+                                      : userProvider.user.avatar
                                   //widget.supplier['image'],
                                   //"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X",
                                   /*"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X"*/
@@ -351,7 +356,9 @@ class _MyProfileState extends State<ManagerMyProfile> with SingleTickerProviderS
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        Text(userProvider.user.adress.toString() + ', '),
+                                        Text(userProvider.user.adress
+                                                .toString() +
+                                            ', '),
                                         Text(userProvider.user.region +
                                             ' ' +
                                             userProvider.user.postcode +
@@ -363,14 +370,14 @@ class _MyProfileState extends State<ManagerMyProfile> with SingleTickerProviderS
                                 ],
                               ),
                             ),
-                           // _buildGoogleMap(context),
+                            // _buildGoogleMap(context),
                           ],
                         ),
                       ),
                     ),
-                   // getitem(),
+                    // getitem(),
                     SizedBox(height: 5),
-                   // getitem2()
+                    // getitem2()
                     /*  Card(
                       child: ListViewBuilder({
                         'title': 'Recent Orders',

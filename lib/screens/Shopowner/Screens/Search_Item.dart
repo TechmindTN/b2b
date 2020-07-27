@@ -7,11 +7,12 @@ import 'package:provider/provider.dart';
 import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/Product/Itemdetails.dart';
 
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 import '../../../main.dart';
-import 'Itemdetails.dart';
+
 
 class SearchItem extends StatefulWidget {
   final String search;
@@ -521,8 +522,8 @@ class _SearchViewState extends State<SearchItem> {
                               cartProvider.addCartItems(
                                   _productProvide.searchitem[index],
                                   _productProvide.searchitem[index].itemPackage,
-                                  _productProvide
-                                      .searchitem[index].supplier.id);
+                                  _productProvide.searchitem[index].supplier.id,
+                                  _productProvide.searchitem[index].supplier);
                               _productProvide.notify();
                             },
                           ),

@@ -260,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _loginUser() async {
-    //TODO: Remove after test & add random email password
+    
     /*if (!_formKey.currentState.validate()) {
       showPlatformMsg(
           context, AppLocalizations.of(context).tr('loginScreen.invalid'));

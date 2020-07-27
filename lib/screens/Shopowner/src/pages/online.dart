@@ -1,12 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/entypo_icons.dart';
+import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:siyou_b2b/main.dart';
+import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/Home_Screen.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/cart.dart';
-import 'package:siyou_b2b/screens/Shopowner/Screens/productlistScreenCategorie.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/product/productlistScreenCategorie.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/wishlist.dart';
 import 'package:siyou_b2b/widgets/profile.dart';
-
 
 class Online extends StatefulWidget {
   // This widget is the root of your application.
@@ -21,18 +25,16 @@ class _OnlineState extends State<Online> {
     LanguageProvider(
       child: HomeScreen(),
     ),
-    LanguageProvider(
-      child: ProductsListScreen(),
+    ChangeNotifierProvider(
+      create: (_) => ProductListProvider(),
+      child: LanguageProvider(
+        child: ProductsListScreen(),
+      ),
     ),
-  /*  LanguageProvider(
-      child: ProductsListScreen(),
-    ),
-    LanguageProvider(
-      child: ProductsListBrand(),
-    ),*/
-    //Cart(),
+    WishList(),
     Cart(),
-    Container(color: Colors.white, child:LanguageProvider(child: ProfilePage())),
+    Container(
+        color: Colors.white, child: LanguageProvider(child: ProfilePage())),
   ];
   @override
   void didChangeDependencies() {
@@ -45,7 +47,7 @@ class _OnlineState extends State<Online> {
     return Scaffold(
       //backgroundColor: Theme.of(context).primaryColor,
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Theme.of(context).primaryColor,
+        selectedItemColor: Theme.of(context).primaryColorDark,
         unselectedItemColor: Colors.grey[500],
         currentIndex: _currentPage,
         onTap: (i) {
@@ -63,19 +65,19 @@ class _OnlineState extends State<Online> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              FontAwesomeIcons.search,
+              FontAwesomeIcons.safari,
               size: 20,
             ),
-            title: Text(lang.tr('shopOwner.Supplier')),
-          ),
-          /*BottomNavigationBarItem(
-            icon: Icon(
-              FontAwesomeIcons.tags,
-              size: 20,
-            ),
-            title: Text(lang.tr('shopOwner.Category')),
+            title: Text(lang.tr('shopOwner.Discovery')),
           ),
           BottomNavigationBarItem(
+            icon: Icon(
+              RpgAwesome.glass_heart,
+              size: 20,
+            ),
+            title: Text(lang.tr('shopOwner.Wishlist')),
+          ),
+          /*BottomNavigationBarItem(
             icon: Icon(
               FontAwesomeIcons.tradeFederation,
               size: 20,
@@ -84,7 +86,7 @@ class _OnlineState extends State<Online> {
           ),*/
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.shopping_basket,
+              Entypo.bag,
               size: 20,
             ),
             title: Text(lang.tr('shopOwner.Cart')),
@@ -101,5 +103,3 @@ class _OnlineState extends State<Online> {
     );
   }
 }
-
-

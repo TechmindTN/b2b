@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,6 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
     _orderProvide?.getSupplierOrders(context);
   }
 
- 
   Widget getWidget() {
     return Consumer<CartProvider>(
       builder: (context, provider, widget) {
@@ -54,9 +52,7 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
     );
   }
 
-  Widget _getItemWidget(
-    int index,
-  ) {
+  Widget _getItemWidget(int index) {
     return ExpandableNotifier(
         child: ScrollOnExpand(
       scrollOnExpand: false,
@@ -67,13 +63,17 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 4,
-                    child: Row(
-                      children: <Widget>[
-                        /*Padding(
+              Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 4,
+                        child: Row(
+                          children: <Widget>[
+                            /*Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: CachedNetworkImage(
                             alignment: Alignment.centerLeft,
@@ -84,30 +84,35 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                             imageUrl: "${item["image"]}",
                           ),
                         ),*/
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              _orderProvide.suppvaildorders[index].shopOwner.firstName,
-                              style: TextStyle(
-                                  fontSize: 18.0, fontWeight: FontWeight.w700),
-                            ),
-                            Text(
-                              "Order #1GF5D6HO${_orderProvide.suppvaildorders[index].id.toString()}",
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  _orderProvide.suppvaildorders[index].shopOwner
+                                          .firstName +
+                                      ' ' +
+                                      _orderProvide.suppvaildorders[index]
+                                          .shopOwner.lastName,
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                /*Text(
+                              "Order Ref ${_orderProvide.suppvaildorders[index].orderref}",
                               style: TextStyle(fontSize: 12),
-                            ),
+                            ),*/
+                              ],
+                            )
                           ],
-                        )
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "\€${_orderProvide.suppvaildorders[index].orderPrice}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                 /* if (item["orderStatus"] != "Done")
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "\€${_orderProvide.suppvaildorders[index].orderPrice}",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      /* if (item["orderStatus"] != "Done")
                     Expanded(
                       child: IconButton(
                         onPressed: () => null,
@@ -124,8 +129,8 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                         ),
                       ),
                     ),*/
-                ],
-              ),
+                    ],
+                  )),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 8.0,
@@ -133,30 +138,30 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: Text("Purchase date - "),
+                      child: Text(
+                          "Order Ref- ${_orderProvide.suppvaildorders[index].orderRef}"),
                       flex: 3,
                     ),
-                    
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xff3ed3d3),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16.0)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 2.0),
-                            child: Text(
-                              _orderProvide.suppvaildorders[index].statut.statutName,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.black,fontSize: 10),
-                            ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xff3ed3d3),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 2.0),
+                          child: Text(
+                            _orderProvide
+                                .suppvaildorders[index].statut.statutName,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black, fontSize: 10),
                           ),
                         ),
-                      )
-                    
-                     /* Padding(
+                      ),
+                    )
+
+                    /* Padding(
                         child: Icon(
                           Icons.check_circle,
                           color: Color(0xff3ed3d3),
@@ -166,6 +171,7 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                   ],
                 ),
               ),
+              
               ScrollOnExpand(
                 scrollOnExpand: true,
                 scrollOnCollapse: false,
@@ -184,7 +190,8 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      for (var i in _orderProvide.suppvaildorders[index].productItem)
+                      for (var i
+                          in _orderProvide.suppvaildorders[index].productItem)
                         Padding(
                           padding: EdgeInsets.only(bottom: 10),
                           child: Row(
@@ -192,12 +199,12 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                               Expanded(
                                 flex: 3,
                                 child: ListTile(
-                                  title: Text(i.itemBarcode),
-                                  leading: Text(i.product.productName)
-                                  /*CachedNetworkImage(
+                                    title: Text(i.itemBarcode),
+                                    leading: Text(i.product.productName)
+                                    /*CachedNetworkImage(
                                     imageUrl: i.product.productName,
                                   ),*/
-                                ),
+                                    ),
                               ),
                               Expanded(
                                 child: Text("${i.pivot.quantity}"),

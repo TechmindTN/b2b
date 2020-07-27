@@ -1,12 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/entypo_icons.dart';
+import 'package:fluttericon/font_awesome_icons.dart';
+import 'package:fluttericon/mfg_labs_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/main.dart';
 
 import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
-import 'package:siyou_b2b/screens/Shopowner/Screens/Confirme_orders.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/orders/Confirme_orders.dart';
+import 'package:siyou_b2b/utlis/utils.dart';
+
+import 'orders/Confirme_orders.dart';
 
 class Cart extends StatefulWidget {
   @override
@@ -15,6 +21,7 @@ class Cart extends StatefulWidget {
 
 class _CartState extends State<Cart> {
   AppLocalizations lang;
+  // ignore: unused_field
   CartProvider _cartProvider;
   int _total = 0;
   // final ApiProvider _api = ApiProvider();
@@ -43,6 +50,82 @@ class _CartState extends State<Cart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: <Widget>[
+            Icon(
+              Entypo.bag,
+              size: 20,
+            ),
+            SizedBox(width: 10),
+            Text(
+              lang.tr('shopOwner.Cart'),
+              style: TextStyle(color: Colors.black),
+              //style: Theme.of(context).textTheme.display1.copyWith(
+              //  fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+            Spacer(),
+            if (_cartProvider.orders.length > 0)
+              GestureDetector(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      MfgLabs.menu,
+                      // color: Theme.of(context).primaryColorDark,
+                    ),
+                    Text('Orders',
+                        style: Theme.of(context).textTheme.body2.copyWith(
+                            color: Theme.of(context).primaryColorDark,
+                            fontSize: 12))
+                  ],
+                ),
+                onTap: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (ctx) => LanguageProvider(
+                        child: ConOrder(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            SizedBox(
+              width: 15,
+            ),
+            GestureDetector(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    FontAwesome.barcode,
+                    // color: Theme.of(context).primaryColorDark,
+                  ),
+                  Text('Quick',
+                      style: Theme.of(context).textTheme.body2.copyWith(
+                          color: Theme.of(context).primaryColorDark,
+                          fontSize: 12))
+                ],
+              ),
+              onTap: () async {
+                String code = await scanCode(context, lang);
+                print(code);
+                if (code != null) {
+                  await _cartProvider.searchItems(context, code);
+                  // _cartProvider.notify();
+                }
+              },
+            ),
+          ],
+        ),
+
+        backgroundColor: Colors.white,
+        //elevation: 0.0,
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
+      ),
       body: SafeArea(
         child: Container(
           color: Colors.white,
@@ -61,11 +144,6 @@ class _CartState extends State<Cart> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  lang.tr('shopOwner.Cart'),
-                  style: Theme.of(context).textTheme.display1.copyWith(
-                      fontWeight: FontWeight.bold, color: Colors.black),
-                ),
                 SizedBox(height: 15),
                 Expanded(
                   flex: 1,
@@ -78,7 +156,7 @@ class _CartState extends State<Cart> {
                         child: Row(
                           children: <Widget>[
                             Container(
-                              height: 70,
+                              height: 50,
                               width: 80,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15.0),
@@ -95,8 +173,6 @@ class _CartState extends State<Cart> {
                                   : CachedNetworkImage(
                                       imageUrl:
                                           provider.itmes[i].images[0].imageUrl,
-                                      placeholder: (context, url) =>
-                                          CircularProgressIndicator(),
                                       fit: BoxFit.contain,
                                     ),
                               /*provider.itmes[i].images!=null? Image.network(
@@ -110,36 +186,54 @@ class _CartState extends State<Cart> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  provider.itmes[i].product!=null?
-                                  Text(
-                                    '${provider.itmes[i].product.productName}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .title
-                                        .copyWith(fontSize: 14),
-                                  ):Text(
-                                    '${provider.itmes[i].productname}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .title
-                                        .copyWith(fontSize: 14),
-                                  ),
+                                  provider.itmes[i].product != null
+                                      ? Text(
+                                          '${provider.itmes[i].product.productName}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .title
+                                              .copyWith(fontSize: 12),
+                                        )
+                                      : Text(
+                                          '${provider.itmes[i].productname}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .title
+                                              .copyWith(fontSize: 14),
+                                        ),
                                   Text(
                                     "${provider.itmes[i].itemBarcode}",
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12),
                                   ),
-                                  Text(
-                                    "€ ${provider.itmes[i].itemOfflinePrice} x ${provider.itmes[i].quantity} ",
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12),
-                                  ),
+                                  provider.itmes[i].itemDiscountPrice == null
+                                      ? Text(
+                                          "€ ${provider.itmes[i].itemOfflinePrice} x ${provider.itmes[i].quantity} ",
+                                          style: TextStyle(
+                                              color: Colors.grey, fontSize: 12),
+                                        )
+                                      : Text(
+                                          "€ ${provider.itmes[i].itemOfflinePrice} x ${provider.itmes[i].quantity} ",
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                          ),
+                                        ),
+                                  if (provider.itmes[i].itemDiscountPrice !=
+                                      null)
+                                    Text(
+                                      "€ ${provider.itmes[i].itemDiscountPrice} x ${provider.itmes[i].quantity} ",
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 12),
+                                    ),
                                   SizedBox(height: 15),
                                 ],
                               ),
                             ),
                             Container(
-                              height: 40,
+                              // height: 70,
                               child: Row(
                                 children: <Widget>[
                                   SizedBox(width: 5),
@@ -155,42 +249,58 @@ class _CartState extends State<Cart> {
                                     child: Center(
                                         child: Row(
                                       children: <Widget>[
+                                        // if (provider.itmes[i].quantity > 0)
                                         GestureDetector(
                                           child: Container(
                                             padding: const EdgeInsets.all(5.0),
                                             decoration: BoxDecoration(
-                                              shape: BoxShape.rectangle,
-                                              color: Colors.red,
+                                              shape: BoxShape.circle,
+                                              color: Theme.of(context)
+                                                  .primaryColorDark,
                                             ),
-                                            child: Icon(
-                                              Icons.remove,
-                                              color: Colors.white,
-                                              size: 10,
-                                            ),
+                                            child:
+                                                provider.itmes[i].quantity > 0
+                                                    ? Icon(
+                                                        Icons.remove,
+                                                        color: Colors.white,
+                                                        size: 20,
+                                                      )
+                                                    : Icon(
+                                                        Icons.delete_forever,
+                                                        color: Colors.white,
+                                                        size: 20,
+                                                      ),
                                           ),
                                           onTap: () {
-                                            provider.itmes[i].quantity -
-                                                        provider.itmes[i]
-                                                            .quantity >=
-                                                    0
-                                                ? provider.itmes[i].quantity -=
-                                                    provider
-                                                        .itmes[i].itemPackage
-                                                : provider.itmes[i].quantity =
-                                                    0;
+                                            if (provider.itmes[i].quantity ==
+                                                0) {
+                                              provider.itmes.removeAt(i);
+                                              provider.notify();
+                                            } else {
+                                              provider.itmes[i].quantity -
+                                                          provider.itmes[i]
+                                                              .quantity >=
+                                                      0
+                                                  ? provider
+                                                          .itmes[i].quantity -=
+                                                      provider
+                                                          .itmes[i].itemPackage
+                                                  : provider.itmes[i].quantity =
+                                                      0;
 
-                                            provider.itmes[i].quantity -
-                                                        provider.itmes[i]
-                                                            .itemPackage >
-                                                    0
-                                                ? provider.total =
-                                                    provider.total
-                                                : provider.total -= provider
-                                                        .itmes[i]
-                                                        .itemOfflinePrice *
-                                                    provider
-                                                        .itmes[i].itemPackage;
-                                            provider.notify();
+                                              provider.itmes[i].quantity -
+                                                          provider.itmes[i]
+                                                              .itemPackage >
+                                                      0
+                                                  ? provider.total =
+                                                      provider.total
+                                                  : provider.total -= provider
+                                                          .itmes[i]
+                                                          .itemOfflinePrice *
+                                                      provider
+                                                          .itmes[i].itemPackage;
+                                              provider.notify();
+                                            }
                                           },
                                         ),
                                         SizedBox(width: 15),
@@ -204,13 +314,14 @@ class _CartState extends State<Cart> {
                                           child: Container(
                                             padding: const EdgeInsets.all(5.0),
                                             decoration: BoxDecoration(
-                                              shape: BoxShape.rectangle,
-                                              color: Colors.red,
+                                              shape: BoxShape.circle,
+                                              color: Theme.of(context)
+                                                  .primaryColorDark,
                                             ),
                                             child: Icon(
                                               Icons.add,
                                               color: Colors.white,
-                                              size: 10,
+                                              size: 20,
                                             ),
                                           ),
                                           onTap: () {
@@ -232,7 +343,7 @@ class _CartState extends State<Cart> {
                           ],
                         ),
                       );
-                      Divider();
+                      //Divider();
                     },
                   ),
                 ),
@@ -243,10 +354,13 @@ class _CartState extends State<Cart> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text("TOTAL",
+                          Text(lang.tr('shopOwner.Total'),
                               style: Theme.of(context).textTheme.subtitle),
-                          Text("€. ${provider.total.toStringAsFixed(2)}",
-                              style: Theme.of(context).textTheme.headline.copyWith(fontSize: 17)),
+                          Text("€ ${provider.total.toStringAsFixed(2)}",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline
+                                  .copyWith(fontSize: 17)),
                         ],
                       ),
                     ),
@@ -300,6 +414,7 @@ class _CartState extends State<Cart> {
                               ),
                             );
                             provider.checkout();
+                            provider.itmes.clear();
                           },
                           color: Colors.black,
                           shape: RoundedRectangleBorder(
@@ -319,18 +434,33 @@ class _CartState extends State<Cart> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  lang.tr('shopOwner.Cart'),
-                  style: Theme.of(context).textTheme.display1.copyWith(
-                      fontWeight: FontWeight.bold, color: Colors.black),
+                //SizedBox(height: 15),
+                Container(
+                  child: Center(
+                    child: Container(
+                      width: double.infinity,
+                      //height: 250,
+                      child: Image.asset(
+                        "assets/jpg/EmptyCard3.gif",
+                        //height: 250,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 15),
                 Expanded(
-                  flex: 1,
+                  flex: 0,
                   child: Center(
                     child: Text(lang.tr('shopOwner.emptycart')),
                   ),
                 ),
+                Expanded(
+                  flex: 1,
+                  child: Center(
+                    child: Container(),
+                  ),
+                ),
+
                 Divider(),
                 Row(
                   children: <Widget>[
@@ -340,7 +470,7 @@ class _CartState extends State<Cart> {
                         children: <Widget>[
                           Text("TOTAL",
                               style: Theme.of(context).textTheme.subtitle),
-                          Text("€. $_total",
+                          Text("€ $_total",
                               style: Theme.of(context).textTheme.headline),
                         ],
                       ),

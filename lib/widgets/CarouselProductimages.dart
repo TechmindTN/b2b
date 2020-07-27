@@ -19,7 +19,8 @@ class _CarouselProductsListState extends State<CarouselProductsList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: widget.type == CarouselTypes.details ? 160 : 140,
+        height: widget.type == CarouselTypes.details ? 200 : 120,
+        
         child: Stack(
           children: <Widget>[
             Column(
@@ -28,7 +29,7 @@ class _CarouselProductsListState extends State<CarouselProductsList> {
                   child: PageView.builder(
                     controller: PageController(
                       viewportFraction:
-                          widget.type == CarouselTypes.details ? .92 : .99,
+                          widget.type == CarouselTypes.details ? .80 : .99,
                     ),
                     onPageChanged: (index) {
                       setState(() {
@@ -61,7 +62,7 @@ class _CarouselProductsListState extends State<CarouselProductsList> {
                           child: Image.network(
                             "${widget.productsList[id]}",
                             fit: widget.type == CarouselTypes.details
-                                ? BoxFit.cover
+                                ? BoxFit.fill
                                 : BoxFit.fill,
                           ),
                         ),
@@ -71,7 +72,6 @@ class _CarouselProductsListState extends State<CarouselProductsList> {
                 ),
               ],
             ),
-            if(widget.productsList.length>1)
             Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(

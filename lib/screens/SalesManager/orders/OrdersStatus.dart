@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:siyou_b2b/network/ApiProvider.dart';
 import 'package:siyou_b2b/providers/CartProvider.dart';
-import 'package:siyou_b2b/utlis/utils.dart';
+import 'package:siyou_b2b/widgets/TransactionWidget.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 
@@ -17,7 +17,7 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
   AppLocalizations lang;
   CartProvider _orderProvide;
   ScrollController _scrollController = new ScrollController();
-  final ApiProvider _api = ApiProvider();
+  //final ApiProvider _api = ApiProvider();
 
   @override
   void didChangeDependencies() {
@@ -36,13 +36,13 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
           );
         else if (provider.loading)
           return ProgressIndicatorWidget();
-        else if (provider.suppinvalidorders != null &&
-            provider.suppinvalidorders.isNotEmpty) {
+        else if (provider.managerinvalidorders != null &&
+            provider.managerinvalidorders.isNotEmpty) {
           return ListView.builder(
             //scrollDirection: Axis.horizontal,
             shrinkWrap: true,
             controller: _scrollController,
-            itemCount: provider.suppinvalidorders.length,
+            itemCount: provider.managerinvalidorders.length,
             itemBuilder: (context, index) {
               return _getItemWidget(index);
             },
@@ -57,129 +57,118 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
     );
   }
 
-  orderCR(int id, String status) async {
-    loadingDialog(context, lang);
-    try {
-      final data = await _api.confirmRejectOrder(id, status);
-
-      if (checkorder(data)) {
-        try {
-          Navigator.pop(context);
-          return true;
-        } catch (e) {
-          Navigator.pop(context);
-          showAlertDialog(context, " Error", e);
-          print(e);
-          return false;
-        }
-      } else {
-        Navigator.pop(context);
-        showAlertDialog(context, "", 'error');
-      }
-    } catch (e) {
-      Navigator.pop(context);
-      print(e);
-      showAlertDialog(context, "Error", e.toString());
-    }
-  }
-
-  void _onItemPressed(BuildContext context, int i, int orderid) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Center(
-            child: Wrap(children: <Widget>[
-              Stack(children: <Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(8.0)),
-                  padding: EdgeInsets.all(32.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox.fromSize(
-                        size: Size(86, 86), // button width and height
-                        child: ClipOval(
-                          child: Material(
-                            color: Colors.green, // button color
-                            child: InkWell(
-                              splashColor: Colors.white, // splash color
-                              onTap: () {
-                                if (orderCR(orderid, 'confirm')) {
-                                  Navigator.pop(context);
-                                  _orderProvide.invalidorders.removeAt(i);
-                                  _orderProvide.notify();
-                                  Navigator.pop(context);
-                                }
-                              }, // button pressed
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Icon(Icons.check_circle), // icon
-                                  Text("Confirme"), // text
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      SizedBox.fromSize(
-                        size: Size(86, 86), // button width and height
-                        child: ClipOval(
-                          child: Material(
-                            color: Colors.red, // button color
-                            child: InkWell(
-                              splashColor: Colors.white, // splash color
-                              onTap: () {
-                                if (orderCR(orderid, 'rejected')) {
-                                  Navigator.pop(context);
-                                  _orderProvide.invalidorders.removeAt(i);
-                                  _orderProvide.notify();
-                                  Navigator.pop(context);
-                                }
-                              }, // button pressed
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Icon(Icons.close), // icon
-                                  Text("Reject"), // text
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+  Widget _getItemWidget(int index) {
+    const Widget _dividerWidget = Divider(height: 2);
+    final Widget _contentCopyIconWidget = IconButton(
+      iconSize: 20,
+      icon: Icon(
+        Icons.content_copy,
+        color: Theme.of(context).iconTheme.color,
+      ),
+      onPressed: () {
+        Clipboard.setData(ClipboardData(
+            text: _orderProvide.managerinvalidorders[index].orderRef));
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Tooltip(
+            message: lang.tr('transaction_detail__copy'),
+            child: Text(
+              lang.tr('Batch No Coppied'),
+              style: Theme.of(context).textTheme.title.copyWith(
+                  //color: PsColors.mainColor,
                   ),
-                ),
-                /*Positioned(
-                  top: 4.0,
-                  right: 4.0,
-                  child: GestureDetector(
-                    child: Container(
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                      ),
-                      decoration: BoxDecoration(
-                          color: Colors.black87, shape: BoxShape.circle),
+            ),
+            showDuration: const Duration(seconds: 5),
+          ),
+        ));
+      },
+    );
+    return Container(
+        // color: Colors.black87,
+        padding: const EdgeInsets.only(
+          left: 6,
+          right: 6,
+        ),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    child: Row(
+                      children: <Widget>[
+                        const SizedBox(
+                          width: 2,
+                        ),
+                        Icon(
+                          Icons.offline_pin,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                          flex: 4,
+                          child: Text(
+                              '${lang.tr('shopOwner.OrderNo')} : ${_orderProvide.managerinvalidorders[index].orderRef}',
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context).textTheme.subhead),
+                        ),
+                      ],
                     ),
-                    onTap: () => Navigator.pop(context),
                   ),
-                ),*/
-              ]),
-            ]),
-          );
-        });
+                  Spacer(),
+                  _contentCopyIconWidget,
+                ],
+              ),
+            ),
+            _dividerWidget,
+            TransactionNoTextWidget(
+              transationInfoText: _orderProvide
+                      .managerinvalidorders[index].supplier.firstName +
+                  ' ' +
+                  _orderProvide.managerinvalidorders[index].supplier.lastName,
+              title: '${lang.tr('shopOwner.Supplier')} :',
+            ),
+            TransactionNoTextWidget(
+              transationInfoText:
+                  _orderProvide.managerinvalidorders[index].orderPrice,
+              title: '${lang.tr('Total')} :',
+            ),
+            TransactionNoTextWidget(
+              transationInfoText:
+                  _orderProvide.managerinvalidorders[index].statut.statutName,
+              title: '${lang.tr('Status')} :',
+            ),
+
+            /* _TransactionNoTextWidget(
+              transationInfoText: transaction.cuponDiscountAmount == '0'
+                  ? '-'
+                  : '${transaction.currencySymbol} ${Utils.getPriceFormat(transaction.cuponDiscountAmount)}',
+              title:
+                  '${Utils.getString(context, 'transaction_detail__coupon_discount')} :',
+            ),*/
+            const SizedBox(
+              height: 12,
+            ),
+            _dividerWidget,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                FlatButton(
+                  child: Text('View Details'),
+                  //color: Colors.blueAccent,
+                  //textColor: Colors.white,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ],
+        ));
   }
 
-  Widget _getItemWidget(
+  Widget _getItemWidget1(
     int index,
   ) {
     return ExpandableNotifier(
@@ -192,13 +181,17 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 4,
-                    child: Row(
-                      children: <Widget>[
-                        /*Padding(
+              Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 4,
+                        child: Row(
+                          children: <Widget>[
+                            /*Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: CachedNetworkImage(
                             alignment: Alignment.centerLeft,
@@ -209,32 +202,32 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                             imageUrl: "${item["image"]}",
                           ),
                         ),*/
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              _orderProvide
-                                  .suppinvalidorders[index].shopOwner.firstName+' '+_orderProvide
-                                  .suppinvalidorders[index].shopOwner.lastName,
-                              style: TextStyle(
-                                  fontSize: 18.0, fontWeight: FontWeight.w700),
-                            ),
-                            /*Text(
-                              "Order Ref ${_orderProvide.suppinvalidorders[index].orderref}",
-                              style: TextStyle(fontSize: 12),
-                            ),*/
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  _orderProvide.managerinvalidorders[index]
+                                      .shopOwner.firstName,
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                Text(
+                                  "${_orderProvide.managerinvalidorders[index].orderRef}",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            )
                           ],
-                        )
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "\€${_orderProvide.suppinvalidorders[index].orderPrice}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  /* if (item["orderStatus"] != "Done")
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "\€${_orderProvide.managerinvalidorders[index].orderPrice}",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      /* if (item["orderStatus"] != "Done")
                     Expanded(
                       child: IconButton(
                         onPressed: () => null,
@@ -251,8 +244,8 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                         ),
                       ),
                     ),*/
-                ],
-              ),
+                    ],
+                  )),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 8.0,
@@ -260,7 +253,8 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: Text("Order Ref-Purchase date ${_orderProvide.suppinvalidorders[index].orderref}"),
+                      child: Text(
+                          "Shop - ${_orderProvide.managerinvalidorders[index].shopOwner.firstName} ${_orderProvide.managerinvalidorders[index].shopOwner.lastName}"),
                       flex: 3,
                     ),
                     Expanded(
@@ -273,8 +267,7 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8.0, vertical: 2.0),
                           child: Text(
-                            _orderProvide
-                                .suppinvalidorders[index].statut.statutName,
+                            'Waiting for Your Validation',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: Colors.black, fontSize: 10),
                           ),
@@ -310,8 +303,8 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      for (var i
-                          in _orderProvide.suppinvalidorders[index].productItem)
+                      for (var i in _orderProvide
+                          .managerinvalidorders[index].productItem)
                         Padding(
                           padding: EdgeInsets.only(bottom: 10),
                           child: Row(
@@ -319,8 +312,9 @@ class _OrdersStatusState extends State<SuppOrdersStatus> {
                               Expanded(
                                 flex: 3,
                                 child: ListTile(
-                                    title: Text(i.itemBarcode),
-                                    leading: Text(i.product.productName)
+                                    leading: Text(i.product.productName +
+                                        ' ' +
+                                        i.itemBarcode)
                                     /*CachedNetworkImage(
                                     imageUrl: i.product.productName,
                                   ),*/

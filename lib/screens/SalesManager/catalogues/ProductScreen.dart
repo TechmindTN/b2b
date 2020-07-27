@@ -36,7 +36,7 @@ class _ProductsListScreenState extends State<ProductsListSScreen> {
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context);
-    var width = 300;
+    //var width = 300;
     //var _theme = Theme.of(context);
     var iconSize = 24.0;
     //var thirdWidth = (width - iconSize * 3) / 3;

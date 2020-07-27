@@ -12,7 +12,6 @@ class SuppPaidOrders extends StatefulWidget {
 }
 
 class _OrdersStatusState extends State<SuppPaidOrders> {
-
   AppLocalizations lang;
   CartProvider _orderProvide;
   ScrollController _scrollController = new ScrollController();
@@ -25,7 +24,6 @@ class _OrdersStatusState extends State<SuppPaidOrders> {
     _orderProvide?.getSupplierOrders(context);
   }
 
- 
   Widget getWidget() {
     return Consumer<CartProvider>(
       builder: (context, provider, widget) {
@@ -67,13 +65,17 @@ class _OrdersStatusState extends State<SuppPaidOrders> {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 4,
-                    child: Row(
-                      children: <Widget>[
-                        /*Padding(
+              Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 4,
+                        child: Row(
+                          children: <Widget>[
+                            /*Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: CachedNetworkImage(
                             alignment: Alignment.centerLeft,
@@ -84,30 +86,32 @@ class _OrdersStatusState extends State<SuppPaidOrders> {
                             imageUrl: "${item["image"]}",
                           ),
                         ),*/
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              _orderProvide.supppaidorders[index].shopOwner.firstName,
-                              style: TextStyle(
-                                  fontSize: 18.0, fontWeight: FontWeight.w700),
-                            ),
-                            Text(
-                              "Order #1GF5D6HO${_orderProvide.supppaidorders[index].id.toString()}",
-                              style: TextStyle(fontSize: 12),
-                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  _orderProvide.supppaidorders[index].shopOwner
+                                      .firstName,
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                Text(
+                                  _orderProvide.supppaidorders[index].orderRef,
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            )
                           ],
-                        )
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      "\€${_orderProvide.supppaidorders[index].orderPrice}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                 /* if (item["orderStatus"] != "Done")
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "\€${_orderProvide.supppaidorders[index].orderPrice}",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      /* if (item["orderStatus"] != "Done")
                     Expanded(
                       child: IconButton(
                         onPressed: () => null,
@@ -124,8 +128,8 @@ class _OrdersStatusState extends State<SuppPaidOrders> {
                         ),
                       ),
                     ),*/
-                ],
-              ),
+                    ],
+                  )),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 8.0,
@@ -133,30 +137,29 @@ class _OrdersStatusState extends State<SuppPaidOrders> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: Text("Purchase date - "),
+                      child: Text("Purchase date - ${_orderProvide.supppaidorders[index].createdAt}"),
                       flex: 3,
                     ),
-                    
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xff3ed3d3),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16.0)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 2.0),
-                            child: Text(
-                              _orderProvide.supppaidorders[index].statut.statutName,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.black,fontSize: 10),
-                            ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xff3ed3d3),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 2.0),
+                          child: Text(
+                            _orderProvide
+                                .supppaidorders[index].statut.statutName,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black, fontSize: 10),
                           ),
                         ),
-                      )
-                    
-                     /* Padding(
+                      ),
+                    )
+
+                    /* Padding(
                         child: Icon(
                           Icons.check_circle,
                           color: Color(0xff3ed3d3),
@@ -184,7 +187,8 @@ class _OrdersStatusState extends State<SuppPaidOrders> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      for (var i in _orderProvide.supppaidorders[index].productItem)
+                      for (var i
+                          in _orderProvide.supppaidorders[index].productItem)
                         Padding(
                           padding: EdgeInsets.only(bottom: 10),
                           child: Row(
@@ -192,12 +196,12 @@ class _OrdersStatusState extends State<SuppPaidOrders> {
                               Expanded(
                                 flex: 3,
                                 child: ListTile(
-                                  title: Text(i.itemBarcode),
-                                  leading: Text(i.product.productName)
-                                  /*CachedNetworkImage(
+                                    title: Text(i.itemBarcode),
+                                    leading: Text(i.product.productName)
+                                    /*CachedNetworkImage(
                                     imageUrl: i.product.productName,
                                   ),*/
-                                ),
+                                    ),
                               ),
                               Expanded(
                                 child: Text("${i.pivot.quantity}"),
@@ -244,6 +248,3 @@ class _OrdersStatusState extends State<SuppPaidOrders> {
     );*/
   }
 }
-
-
-

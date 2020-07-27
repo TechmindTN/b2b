@@ -1,12 +1,12 @@
-
 import 'package:siyou_b2b/models/brand.dart';
 import 'package:siyou_b2b/models/category.dart';
+import 'package:siyou_b2b/models/suppliers.dart';
 
 class Productitems {
   dynamic id;
   String productName;
   String productDescription;
- // dynamic taxeRate;
+  // dynamic taxeRate;
   dynamic productPackage;
   dynamic productBox;
   dynamic categoryId;
@@ -17,12 +17,13 @@ class Productitems {
   Brand brand;
   Category category;
   List<Items> items;
+  Suppliers supplier;
 
   Productitems(
       {this.id,
       this.productName,
       this.productDescription,
-     // this.taxeRate,
+      // this.taxeRate,
       this.productPackage,
       this.productBox,
       this.categoryId,
@@ -56,6 +57,9 @@ class Productitems {
         items.add(new Items.fromJson(v));
       });
     }
+    supplier = json['supplier'] != null
+        ? new Suppliers.fromJson(json['supplier'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -63,7 +67,7 @@ class Productitems {
     data['id'] = this.id;
     data['product_name'] = this.productName;
     data['product_description'] = this.productDescription;
-   // data['taxe_rate'] = this.taxeRate;
+    // data['taxe_rate'] = this.taxeRate;
     data['product_package'] = this.productPackage;
     data['product_box'] = this.productBox;
     data['category_id'] = this.categoryId;
@@ -79,8 +83,6 @@ class Productitems {
     return data;
   }
 }
-
-
 
 class Items {
   dynamic id;
@@ -98,12 +100,11 @@ class Items {
   dynamic productBaseId;
   List<CriteriaBase> criteriaBase;
   List<Images> images;
-  num quantity;
+  int quantity;
   dynamic supplierid;
   String productname;
   Productitems product;
-  Supplier supplier;
-
+  Suppliers supplier;
 
   Items(
       {this.id,
@@ -123,26 +124,27 @@ class Items {
       this.images,
       this.quantity,
       this.supplierid,
-      this.productname
-      });
+      this.productname});
 
-  
-
-
-Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'item_id': id,
+      'item_package': itemPackage,
       'item_quantity': quantity,
-      'item_barcode':itemBarcode,
-      'item_price':itemOnlinePrice,
-      'item_weight':double.parse(criteriaBase[0].pivot.criteriaValue),
-      'item_image':images[0].imageUrl,
-      'product_base_name':product.productName
+      'item_barcode': itemBarcode,
+      'item_price':
+          itemDiscountPrice == null ? itemOfflinePrice : itemDiscountPrice,
+      'item_weight': 10, //double.parse(criteriaBase[0].pivot.criteriaValue),
+      'item_image': images[0].imageUrl,
+      'product_base_name': product.productName
     };
   }
+
   Items.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    itemOnlinePrice = json['item_online_price']==null?itemOnlinePrice=1.00:double.parse(json['item_online_price']);
+    itemOnlinePrice = json['item_online_price'] == null
+        ? 1.00
+        : double.parse(json['item_online_price']);
     itemOfflinePrice = double.parse(json['item_offline_price']);
     itemPackage = json['item_package'];
     itemBox = json['item_box'];
@@ -150,29 +152,32 @@ Map<String, dynamic> toMap() {
     itemWarnQuantity = json['item_warn_quantity'];
     itemQuantity = json['item_quantity'];
     itemDiscountType = json['item_discount_type'];
-    itemDiscountPrice = json['item_discount_price']==null?itemDiscountPrice=null:double.parse(json['item_discount_price']);//double.parse();
+    itemDiscountPrice = json['item_discount_price'] == null
+        ? null
+        : double.parse(json['item_discount_price']);
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     productBaseId = json['product_base_id'];
-    productname=json['product_base_name'];
+    productname = json['product_base_name'];
     if (json['criteria_base'] != null) {
       criteriaBase = new List<CriteriaBase>();
       json['criteria_base'].forEach((v) {
         criteriaBase.add(new CriteriaBase.fromJson(v));
       });
     }
-   if (json['images'] != null) {
+    if (json['images'] != null) {
       images = new List<Images>();
       json['images'].forEach((v) {
         images.add(new Images.fromJson(v));
       });
     }
-    product=json['product'] != null ? new Productitems.fromJson(json['product']) : null;
-    quantity=0;
-    supplier = json['supplier'] != null
-        ? new Supplier.fromJson(json['supplier'])
+    product = json['product'] != null
+        ? new Productitems.fromJson(json['product'])
         : null;
-
+    quantity = 0;
+    supplier = json['supplier'] != null
+        ? new Suppliers.fromJson(json['supplier'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -190,11 +195,11 @@ Map<String, dynamic> toMap() {
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['product_base_id'] = this.productBaseId;
-    data['product_base_name']=this.productname;
+    data['product_base_name'] = this.productname;
     if (this.criteriaBase != null) {
       data['criteria_base'] = this.criteriaBase.map((v) => v.toJson()).toList();
     }
-    
+
     return data;
   }
 }
@@ -308,7 +313,7 @@ class Images {
   }
 }
 
-class Supplier {
+/*class Supplier {
   int id;
   String firstName;
   String lastName;
@@ -328,4 +333,4 @@ class Supplier {
     data['last_name'] = this.lastName;
     return data;
   }
-}
+}*/

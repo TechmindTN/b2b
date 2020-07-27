@@ -3,7 +3,6 @@ import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:siyou_b2b/models/Theme.dart';
 
@@ -54,12 +53,39 @@ class _MainScreenState extends State<MainScreen> {
         body: Stack(
           children: <Widget>[
             Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(width: 20.0, height: 100.0),
+                  Text(
+                    "The day of life starts",
+                    style: TextStyle(fontSize: 30.0),
+                  ),
+                  SizedBox(width: 20.0, height: 5.0),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Spacer(),
+                      Text(
+                        "SIYOU !",
+                        style: TextStyle(
+                            fontSize: 40.0,
+                            color: Theme.of(context).primaryColorDark,
+                            fontFamily: 'Siyou',
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            /*Center(
               child: Image.asset(
                 "assets/png/logo_siyou-02.png",
                 alignment: Alignment.center,
                 fit: BoxFit.contain,
               ),
-            ),
+            ),*/
             Positioned(
               bottom: 8.0,
               left: 8.0,
@@ -91,7 +117,9 @@ class _MainScreenState extends State<MainScreen> {
     } else {
 //      prefs.setBool('firstStart', true);
       Navigator.pushNamedAndRemoveUntil(
-          context, "/onboarding", (Route<dynamic> route) => false);
+          context, "/", (Route<dynamic> route) => false);
+      /*Navigator.pushNamedAndRemoveUntil(
+          context, "/onboarding", (Route<dynamic> route) => false);*/
     }
   }
 }

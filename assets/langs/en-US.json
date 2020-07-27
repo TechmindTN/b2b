@@ -16,6 +16,17 @@
     "mark": "Mark as read",
     "remove": "Remove"
   },
+
+  "supplier": {
+    "confirm": "Confirm Order",
+    "reject ": "Reject",
+    "about": "About",
+    "recentadded": "Recent added products",
+    "recentpurchased": "Recent purchased products",
+    "accept": "Accept",
+    "alert":"You Can Accept or Reject this order"
+
+  },
   "shopOwner": {
     "Home":"Home",
     "Search": "Search",
@@ -35,8 +46,9 @@
     "product": "product",
     "items": "items",
     "quickadd": "quick add",
-    "pack/box": "pack/box",
-    "addtocart": "add to cart",
+    "pack": "Package",
+    "box": "BOX",
+    "addtocart": "Add to cart",
     "Specification": "Specification",
     "Details": "Details",
     "newproduct":"New product",
@@ -53,7 +65,36 @@
     "general":"General",
     "privacy":"Privacy and logout",
     "orderlist":"Your Orders List",
-    "questions":"questions and answer"
+    "Discounts":"Discounts",
+    "New Arrivals":"New Arrivals",
+    "Purchased":"Purchased",
+    "Discovery":"Discovery",
+    "Sort":"Sort",
+    "Scan":"Scan",
+    "Country":"Change Country",
+    "Password":"Change Password",
+    "Help":"Help & Support",
+    "productslist":"Products List",
+    "description":"Description ",
+    "viewmore":"View More ",
+    "outofstock":" OUT OF STOCK ",
+    "gocart":"GO CART",
+    "back":"Back",
+    "addedcart":"Your Product has been added to cart.",
+    "helpc":"Help center and legal support",
+    "orderno":"Order No",
+    "status":"Status",
+    "productlist":"Product List",
+    "invalid":"Invalid",
+    "valid":"Vaild",
+    "paid":"Paid",
+    "opss":"Opss, Somthing went Wrong !",
+    "tryagain":"Tap to try again",
+    "emptywish":"Your wishlist is empty",
+    "wishexplor":"Explore more & shortlist some items",
+    "Total":"Total"
+
+
     
   },
   "homeScreen": {

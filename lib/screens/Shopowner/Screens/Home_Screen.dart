@@ -3,17 +3,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launch/flutter_launch.dart';
+import 'package:fluttericon/linecons_icons.dart';
 import 'package:fluttericon/typicons_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-//import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:siyou_b2b/main.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
-//import 'package:siyou_b2b/widgets/CarouselProductsWidget.dart';
+import 'package:siyou_b2b/widgets/LoadingWidget.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:siyou_b2b/widgets/SupplierMap.dart';
-import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 import 'Search_view.dart';
 import 'Supplier/Supplier_Screen.dart';
@@ -67,31 +67,15 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
 
   Widget search() {
     return Container(
-      height: 45,
+      height: 40,
       decoration: BoxDecoration(
         color: Color(0x11727c8E),
-        borderRadius: BorderRadius.circular(35),
+        borderRadius: BorderRadius.circular(20),
       ),
       margin: EdgeInsets.symmetric(horizontal: 0),
       padding: EdgeInsets.symmetric(horizontal: 0),
       child: Row(
         children: <Widget>[
-          /* Expanded(
-              child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 2),
-            width: 20,
-            height: 20,
-            child: InkWell(
-              onTap: () {},
-              child: SvgPicture.asset(
-                'assets/svg/barcode_scanner.svg',
-                fit: BoxFit.contain,
-                color: Colors.red,
-                width: 20,
-                height: 20,
-              ),
-            ),
-          )),*/
           SizedBox(
             width: 10,
           ),
@@ -117,7 +101,7 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                 controller: searchController,
                 decoration: InputDecoration(
                     labelStyle: TextStyle(color: Color(0xffBEBEBE)),
-                    hintText: lang.tr('Supplier'),
+                    hintText: lang.tr('SIYOU B2B SEARCH SUPPLIER'),
                     border: InputBorder.none),
                 onSubmitted: (_) {
                   if (searchController.text != "") {
@@ -144,7 +128,20 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
             errorText: provider.errorMsg,
           );
         } else if (provider.loading)
-          return ProgressIndicatorWidget();
+          return ListView(
+            children: <Widget>[
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+              LoadingListItemWidget(),
+            ],
+          );
         else if (provider.suppliers != null && provider.suppliers.isNotEmpty) {
           return ListView.builder(
             scrollDirection: Axis.vertical,
@@ -159,6 +156,20 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
           );
       },
     );
+  }
+
+  Widget placeholder(BuildContext context) {
+    return Shimmer.fromColors(
+        baseColor: Colors.grey[300],
+        highlightColor: Colors.grey[50],
+        enabled: true,
+        period: const Duration(seconds: 1),
+        direction: ShimmerDirection.ttb,
+        child: Container(
+          height: double.infinity,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+        ));
   }
 
   Widget _getItemWidget(
@@ -189,28 +200,25 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
               Container(
                 // width: MediaQuery.of(context).size.width,
                 padding: new EdgeInsets.all(10.0),
-                child: Material(
-                  // borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  // elevation: 10.0,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(15.0),
-                    ),
-                    child: Container(
-                      height: 85.0,
-                      width: 100.0,
-                      child: _productProvide.suppliers[index].image == null ||
-                              _productProvide.suppliers[index].image == ""
-                          ? Image.asset(
-                              "assets/png/empty_cart.png",
-                              fit: BoxFit.contain,
-                              alignment: Alignment.center,
-                            )
-                          : CachedNetworkImage(
-                              imageUrl: _productProvide.suppliers[index].image,
-                              fit: BoxFit.contain,
-                            ),
-                    ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15.0),
+                  ),
+                  child: Container(
+                    height: 85.0,
+                    width: 100.0,
+                    child: _productProvide.suppliers[index].imgUrl == null ||
+                            _productProvide.suppliers[index].imgUrl == ""
+                        ? Image.asset(
+                            "assets/png/empty_cart.png",
+                            fit: BoxFit.contain,
+                            alignment: Alignment.center,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: _productProvide.suppliers[index].imgUrl,
+                            fit: BoxFit.fill,
+                            placeholder: (context, url) => placeholder(context),
+                          ),
                   ),
                 ),
               ),
@@ -231,6 +239,19 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                       fontSize: 17.0,
                     ),
                   ),
+                  if (_productProvide.suppliers[index].description != null)
+                    Container(
+                      padding: EdgeInsets.only(top: 5),
+                      width: MediaQuery.of(context).size.width / 1.6,
+                      child: Text(
+                        _productProvide.suppliers[index].description,
+                        style:
+                            TextStyle(color: Color(0xFFB7B7B7), fontSize: 10),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  //if (_productProvide.suppliers[index].minorder > 0)
                   SizedBox(
                     height: 10,
                   ),
@@ -260,7 +281,10 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                       ],
                     ),
                   ),
-                  SizedBox(height: 10),
+                  if (_productProvide.suppliers[index].minorder > 0)
+                    SizedBox(
+                      height: 10,
+                    ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width - 140,
                     child: Row(
@@ -288,14 +312,20 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         Spacer(),
-                        Text(
-                            _productProvide.suppliers[index].country +
-                                ',' +
-                                _productProvide.suppliers[index].region,
-                            style: TextStyle(color: Color(0xFF959ca6))),
+                        Container(
+                          width: 100,
+                          child: Text(
+                              _productProvide.suppliers[index].country +
+                                  ',' +
+                                  _productProvide.suppliers[index].region,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: Color(0xFF959ca6))),
+                        )
                       ],
                     ),
-                  )
+                  ),
+                  Divider()
                 ],
               )
             ],
@@ -307,35 +337,28 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(color: Colors.red),
+          backgroundColor: Colors.white,
           elevation: 0.0,
           title: Row(
             children: <Widget>[
-              /*  Container(
-                height: 60,
-                width: 75,
-                child: Image.asset(
-                  "assets/png/logo_siyou-02.png",
-                  fit: BoxFit.contain,
-                ),
-              ),*/
               Expanded(child: search()),
+              SizedBox(width: 15),
               InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SupplierMap(
-                              suppliers: _productProvide.suppliers,
-                              currentpostion:
-                                  _productProvide.currentPosition)));
-                },
-                child: ImageIcon(
-                  AssetImage("assets/png/location.png"),
-                  size: 30,
-                  color: Colors.black,
-                ),
-              ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SupplierMap(
+                                suppliers: _productProvide.suppliers,
+                                currentpostion:
+                                    _productProvide.currentPosition)));
+                  },
+                  child: Icon(
+                    Linecons.location,
+                    color: Colors.black,
+                    size: 25,
+                  )),
             ],
           )),
       floatingActionButton: FloatingActionBubble(
@@ -345,7 +368,7 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
           Bubble(
             title: "",
             iconColor: Colors.white,
-            bubbleColor: Colors.red,
+            bubbleColor: Theme.of(context).primaryColorDark,
             icon: Icons.email,
             titleStyle: TextStyle(color: Colors.white),
             onPress: () async {
@@ -379,16 +402,7 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
               _animationController.reverse();
             },
           ),
-          /*Bubble(
-            title:"Wechat",
-            iconColor :Colors.white,
-            bubbleColor : Colors.blue,
-            icon:FontAwesomeIcons.wech,
-            titleStyle:TextStyle(fontSize: 16 , color: Colors.white),
-            onPress: () {
-              _animationController.reverse();
-            },
-          ),*/
+
           Bubble(
             title: "",
             iconColor: Colors.white,
@@ -413,43 +427,56 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
         },
 
         // Floating Action button Icon color
-        iconColor: Colors.red,
+        iconColor: Colors.white,
+        backGroundColor: Theme.of(context).primaryColorDark,
 
         // Flaoting Action button Icon
-        icon: Typicons.chat,
+        iconData: Typicons.chat,
       ),
-      backgroundColor: Colors.white54,
+      //backgroundColor: Theme.of(context).primaryColorDark,
       body: Container(
         child: Column(
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            CarouselSlider(
-                items: imgList
-                    .map((item) => Container(
-                          child: Center(
-                              child: Image.network(
-                            item,
-                            fit: BoxFit.cover,
-                            width: 9000,
-                            height: 160,
-                          )),
-                        ))
-                    .toList(),
-                options: CarouselOptions(
-                  height: 150,
-                  aspectRatio: 16 / 10,
-                  viewportFraction: 1.0,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  autoPlayInterval: Duration(seconds: 4),
-                  autoPlayAnimationDuration: Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enlargeCenterPage: true,
-                  //onPageChanged: callbackFunction,
-                  scrollDirection: Axis.horizontal,
-                )),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: CarouselSlider(
+                  items: imgList
+                      .map((item) => Card(
+                          shape: BeveledRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          elevation: 1.0,
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                            child: CachedNetworkImage(
+                              fit: BoxFit.fill,
+                              width: MediaQuery.of(context).size.width,
+                              height: 140,
+                              imageUrl: item,
+                              placeholder: (context, url) =>
+                                  placeholder(context),
+                            ),
+                          )))
+                      .toList(),
+                  options: CarouselOptions(
+                    height: 140,
+
+                    // aspectRatio: 16 / 10,
+                    viewportFraction: 0.99,
+                    //initialPage: 0,
+                    enableInfiniteScroll: true,
+                    //reverse: false,
+                    autoPlay: true,
+                    autoPlayInterval: Duration(seconds: 4),
+                    autoPlayAnimationDuration: Duration(milliseconds: 800),
+                    //autoPlayCurve: Curves.fastOutSlowIn,
+                    enlargeCenterPage: false,
+                    //onPageChanged: callbackFunction,
+                    scrollDirection: Axis.horizontal,
+                  )),
+            ),
             SizedBox(
               height: 5,
             ),

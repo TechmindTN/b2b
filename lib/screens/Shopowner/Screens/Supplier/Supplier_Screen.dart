@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/main.dart';
 import 'package:siyou_b2b/models/suppliers.dart';
+import 'package:siyou_b2b/providers/CartProvider.dart';
+import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/Supplier/purchased.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/cart.dart';
-import 'package:siyou_b2b/screens/Shopowner/Screens/productlist.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/product/productlist.dart';
 import 'package:siyou_b2b/widgets/CarouselProductimages.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
-
-import '../productlistScreenCategorie.dart';
+import 'package:badges/badges.dart';
 import 'Discount.dart';
 import 'NewArrivals.dart';
 
@@ -31,21 +32,22 @@ class _DetailsScreenState extends State<SupplierScreen>
   TabController tabController;
   AppLocalizations lang;
   HomeProvider _productProvider;
-  //CartProvider _cartProvider;
+  CartProvider cartProvider;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int id;
   @override
   void initState() {
     super.initState();
-    tabController = new TabController(length: 4, vsync:this);
+    tabController = new TabController(length: 4, vsync: this);
     id = widget.supplier.id;
     _productProvider = Provider.of<HomeProvider>(context, listen: false);
-     intil();
+    cartProvider = Provider.of<CartProvider>(context, listen: false);
+    intil();
   }
 
   void intil() async {
     await _productProvider?.getProducts(context, id);
-    
+
     await _productProvider?.getCategories(context, id);
   }
 
@@ -55,7 +57,7 @@ class _DetailsScreenState extends State<SupplierScreen>
     lang = AppLocalizations.of(context);
     //_productProvider = Provider.of<HomeProvider>(context, listen: false);
     //if (_productProvider.discounts.isEmpty||_productProvider.purchased.isEmpty)
-   // _productProvider?.getProducts(context, id);
+    // _productProvider?.getProducts(context, id);
 
     //_productProvider?.getProducts(context, id);
   }
@@ -65,6 +67,34 @@ class _DetailsScreenState extends State<SupplierScreen>
     // _productProvider.lastadded.clear();
     super.dispose();
   }*/
+
+  Widget basketWidget() {
+    return Consumer<CartProvider>(
+      builder: (context, provider, widget) {
+        return SizedBox(
+            //height: 25,
+            width: 25,
+            child: Badge(
+              animationDuration: Duration(milliseconds: 250),
+              animationType: BadgeAnimationType.scale,
+              badgeContent: Text(cartProvider.itmes.length.toString(),
+                  style: new TextStyle(color: Colors.white)),
+              child: IconButton(
+                icon: Icon(
+                  Icons.shopping_cart,
+                  color: Colors.black,
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => LanguageProvider(child: Cart()),
+                  ),
+                ),
+              ),
+            ));
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,75 +108,50 @@ class _DetailsScreenState extends State<SupplierScreen>
       backgroundColor: Colors.white,
       appBar: AppBar(
         brightness: Brightness.light,
-         // backgroundColor: Colors.transparent,
-          iconTheme: IconThemeData(
-            color: Colors.white,
-          ),
-          title: Row(children: <Widget>[
-            Spacer(),
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.red[300],
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.shopping_cart,
-                            color: Colors.red,
-                            //size: 35,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (ctx) =>
-                                    LanguageProvider(child: Cart()),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-          ],),
-          elevation: 0,
+        backgroundColor: Colors.white,
+        titleSpacing: 0.00,
+        iconTheme: IconThemeData(
+          color: Colors.black,
         ),
+        title: Row(
+          children: <Widget>[
+            Text(
+              widget.supplier.firstName.toUpperCase(),
+              style: TextStyle(color: Colors.black),
+            ),
+            Spacer(),
+            IconButton(
+              icon: Icon(
+                Icons.refresh,
+                color: Colors.black,
+                //size: 35,
+              ),
+              onPressed: () {
+                _productProvider.resetList(context, supplierid: id);
+              },
+            ),
+            basketWidget(),
+            SizedBox(
+              width: 15,
+            )
+            // Spacer(),
+          ],
+        ),
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(0.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Stack(
-                children: <Widget>[
-                  CarouselProductsList(
-                    productsList: imglist,
-                    type: CarouselTypes.home,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                     /* Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.transparent,
-                        ),
-                        
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.black,
-                            size: 35,
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),*/
-                      
-                    ],
-                  ),
-                ],
-              ),
-              Container(
+              Expanded(
+                  child: CarouselProductsList(
+                productsList: imglist,
+                type: CarouselTypes.home,
+              )),
+              Expanded(
+                flex: 5,
                 child: _buildDetailsAndMaterialWidgets(),
               ),
             ],
@@ -155,33 +160,6 @@ class _DetailsScreenState extends State<SupplierScreen>
       ),
     );
   }
-
-  /*Widget getWidget() {
-    return Consumer<ProductListProvider>(
-      builder: (context, provider, widget) {
-        if (provider.error)
-          return ServerErrorWidget(
-            errorText: provider.errorMsg,
-          );
-        else if (provider.loading)
-          return ProgressIndicatorWidget();
-        else if (provider.itmes != null && provider.itmes.isNotEmpty) {
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            itemCount: provider.itmes.length,
-            itemBuilder: (context, index) => _getItemWidget(index),
-            // physics:  NeverScrollableScrollPhysics(),
-          );
-        } else
-          return Container(
-            child: Center(
-              child: Text("No data found"),
-            ),
-          );
-      },
-    );
-  }*/
 
   _buildDetailsAndMaterialWidgets() {
     //TabController tabController = new TabController(length: 4, vsync: this);
@@ -193,60 +171,58 @@ class _DetailsScreenState extends State<SupplierScreen>
           TabBar(
             controller: tabController,
             indicatorColor: Colors.red,
-            indicatorSize: TabBarIndicatorSize.tab,
+            indicatorSize: TabBarIndicatorSize.label,
             isScrollable: true,
+            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w400),
+            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+            labelColor: Colors.black,
             tabs: <Widget>[
               Tab(
                 child: Text(
-                  lang.tr('Discounts'),
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
+                  lang.tr('shopOwner.Discounts'),
                 ),
               ),
               Tab(
                 child: Text(
-                  lang.tr('New Arrivals'),
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
+                  lang.tr('shopOwner.New Arrivals'),
                 ),
               ),
               Tab(
                 child: Text(
-                  lang.tr('Purchased'),
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
+                  lang.tr('shopOwner.Purchased'),
                 ),
               ),
               Tab(
                 child: Text(
-                  lang.tr('Discover'),
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
+                  lang.tr('shopOwner.Discovery'),
                 ),
               ),
             ],
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0),
-            height: MediaQuery. of(context). size.height-MediaQuery. of(context). size.height*1/2.5788,
+            height: MediaQuery.of(context).size.height - 240,
             child: TabBarView(
               controller: tabController,
               children: <Widget>[
                 Discount(
                   supplierid: id,
+                  supplier: widget.supplier,
                 ),
                 NewArrivals(
                   supplierid: id,
+                  supplier: widget.supplier,
                 ),
                 Purchased(
                   supplierid: id,
+                  supplier: widget.supplier,
                 ),
-               // ProductsListScreen()
-                ProductList(suppid: id,)
+                // ProductsListScreen()
+                ChangeNotifierProvider(
+                    create: (_) => ProductListProvider(),
+                    child: LanguageProvider(
+                      child: ProductList(suppid: id),
+                    )),
               ],
             ),
           ),
@@ -255,6 +231,7 @@ class _DetailsScreenState extends State<SupplierScreen>
     );
   }
 
+  // ignore: unused_element
   void _onItemPressed(BuildContext context, String barcode) {
     showDialog(
         context: context,
@@ -307,5 +284,4 @@ class _DetailsScreenState extends State<SupplierScreen>
           );
         });
   }
-  
 }

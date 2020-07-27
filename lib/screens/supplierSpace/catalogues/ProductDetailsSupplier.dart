@@ -4,7 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/models/Product.dart';
-import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/widgets/CarouselProductimages.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
@@ -356,8 +355,8 @@ class _DetailsScreenState extends State<DetailsSupplierScreen>
   }
 Widget _getItemWidget(int index,) 
 {
-  int _currentAmount = _productProvider.itmes[index].itemPackage;
-    var _cartProvider = Provider.of<CartProvider>(context);
+  //int _currentAmount = _productProvider.itmes[index].itemPackage;
+    //var _cartProvider = Provider.of<CartProvider>(context);
     return InkWell(
         onTap: () {
         /*  Navigator.push(
@@ -499,6 +498,7 @@ Widget _getItemWidget(int index,)
   }
  
 
+  // ignore: unused_element
   void _onItemPressed(BuildContext context, String barcode) {
     showDialog(
         context: context,

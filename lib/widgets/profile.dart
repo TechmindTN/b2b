@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
@@ -7,37 +8,61 @@ import 'package:siyou_b2b/screens/Shopowner/Screens/orders/OrdersScreen.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/wishlist.dart';
 import 'package:siyou_b2b/screens/Shopowner/settings/Support.dart';
 import 'package:siyou_b2b/screens/Shopowner/settings/settings_page.dart';
+import 'package:siyou_b2b/utlis/utils.dart';
 import '../main.dart';
 import 'faq_page.dart';
 
+// ignore: must_be_immutable
 class ProfilePage extends StatelessWidget {
-   HomeProvider userProvider; 
+  HomeProvider userProvider;
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context);
     userProvider = Provider.of<HomeProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Color(0xffF9F9F9),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+          title: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Spacer(),
+          GestureDetector(child:SvgPicture.asset(
+                'assets/svg/logout.svg',
+                width: 30,
+                height: 30,
+                //color: Colors.red,
+              ), onTap: () {
+                logoutUser(context);
+              }),
+          
+        ],
+      )),
       body: SafeArea(
-        top: true,
+        //top: true,
         child: SingleChildScrollView(
           child: Padding(
-            padding:
-                EdgeInsets.only(left: 16.0, right: 16.0, top: 56),
+            padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 0),
             child: Column(
               children: <Widget>[
-                 CircleAvatar(
+                CircleAvatar(
                   maxRadius: 48,
-                  backgroundImage: userProvider.user.avatar!=null?NetworkImage(userProvider.user.avatar):AssetImage('assets/background.jpg'),
+                  backgroundImage: userProvider.user.avatar != null
+                      ? NetworkImage(userProvider.user.avatar)
+                      : AssetImage('assets/background.jpg'),
+                  backgroundColor: Colors.white,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    userProvider.user.userNickname.toUpperCase()+' '+userProvider.user.userNickname.toUpperCase(),
+                    userProvider.user.userNickname.toUpperCase() +
+                        ' ' +
+                        userProvider.user.userAccount.toUpperCase(),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-               /* Container(
+                /* Container(
                   margin: EdgeInsets.symmetric(vertical: 16.0),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
@@ -126,8 +151,8 @@ class ProfilePage extends StatelessWidget {
                 ListTile(
                   title: Text(lang.tr('shopOwner.Wishlist')),
                   subtitle: Text(lang.tr('shopOwner.yourwishlist')),
-                  leading: Image.asset(
-                    'assets/icons/wishlist.png',
+                  leading: SvgPicture.asset(
+                    'assets/svg/wishlist.svg',
                     fit: BoxFit.scaleDown,
                     width: 30,
                     height: 30,
@@ -145,26 +170,25 @@ class ProfilePage extends StatelessWidget {
                 ),
                 Divider(),
                 ListTile(
-                    title: Text(lang.tr('shopOwner.orders')),
-                    subtitle: Text(lang.tr('shopOwner.orderlist')),
-                    leading: Image.asset(
-                      'assets/icons/orders.png',
-                      fit: BoxFit.scaleDown,
-                      width: 30,
-                      height: 30,
-                    ),
-                    trailing: Icon(Icons.chevron_right,
-                        color: Theme.of(context).primaryColor),
-                    onTap: () =>
-                        Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => OrdersScreen())),
-                    ),
+                  title: Text(lang.tr('shopOwner.orders')),
+                  subtitle: Text(lang.tr('shopOwner.orderlist')),
+                  leading: SvgPicture.asset(
+                    'assets/svg/order.svg',
+                    fit: BoxFit.scaleDown,
+                    width: 30,
+                    height: 30,
+                  ),
+                  trailing: Icon(Icons.chevron_right,
+                      color: Theme.of(context).primaryColor),
+                  onTap: () => Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => OrdersScreen())),
+                ),
                 Divider(),
                 ListTile(
                   title: Text(lang.tr('shopOwner.Settings')),
                   subtitle: Text(lang.tr('shopOwner.privacy')),
-                  leading: Image.asset(
-                    'assets/icons/settings_icon.png',
+                  leading: SvgPicture.asset(
+                    'assets/svg/Setting.svg',
                     fit: BoxFit.scaleDown,
                     width: 30,
                     height: 30,
@@ -174,18 +198,19 @@ class ProfilePage extends StatelessWidget {
                   onTap: () => Navigator.of(context)
                       .push(MaterialPageRoute(builder: (_) => SettingsPage())),
                 ),
-                
                 Divider(),
-
                 ListTile(
-                  title: Text('Help & Support'),
-                  subtitle: Text('Help center and legal support'),
-                  leading: Image.asset('assets/icons/support.png'),
+                  title: Text(lang.tr('shopOwner.Help')),
+                  subtitle: Text(lang.tr('shopOwner.helpc')),
+                  leading: SvgPicture.asset(
+                    'assets/svg/Help&Support.svg',
+                    fit: BoxFit.scaleDown,
+                    width: 30,
+                    height: 30,
+                  ),
                   trailing: Icon(
                     Icons.chevron_right,
                     color: Theme.of(context).primaryColor,
-                    
-
                   ),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => LanguageProvider(
@@ -197,7 +222,12 @@ class ProfilePage extends StatelessWidget {
                 ListTile(
                   title: Text((lang.tr('shopOwner.FAQ'))),
                   subtitle: Text(lang.tr('shopOwner.questions')),
-                  leading: Image.asset('assets/icons/faq.png'),
+                  leading: SvgPicture.asset(
+                    'assets/svg/FAQ.svg',
+                    fit: BoxFit.scaleDown,
+                    width: 30,
+                    height: 30,
+                  ),
                   trailing: Icon(Icons.chevron_right,
                       color: Theme.of(context).primaryColor),
                   onTap: () => Navigator.of(context)

@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:provider/provider.dart';
-
 import 'package:siyou_b2b/models/Productitems.dart';
 import 'package:siyou_b2b/models/order.dart';
 import 'package:siyou_b2b/network/ApiProvider.dart';
@@ -20,18 +20,17 @@ class ConOrder extends StatefulWidget {
 class _CartState extends State<ConOrder> {
   AppLocalizations lang;
   CartProvider _cartProvider;
-  //int _total = 0;
+
   String img =
       'https://manversusweb.com/wp-content/uploads/2019/03/checkout.png';
-  // final ApiProvider _api = ApiProvider();
-  //final ScrollController _scrollController = new ScrollController();
+
   final ApiProvider _api = ApiProvider();
-  List<String> payments = [
-    'Credit Card',
-    'Paypal',
-    'Bank Transfers',
-    'Bank check',
-    'payment on delivery',
+  List<Payments> payments = [
+    Payments('Credit Card', Icon(FontAwesome.credit_card)),
+    Payments('Paypal', Icon(FontAwesome.cc_paypal)),
+    Payments('Bank Transfers', Icon(FontAwesome.credit_card)),
+    Payments('Bank check', Icon(FontAwesome.bank)),
+    Payments('payment on delivery', Icon(FontAwesome.money)),
   ];
 
   String currentpayment = '';
@@ -39,6 +38,7 @@ class _CartState extends State<ConOrder> {
   @override
   void initState() {
     super.initState();
+    _cartProvider = Provider.of<CartProvider>(context, listen: false);
 
     /* _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -47,24 +47,17 @@ class _CartState extends State<ConOrder> {
       }
     });*/
   }
-  /*intil()async{
-    await _productProvider.getLists(context);
-    print('intial');
-    
-  }*/
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
-    _cartProvider = Provider.of<CartProvider>(context, listen: false);
-    //_productProvider?.getProducts(context);
   }
 
   @override
   void dispose() {
-    /* _scrollController.dispose();
-    _productProvider.products.clear();*/
+    // _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -101,43 +94,43 @@ class _CartState extends State<ConOrder> {
     return t;
   }
 
+  addOrder(Order order) async {
+    loadingDialog(context, lang);
+    try {
+      final d = order.toJson();
+      print(d);
+      final data = await _api.addOrder(d);
+
+      if (checkorder(
+        data,
+      )) {
+        try {
+          Navigator.pop(context);
+
+          return true;
+        } catch (e) {
+          Navigator.pop(context);
+          showAlertDialog(context, " Error", e);
+          print(e);
+          return false;
+        }
+      } else {
+        Navigator.pop(context);
+        showAlertDialog(context, "", 'error');
+        return false;
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      print(e);
+      showAlertDialog(context, "Error", e.toString());
+      return false;
+    }
+  }
+
   Widget itemcartWidget() {
     return Consumer<CartProvider>(
       builder: (context, provider, widget) {
         if (provider.orders != null && provider.orders.isNotEmpty) {
-          addOrder(Order order) async {
-            loadingDialog(context, lang);
-            try {
-              final d = order.toJson();
-              print(d);
-              final data = await _api.addOrder(d);
-
-              if (checkorder(
-                data,
-              )) {
-                try {
-                  Navigator.pop(context);
-
-                  return true;
-                } catch (e) {
-                  Navigator.pop(context);
-                  showAlertDialog(context, " Error", e);
-                  print(e);
-                  return false;
-                }
-              } else {
-                Navigator.pop(context);
-                showAlertDialog(context, "", 'error');
-                return false;
-              }
-            } catch (e) {
-              Navigator.pop(context);
-              print(e);
-              showAlertDialog(context, "Error", e.toString());
-              return false;
-            }
-          }
-
           return Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
@@ -162,29 +155,24 @@ class _CartState extends State<ConOrder> {
                                 Row(
                                   children: <Widget>[
                                     Expanded(
-                                      flex: 4,
+                                      flex: 3,
                                       child: Row(
                                         children: <Widget>[
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            /*child: CachedNetworkImage(
-                          alignment: Alignment.centerLeft,
-                          imageBuilder: (context, imageProvider) =>
-                              CircleAvatar(
-                                backgroundImage: imageProvider,
-                              ),
-                          imageUrl: "${item["image"]}",
-                        ),*/
                                           ),
                                           Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: <Widget>[
                                               Text(
-                                                'Supplier ' +
-                                                    provider
-                                                        .orders[i].supplierId
-                                                        .toString(),
+                                                provider.orders[i].supplier
+                                                        .firstName
+                                                        .toUpperCase() +
+                                                    ' ' +
+                                                    provider.orders[i].supplier
+                                                        .lastName
+                                                        .toUpperCase(),
                                                 style: TextStyle(
                                                     fontSize: 18.0,
                                                     fontWeight:
@@ -200,15 +188,19 @@ class _CartState extends State<ConOrder> {
                                       ),
                                     ),
                                     Expanded(
+                                      //flex: 1,
                                       child: Text(
-                                        "\€${provider.orders[i].orderTotalPrice}",
+                                        "\€ ${provider.orders[i].orderTotalPrice.toStringAsFixed(2)}",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                     Expanded(
                                       child: IconButton(
-                                        onPressed: () => null,
+                                        onPressed: () {
+                                          provider.orders.removeAt(i);
+                                          provider.notify();
+                                        },
                                         icon: Container(
                                           child: Icon(
                                             Icons.delete,
@@ -240,6 +232,7 @@ class _CartState extends State<ConOrder> {
                                       Expanded(
                                           child: InkWell(
                                         onTap: () async {
+                                          // print(provider.orders[i].orderTotalPrice);
                                           _onItemPressed(context, i);
                                         },
                                         child: Container(
@@ -286,7 +279,8 @@ class _CartState extends State<ConOrder> {
                                         onTap: () async {
                                           if (provider.orders[i]
                                                       .orderTotalPrice >=
-                                                  100.00 &&
+                                                  provider.orders[i].supplier
+                                                      .minorder &&
                                               provider.orders[i].paymentid !=
                                                   null) {
                                             bool confirm = await addOrder(
@@ -302,7 +296,10 @@ class _CartState extends State<ConOrder> {
                                             decoration: BoxDecoration(
                                               color: provider.orders[i]
                                                               .orderTotalPrice >=
-                                                          100.00 ||
+                                                          provider
+                                                              .orders[i]
+                                                              .supplier
+                                                              .minorder &&
                                                       provider.orders[i]
                                                               .paymentid !=
                                                           null
@@ -337,7 +334,7 @@ class _CartState extends State<ConOrder> {
                                     horizontal: 8.0,
                                   ),
                                   child: Text(
-                                    "Minimum Order Amount: € 100.00",
+                                    "Minimum Order Amount: € ${provider.orders[i].supplier.minorder}",
                                     style: TextStyle(color: Colors.red),
                                   ),
                                 ),
@@ -359,13 +356,18 @@ class _CartState extends State<ConOrder> {
                                   scrollOnCollapse: false,
                                   child: ExpandablePanel(
                                     tapHeaderToExpand: true,
-                                    tapBodyToCollapse: true,
+                                    tapBodyToCollapse: false,
                                     headerAlignment:
                                         ExpandablePanelHeaderAlignment.center,
                                     header: Padding(
                                         padding: EdgeInsets.all(10),
                                         child: Text(
-                                          "Products List",
+                                          "Products List" +
+                                              '  (' +
+                                              provider.orders[i]
+                                                  .orderProductsList.length
+                                                  .toString() +
+                                              ')',
                                           style:
                                               Theme.of(context).textTheme.body2,
                                         )),
@@ -383,7 +385,7 @@ class _CartState extends State<ConOrder> {
                                             child: Row(
                                               children: <Widget>[
                                                 Expanded(
-                                                  flex: 4,
+                                                  flex: 3,
                                                   child: ListTile(
                                                     title: Column(
                                                       mainAxisAlignment:
@@ -399,7 +401,7 @@ class _CartState extends State<ConOrder> {
                                                       ],
                                                     ),
                                                     leading: SizedBox(
-                                                      width: 60,
+                                                      width: 35,
                                                       child: x.itemimage ==
                                                                   null ||
                                                               x.itemimage == ""
@@ -426,10 +428,115 @@ class _CartState extends State<ConOrder> {
                                                   ),
                                                 ),
                                                 Expanded(
-                                                  child: Text(
-                                                      "Qty ${x.itemQuantity}"),
-                                                ),
+                                                    flex: 2,
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        GestureDetector(
+                                                          child: Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(5.0),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .primaryColorDark,
+                                                              ),
+                                                              child:
+                                                                  x.itemQuantity >
+                                                                          0
+                                                                      ? Icon(
+                                                                          Icons
+                                                                              .remove,
+                                                                          color:
+                                                                              Colors.white,
+                                                                          size:
+                                                                              12,
+                                                                        )
+                                                                      : Icon(
+                                                                          Icons
+                                                                              .delete_forever,
+                                                                          color:
+                                                                              Colors.white,
+                                                                          size:
+                                                                              12,
+                                                                        )),
+                                                          onTap: () {
+                                                            if (x.itemQuantity ==
+                                                                0) {
+                                                              provider.orders[i]
+                                                                  .orderProductsList
+                                                                  .remove(x);
+                                                              provider.notify();
+                                                            } else {
+                                                              print(x.itemPrice *
+                                                                  x.itemPackage);
+                                                              x.itemQuantity -=
+                                                                  x.itemPackage;
+                                                              provider.orders[i]
+                                                                  .orderTotalPrice -= x
+                                                                      .itemPrice *
+                                                                  x.itemPackage;
+                                                              provider.orders[i]
+                                                                  .orderWeight -= x
+                                                                      .itemweight *
+                                                                  x.itemweight;
+                                                              provider.notify();
+                                                            }
+                                                          },
+                                                        ),
+                                                        SizedBox(width: 5),
+                                                        Text(
+                                                          x.itemQuantity
+                                                              .toString(),
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .title,
+                                                        ),
+                                                        SizedBox(width: 5),
+                                                        GestureDetector(
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(5.0),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .primaryColorDark,
+                                                            ),
+                                                            child: Icon(
+                                                              Icons.add,
+                                                              color:
+                                                                  Colors.white,
+                                                              size: 12,
+                                                            ),
+                                                          ),
+                                                          onTap: () {
+                                                            print(x.itemPrice *
+                                                                x.itemPackage);
+                                                            x.itemQuantity +=
+                                                                x.itemPackage;
+                                                            provider.orders[i]
+                                                                .orderTotalPrice += x
+                                                                    .itemPrice *
+                                                                x.itemPackage;
+                                                            provider.orders[i]
+                                                                .orderWeight += x
+                                                                    .itemweight *
+                                                                x.itemPackage;
+                                                            provider.notify();
+                                                          },
+                                                        ),
+                                                      ],
+                                                    )),
                                                 Expanded(
+                                                  flex: 1,
                                                   child:
                                                       Text("\€${x.itemPrice}"),
                                                 ),
@@ -460,69 +567,6 @@ class _CartState extends State<ConOrder> {
                   ),
                 ),
                 Divider(),
-                /* Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("TOTAL",
-                              style: Theme.of(context).textTheme.subtitle),
-                          Text("€. ${provider.total}",
-                              style: Theme.of(context).textTheme.headline),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 50,
-                        child: RaisedButton(
-                          child: Text(
-                            lang.tr('shopOwner.clear'),
-                            style: Theme.of(context).textTheme.button.copyWith(
-                                  color: Colors.white,
-                                ),
-                          ),
-                          onPressed: () {
-                            provider.itmes.clear();
-                            provider.total = 0;
-                            provider.notify();
-                          },
-                          color: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 50,
-                        child: RaisedButton(
-                          child: Text(
-                            lang.tr('shopOwner.checkout'),
-                            style: Theme.of(context).textTheme.button.copyWith(
-                                  color: Colors.white,
-                                ),
-                          ),
-                          onPressed: () {
-                           /* Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Text('Buying not supported yet.')));*/
-                                provider.checkout();
-
-                          },
-                          color: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),*/
               ],
             ),
           );
@@ -552,11 +596,12 @@ class _CartState extends State<ConOrder> {
         context: context,
         builder: (BuildContext context) {
           return Scaffold(
+            backgroundColor: Colors.transparent,
             body: Center(
               child: Stack(children: <Widget>[
                 Container(
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(8.0)),
                   padding: EdgeInsets.all(32.0),
                   child: Padding(
@@ -576,6 +621,10 @@ class _CartState extends State<ConOrder> {
                           ),
                         ),
                         Container(
+                          //color: Colors.white,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20.0)),
                           height: 300,
                           child: ListView.builder(
                             itemCount: payments.length,
@@ -583,17 +632,19 @@ class _CartState extends State<ConOrder> {
                               return ListTile(
                                 onTap: () {
                                   setState(() {
-                                    currentpayment = payments[index];
-                                    _cartProvider.orders[i].paymentid=index+1;
+                                    currentpayment = payments[index].name;
                                   });
-                                  print(index);
+                                  _cartProvider.orders[i].paymentid = index + 1;
+
+                                  //print(index);
                                   Navigator.pop(context);
                                 },
+                                leading: payments[index].icon,
                                 title: Text(
-                                  payments[index],
+                                  payments[index].name,
                                   style: TextStyle(fontSize: 14),
                                 ),
-                                trailing: payments[index] == currentpayment
+                                trailing: payments[index].name == currentpayment
                                     ? Icon(
                                         Icons.check_circle,
                                         color: yellow,
@@ -609,8 +660,8 @@ class _CartState extends State<ConOrder> {
                   ),
                 ),
                 Positioned(
-                  top: 4.0,
-                  right: 4.0,
+                  top: 85.0,
+                  right: 60.0,
                   child: GestureDetector(
                     child: Container(
                       child: Icon(
@@ -628,4 +679,10 @@ class _CartState extends State<ConOrder> {
           );
         });
   }
+}
+
+class Payments {
+  String name;
+  Icon icon;
+  Payments(this.name, this.icon);
 }

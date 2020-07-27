@@ -41,17 +41,16 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>> signInUser(
+  Future<Map<String, dynamic>> signInUser(BuildContext context,
       String username, String password) async {
     try {
       _status = Status.Authenticating;
       notifyListeners();
       final data = await api.signInUser(username, password);
       var s = json.encode(data);
-      print(s);
+     // print(s);
 
-      if (data["user"] != null) {
-
+      if (checkServerResponse(data, context) ) {
         final user = User.fromJson(data["user"]);
         //await addCurrentShopToPref(user.storeId);
         //print(user.toString());

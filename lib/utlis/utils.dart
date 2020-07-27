@@ -37,6 +37,29 @@ void saveUserToken(String token) async {
   pref.setString(Keys.usertoken, token);
 }
 
+void saveUserEmail(String token) async {
+  final pref = await SharedPreferences.getInstance();
+  await getUserPrefsUX();
+  pref.setString('EMAIL', token);
+  print('Email ' + token);
+}
+
+void saveUserPW(String token) async {
+  final pref = await SharedPreferences.getInstance();
+  await getUserPrefsUX();
+  pref.setString('PW', token);
+}
+
+Future<String> getUserEmail() async {
+  final pref = await SharedPreferences.getInstance();
+  return pref.getString('EMAIL');
+}
+
+Future<String> getUserPW() async {
+  final pref = await SharedPreferences.getInstance();
+  return pref.getString('PW');
+}
+
 void saveUserInfo(String token) async {
   final pref = await SharedPreferences.getInstance();
   await getUserPrefsUX();
@@ -108,7 +131,9 @@ Future<String> getCurrentShopFromPref() async {
 }
 
 bool checkServerResponse(Map<String, dynamic> data, BuildContext context) {
-  if (data["msg"] == '2' || data["msg"] == 'Unauthorized') {
+  if (data["msg"] == '2' ||
+      data["msg"] == 'Unauthorized' ||
+      data["error"].toString().toLowerCase() == 'unauthorized') {
     showLogoutDialog(context);
     return false;
   } else

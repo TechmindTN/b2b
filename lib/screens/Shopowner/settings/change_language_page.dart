@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/easy_localization_provider.dart';
 import 'package:flutter/material.dart';
@@ -13,18 +12,23 @@ class ChangeLanguagePage extends StatefulWidget {
 }
 
 class _ChangeCountryPageState extends State<ChangeLanguagePage> {
-  List<String> languages = [
-    'Chinesse',
-    'Spanish',
-    'English',
-    'Romanian',
-    'German',
-    'Portuguese',
-    'Bengali',
-    'Russian',
-    'Japanese',
-    'French',
+  final List list = [
+    "English",
+    "Italian",
+    // "Spanish",
+    //"French",
+    "Chinese",
+    //"German"
   ];
+  final List flag = [
+    "https://cdn3.iconfinder.com/data/icons/flags-circle/100/USA_-512.png",
+    "https://cdn3.iconfinder.com/data/icons/flags-of-countries-3/128/Italy-512.png",
+    // "Spanish",
+    //"French",
+    "https://cdn4.iconfinder.com/data/icons/flat-country-flag/512/China-512.png",
+    //"German"
+  ];
+
   final mList = MyApp.list.map((item) => item.toLanguageTag()).toList();
 
   String currentLanguage = '';
@@ -33,15 +37,8 @@ class _ChangeCountryPageState extends State<ChangeLanguagePage> {
   Widget build(BuildContext context) {
     final data = EasyLocalizationProvider.of(context).data;
     final langs = AppLocalizations.of(context);
-    /*final List list = [
-      "English",
-      "Italian",
-      "Spanish",
-      "French",
-      "Chinese",
-      "German"
-    ];*/
-     currentLanguage = mList.firstWhere((item) =>
+
+    currentLanguage = mList.firstWhere((item) =>
         item.toString().toLowerCase().substring(0, 2) ==
         langs.locale.languageCode);
     return Scaffold(
@@ -76,28 +73,38 @@ class _ChangeCountryPageState extends State<ChangeLanguagePage> {
                 ),
               ),
               Flexible(
-                child: ListView(
-                  children: mList
-                      .map((l) => ListTile(
-                            onTap: () {
-                              setState(() {
-                                data.changeLocale(getLocale(l));
-                              });
-                            },
-                            title: Text(
-                              l,
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            trailing: l == currentLanguage
-                                ? Icon(
-                                    Icons.check_circle,
-                                    color: yellow,
-                                    size: 16,
-                                  )
-                                : SizedBox(),
-                          ))
-                      .toList(),
+                child: ListView.builder(
+                  itemCount: mList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      onTap: () {
+                        setState(() {
+                          data.changeLocale(getLocale(mList[index]));
+                        });
+                      },
+                      leading: Image.network(flag[index],
+                      height: 30,),
+                      title: Text(
+                        list[index],
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      trailing: mList[index] == currentLanguage
+                          ? Icon(
+                              Icons.check_circle,
+                              color: Theme.of(context).primaryColorDark,
+                              size: 16,
+                            )
+                          : SizedBox(),
+                    );
+                  },
                 ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Divider(
+                height: 4,
+                color: Colors.black45,
               ),
             ],
           ),

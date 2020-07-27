@@ -5,12 +5,11 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/main.dart';
 import 'package:siyou_b2b/network/ApiProvider.dart';
-
 import 'package:siyou_b2b/providers/ProductProvider.dart';
-import 'package:siyou_b2b/screens/Shopowner/Screens/Productdetails.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/product/Productdetails.dart';
 import 'package:siyou_b2b/utlis/utils.dart';
+import 'package:siyou_b2b/widgets/ErrorWidget.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
-import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 
 class ProductList extends StatefulWidget {
   final int suppid;
@@ -29,7 +28,7 @@ class _ProductListState extends State<ProductList> {
   @override
   void initState() {
     super.initState();
-
+    _productProvider = Provider.of<ProductListProvider>(context, listen: false);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -49,7 +48,7 @@ class _ProductListState extends State<ProductList> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
-    _productProvider = Provider.of<ProductListProvider>(context, listen: false);
+    // _productProvider = Provider.of<ProductListProvider>(context, listen: false);
     _productProvider?.getProducts(context, supplierid: widget.suppid);
     intil();
   }
@@ -57,15 +56,17 @@ class _ProductListState extends State<ProductList> {
   @override
   void dispose() {
     _scrollController.dispose();
-    // _productProvider.products.clear();
+    _productProvider.products.clear();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () => _productProvider.resetList(context),
-      child: getWidget(),
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: () => _productProvider.resetList(context),
+        child: getWidget(),
+      ),
     );
   }
 
@@ -73,11 +74,24 @@ class _ProductListState extends State<ProductList> {
     return Consumer<ProductListProvider>(
       builder: (context, provider, widget) {
         if (provider.error)
-          return ServerErrorWidget(
-            errorText: provider.errorMsg,
-          );
+          return OpssWidget(
+              // onPress: _productProvider.resetList(context),
+              );
         else if (provider.loading)
-          return ProgressIndicatorWidget();
+          return Container(
+            color: Colors.white,
+            child: Center(
+              child: Container(
+                width: double.infinity,
+                //height: 250,
+                child: Image.asset(
+                  "assets/jpg/MonkeyLoading.gif",
+                  fit: BoxFit.contain,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+          );
         else if (provider.products != null && provider.products.isNotEmpty) {
           return StaggeredGridView.countBuilder(
             shrinkWrap: true,
@@ -97,7 +111,8 @@ class _ProductListState extends State<ProductList> {
             ),*/
           );
         } else
-          return Container(
+          return RefreshIndicator(
+            onRefresh: () => _productProvider.resetList(context),
             child: Center(
               child: Text("No data found"),
             ),
@@ -128,6 +143,7 @@ class _ProductListState extends State<ProductList> {
         //margin: EdgeInsets.all(value),
 
         child: Container(
+          //color: Colors.grey[200],
           padding: new EdgeInsets.all(2.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,16 +152,16 @@ class _ProductListState extends State<ProductList> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   SizedBox(
-                    width: 140,
+                      width: 140,
                       child: Text(
-                    _productProvider.products[index].productName,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.bold),
-                  )),
+                        _productProvider.products[index].productName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.bold),
+                      )),
                   SizedBox.fromSize(
                     size: Size(20, 20),
                     child: ClipOval(
@@ -178,30 +194,27 @@ class _ProductListState extends State<ProductList> {
               ),
               Center(
                 child: ClipRRect(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20.0),
-                    ),
-                    child: Container(
-                      height: 125.0,
-                      width: 170.0,
-                      child: _productProvider.products[index].productImage ==
-                                  null ||
-                              _productProvider.products[index].productImage ==
-                                  ""
-                          ? Image.asset(
-                              "assets/png/empty_cart.png",
-                              fit: BoxFit.contain,
-                              alignment: Alignment.center,
-                            )
-                          : CachedNetworkImage(
-                              imageUrl:
-                                  _productProvider.products[index].productImage,
-                              placeholder: (context, url) =>
-                                  CircularProgressIndicator(),
-                              fit: BoxFit.contain,
-                            ),
-                    ),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20.0),
                   ),
+                  child: Container(
+                    height: 125.0,
+                    width: 170.0,
+                    child: _productProvider.products[index].productImage ==
+                                null ||
+                            _productProvider.products[index].productImage == ""
+                        ? Image.asset(
+                            "assets/png/empty_cart.png",
+                            fit: BoxFit.contain,
+                            alignment: Alignment.center,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl:
+                                _productProvider.products[index].productImage,
+                            fit: BoxFit.contain,
+                          ),
+                  ),
+                ),
               ),
               SizedBox(
                 height: 15.0,
@@ -258,7 +271,7 @@ class _ProductListState extends State<ProductList> {
                         SizedBox(
                           height: 1.0,
                         ),
-                        Text(
+                        /*Text(
                           'P/B:' +
                               _productProvider.products[index].productPackage
                                   .toString() +
@@ -269,7 +282,7 @@ class _ProductListState extends State<ProductList> {
                             color: Color(0xFFB7B7B7),
                             fontSize: 10.0,
                           ),
-                        ),
+                        ),*/
                         SizedBox(
                           height: 4.0,
                         ),

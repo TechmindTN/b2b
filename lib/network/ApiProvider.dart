@@ -28,7 +28,13 @@ class ApiProvider {
       return res.data;
     } catch (e) {
       print(e);
-      return throw "Error - $e";
+      print(e);
+      if (e.toString().contains('401'))
+        return throw "Error - Email & Password does not match any user";
+      else if (e.toString().contains('siyou.tn'))
+        return throw "Error - Please Check your internet connection";
+      else
+        return throw "Error - Error - Internal server error, Please come back later";
     }
   }
 
@@ -317,7 +323,7 @@ class ApiProvider {
     try {
       final res =
           await dio.request("/orders/shop", queryParameters: {"token": token});
-
+      print(res.data);
       return res.data;
     } catch (e) {
       print(e);
@@ -429,7 +435,6 @@ class ApiProvider {
         "token": token,
         "barcode": barcode,
       });
-      print(res.data);
       return res.data;
     } catch (e) {
       print(e);

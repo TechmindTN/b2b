@@ -1,3 +1,5 @@
+import 'package:siyou_b2b/models/suppliers.dart';
+
 import 'Productitems.dart';
 
 class Orders {
@@ -24,11 +26,11 @@ class Orders {
 }
 
 class Order {
+  Suppliers supplier;
   int supplierId;
   int paymentid;
-  double orderTotalPrice;
+  double orderTotalPrice = 0;
   double orderWeight;
-  //DateTime date;
   int logisticCompanyId;
   int logisticTarif;
   List<Productlist> orderProductsList;
@@ -47,7 +49,7 @@ class Order {
     orderWeight = json['order_weight'];
     logisticCompanyId = json['logistic_company_id'];
     logisticTarif = json['logistic_tarif'];
-    
+
     if (json['order_products_list'] != null) {
       orderProductsList = new List<Productlist>();
       json['order_products_list'].forEach((Items v) {
@@ -63,8 +65,8 @@ class Order {
     data['order_weight'] = this.orderWeight;
     data['logistic_company_id'] = this.logisticCompanyId;
     data['logistic_tarif'] = this.logisticTarif;
-    data['required_date']=(DateTime.now().add(Duration(days: 30,))).toString();
-    data['payment_method_id']=this.paymentid;
+    data['required_date'] = (DateTime.now().add(Duration(days: 30))).toString();
+    data['payment_method_id'] = this.paymentid;
     if (this.orderProductsList != null) {
       data['order_products_list'] =
           this.orderProductsList.map((v) => v.toJson()).toList();
@@ -76,24 +78,32 @@ class Order {
 class Productlist {
   int itemId;
   int itemQuantity;
+  int itemPackage;
   String itemBarcode;
   String itemimage;
   String productname;
-  double itemPrice;
-  double itemweight;
-
+  num itemPrice;
+  num itemweight;
 
   Productlist(
-      {this.itemId, this.itemQuantity, this.itemBarcode, this.itemPrice,this.itemweight,this.itemimage,this.productname});
+      {this.itemId,
+      this.itemQuantity,
+      this.itemPackage,
+      this.itemBarcode,
+      this.itemPrice,
+      this.itemweight,
+      this.itemimage,
+      this.productname});
 
   Productlist.fromJson(Map<String, dynamic> json) {
     itemId = json['item_id'];
+    itemPackage = json['item_package'];
     itemQuantity = json['item_quantity'];
     itemBarcode = json['item_barcode'];
     itemPrice = json['item_price'];
-    itemweight=json['item_weight'];
-    itemimage=json['item_image'];
-    productname=json['product_base_name'];
+    itemweight = json['item_weight'];
+    itemimage = json['item_image'];
+    productname = json['product_base_name'];
   }
 
   Map<String, dynamic> toJson() {
@@ -102,10 +112,9 @@ class Productlist {
     data['item_quantity'] = this.itemQuantity;
     data['item_barcode'] = this.itemBarcode;
     data['item_price'] = this.itemPrice;
-    data['item_weight']= this.itemweight;
-    data['item_image']=this.itemimage;
-    data['product_base_name']=this.productname;
+    data['item_weight'] = this.itemweight;
+    data['item_image'] = this.itemimage;
+    data['product_base_name'] = this.productname;
     return data;
   }
 }
-

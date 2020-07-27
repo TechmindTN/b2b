@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.0+5
 
 environment:
   sdk: ">=2.5.0 <3.0.0"
@@ -31,12 +31,14 @@ dependencies:
   easy_localization: ^1.3.1
   carousel_slider: ^2.2.1
   expandable: ^3.0.0+1
-  cached_network_image: ^2.0.0
+  cached_network_image: ^2.2.0+1
   flutter_rating_bar: ^3.0.0
   flutter_svg: ^0.17.4
   flare_flutter: ^1.5.9
   bottom_navy_bar: ^5.2.0
   popup_menu: ^1.0.3
+  badges: ^1.1.1
+  floating_bottom_navigation_bar: ^1.3.0
   shape_of_view: ^1.0.1
   dynamic_theme: ^1.0.1
   barcode_flutter: ^1.1.0
@@ -45,12 +47,15 @@ dependencies:
   geolocator: ^5.3.1
   auto_size_text: ^2.1.0   
   flutter_launch: "0.2.0"  
-  url_launcher: ^5.4.10   
+  url_launcher: ^5.5.0  
   floating_action_bubble: ^1.0.9
   fluttericon: ^1.0.7
   flutter_staggered_grid_view: ^0.3.0
   fluid_bottom_nav_bar: ^1.0.1
   barcode_scan_fix: ^1.0.2
+  shimmer: ^1.1.1
+  rflutter_alert: ^1.0.3
+  animated_text_kit: ^2.2.0
   
 
 
@@ -82,6 +87,7 @@ flutter:
     - assets/langs/
     - assets/svg/
     - assets/png/
+    - assets/jpg/
     - assets/flare/
     - assets/
     - assets/icons/
@@ -115,6 +121,9 @@ fonts:
     - asset: fonts/Montserrat-Regular.ttf
   - family: NunitoSans
     fonts:
-        - asset: fonts/NunitoSans-Regular.ttf  
+        - asset: assets/fonts/NunitoSans-Regular.ttf  
+  - family: Siyou
+    fonts:
+        - asset: assets/fonts/Raleway-SemiBold.ttf        
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

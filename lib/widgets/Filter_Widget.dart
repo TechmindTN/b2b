@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:siyou_b2b/models/Categorys.dart';
 import 'package:siyou_b2b/models/Theme.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/widgets/appprop.dart';
@@ -275,6 +277,172 @@ class _FilterDialogsideState extends State<FilterDialogsideWidget> {
     //widget.productProvider.getLists(context);
   }
 
+  String textWidget(Categories categories) {
+    if (lang.locale.languageCode.toUpperCase() == 'EN')
+      return categories.categoryName.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'ZH' &&
+        categories.categoryCn != null)
+      return categories.categoryCn.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'FR' &&
+        categories.categoryFr != null)
+      return categories.categoryFr.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'IT' &&
+        categories.categoryIt != null)
+      return categories.categoryIt.toString();
+    else
+      return categories.categoryName.toString();
+  }
+
+  String textSubWidget(SubCategories categories) {
+    if (lang.locale.languageCode.toUpperCase() == 'EN')
+      return categories.categoryName.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'ZH' &&
+        categories.categoryCn != null)
+      return categories.categoryCn.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'FR' &&
+        categories.categoryFr != null)
+      return categories.categoryFr.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'IT' &&
+        categories.categoryIt != null)
+      return categories.categoryIt.toString();
+    else
+      return categories.categoryName.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lang = AppLocalizations.of(context);
+    final currentlang = lang.locale.languageCode;
+    print(currentlang);
+
+    final edgeInsets = const EdgeInsets.all(8.0);
+    return new Drawer(
+        child: ListView(children: <Widget>[
+      Container(
+        padding: edgeInsets,
+        child: Text(lang.tr('shopOwner.Category'),
+            style: Theme.of(context).textTheme.display1.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 25)),
+      ),
+      ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: widget.productProvider.categories.length,
+          itemBuilder: (_, index) {
+            return (ExpansionTile(
+              leading: SizedBox(
+                height: 45,
+                width: 60,
+                child: CachedNetworkImage(
+                  imageUrl: widget.productProvider.categories[index].imgUrl
+                          .toString() ??
+                      ' ',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              title: Text(textWidget(widget.productProvider.categories[index]),
+                  style: Theme.of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(fontSize: 12)),
+              children: [
+                ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: widget
+                        .productProvider.categories[index].subCategories.length,
+                    itemBuilder: (_, i) {
+                      return (ListTile(
+                        onTap: () {
+                          setState(() {
+                            categoryid ==
+                                    widget.productProvider.categories[index]
+                                        .subCategories[i].id
+                                ? categoryid = null
+                                : categoryid = categoryid = widget
+                                    .productProvider
+                                    .categories[index]
+                                    .subCategories[i]
+                                    .id;
+                          });
+                          Navigator.pop(context);
+                          widget.productProvider.resetList(
+                            context,
+                            category: categoryid,
+                          );
+                        },
+                        leading: SizedBox(
+                          height: 40,
+                          width: 55,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.productProvider.categories[index]
+                                    .subCategories[i].imgUrl
+                                    .toString() ??
+                                ' ',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        title: Text(
+                          textSubWidget(widget.productProvider.categories[index]
+                              .subCategories[i]),
+                          style: TextStyle(fontSize: 10),
+                        ),
+                        trailing: categoryid ==
+                                widget.productProvider.categories[index]
+                                    .subCategories[i].id
+                            ? Icon(
+                                Icons.check_circle,
+                                color: yellow,
+                                size: 23,
+                              )
+                            : SizedBox(),
+                      ));
+                    })
+              ],
+            ));
+          })
+    ]));
+  }
+}
+
+class FilterSupplierDialogsideWidget extends StatefulWidget {
+  final ProductListProvider productProvider;
+
+  const FilterSupplierDialogsideWidget({Key key, this.productProvider})
+      : super(key: key);
+
+  @override
+  _FilterSupplierDialogsideState createState() =>
+      _FilterSupplierDialogsideState();
+}
+
+class _FilterSupplierDialogsideState
+    extends State<FilterSupplierDialogsideWidget> {
+  //Suppliers _currentSupplier;
+
+  int categoryid;
+
+  AppLocalizations lang;
+
+  _FilterSupplierDialogsideState();
+
+  @override
+  void initState() {
+    super.initState();
+    //widget.productProvider.getLists(context);
+    //intil();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    lang = AppLocalizations.of(context);
+
+    //widget.productProvider.getLists(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context);
@@ -319,7 +487,7 @@ class _FilterDialogsideState extends State<FilterDialogsideWidget> {
                                     .id;
                           });
                           Navigator.pop(context);
-                          widget.productProvider.resetList(
+                          widget.productProvider.resetSList(
                             context,
                             category: categoryid,
                           );

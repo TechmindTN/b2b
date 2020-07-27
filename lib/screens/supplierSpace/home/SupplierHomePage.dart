@@ -168,6 +168,7 @@ class _SupplierHomeScreenPageState extends State<SupplierHomePage> {
       ),
     );
   }
+  // ignore: unused_element
   Widget _generateRow(Map map1, Map map2) {
     final theme = Theme.of(context);
 

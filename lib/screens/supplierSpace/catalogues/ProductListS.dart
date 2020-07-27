@@ -30,7 +30,10 @@ class _ProductListState extends State<ProductListS> {
   void initState() {
     intil();
     super.initState();
-
+    _productProvider = Provider.of<ProductListProvider>(context, listen: false);
+    _productProvider?.getSupplierProducts(
+      context,
+    );
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -53,17 +56,14 @@ class _ProductListState extends State<ProductListS> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
-    _productProvider = Provider.of<ProductListProvider>(context, listen: false);
-    _productProvider?.getSupplierProducts(
-      context,
-    );
+
     intil();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    // _productProvider.products.clear();
+    _productProvider.products.clear();
     super.dispose();
   }
 
@@ -150,33 +150,30 @@ class _ProductListState extends State<ProductListS> {
                 height: 4.0,
               ),
               Center(
-                
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20.0),
-                    ),
-                    child: Container(
-                      height: 125.0,
-                      width: 170.0,
-                      child: _productProvider.products[index].productImage ==
-                                  null ||
-                              _productProvider.products[index].productImage ==
-                                  ""
-                          ? Image.asset(
-                              "assets/png/empty_cart.png",
-                              fit: BoxFit.contain,
-                              alignment: Alignment.center,
-                            )
-                          : CachedNetworkImage(
-                              imageUrl:
-                                  _productProvider.products[index].productImage,
-                             /* placeholder: (context, url) =>
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20.0),
+                  ),
+                  child: Container(
+                    height: 125.0,
+                    width: 170.0,
+                    child: _productProvider.products[index].productImage ==
+                                null ||
+                            _productProvider.products[index].productImage == ""
+                        ? Image.asset(
+                            "assets/png/empty_cart.png",
+                            fit: BoxFit.contain,
+                            alignment: Alignment.center,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl:
+                                _productProvider.products[index].productImage,
+                            /* placeholder: (context, url) =>
                                   CircularProgressIndicator(),
                               fit: BoxFit.contain,*/
-                            ),
-                    ),
+                          ),
                   ),
-                
+                ),
               ),
               SizedBox(
                 height: 15.0,
@@ -187,15 +184,6 @@ class _ProductListState extends State<ProductListS> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      /* Text(
-                        _productProvider.products[index].supplier.firstName +
-                            ' ' +
-                            _productProvider.products[index].supplier.lastName,
-                        style: TextStyle(
-                          color: Color(0xFFB7B7B7),
-                          fontSize: 10.0,
-                        ),
-                      ),*/
                       SizedBox(
                         height: 1.0,
                       ),
@@ -233,7 +221,7 @@ class _ProductListState extends State<ProductListS> {
                         SizedBox(
                           height: 1.0,
                         ),
-                        Text(
+                        /*Text(
                           'P/B:' +
                               _productProvider.products[index].productPackage
                                   .toString() +
@@ -244,7 +232,7 @@ class _ProductListState extends State<ProductListS> {
                             color: Color(0xFFB7B7B7),
                             fontSize: 10.0,
                           ),
-                        ),
+                        ),*/
                         SizedBox(
                           height: 4.0,
                         ),

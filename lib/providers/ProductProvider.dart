@@ -13,8 +13,8 @@ import 'package:siyou_b2b/utlis/utils.dart';
 class ProductListProvider extends ChangeNotifier {
   final ApiProvider _api = ApiProvider();
   final List<Product> products = List<Product>();
-  
-  final List<Productitems>supplierproducts=List<Productitems>();
+
+  final List<Productitems> supplierproducts = List<Productitems>();
   final List<Product> wishlist = List<Product>();
   final List<Items> itmes = List<Items>();
   final List<Suppliers> suppliers = List<Suppliers>();
@@ -53,8 +53,7 @@ class ProductListProvider extends ChangeNotifier {
     products.clear();
     notify();
 
-    await getSupplierProducts(context,
-         category: category, brand: brand);
+    await getSupplierProducts(context, category: category);
   }
 
   Future<void> resetMList(BuildContext context,
@@ -66,10 +65,8 @@ class ProductListProvider extends ChangeNotifier {
     products.clear();
     notify();
 
-    await getManagerProducts(context,
-         category: category, brand: brand);
+    await getManagerProducts(context, category: category, brand: brand);
   }
-  
 
   Future<void> getProducts(BuildContext context,
       {int supplierid, int brand, int category}) async {
@@ -81,7 +78,7 @@ class ProductListProvider extends ChangeNotifier {
             category: category,
             brand: brand);
 
-        if  (checkServerResponse(data, context)) {
+        if (checkServerResponse(data, context)) {
           final List<Product> prodlist = data["data"]
               .map<Product>((item) => Product.fromJson(item))
               .toList();
@@ -120,12 +117,9 @@ class ProductListProvider extends ChangeNotifier {
     if (page != -1) {
       try {
         final data = await _api.getSupplierProducts(
-            page: page,
-           
-            category: category,
-            brand: brand);
-
-        if  (checkServerResponse(data, context)) {
+            page: page, category: category, brand: brand);
+        print(data);
+        if (checkServerResponse(data, context)) {
           final List<Product> prodlist = data["data"]
               .map<Product>((item) => Product.fromJson(item))
               .toList();
@@ -158,17 +152,18 @@ class ProductListProvider extends ChangeNotifier {
     notify();
     return;
   }
-    Future<void> getManagerProducts(BuildContext context,
-      {int supplierid ,int brand, int category}) async {
+
+  Future<void> getManagerProducts(BuildContext context,
+      {int supplierid, int brand, int category}) async {
     if (page != -1) {
       try {
         final data = await _api.getManagerProducts(
             page: page,
-            supplierid:supplierid,
+            supplierid: supplierid,
             category: category,
             brand: brand);
 
-        if  (checkServerResponse(data, context)) {
+        if (checkServerResponse(data, context)) {
           final List<Product> prodlist = data["data"]
               .map<Product>((item) => Product.fromJson(item))
               .toList();
@@ -201,7 +196,20 @@ class ProductListProvider extends ChangeNotifier {
     notify();
     return;
   }
+
+  Future<void> resetWishList(BuildContext context) async {
+    page = 1;
+    loading = true;
+    error = false;
+    errorMsg = "";
+    wishlist.clear();
+
+    await getWishList(context);
+    notify();
+  }
+
   Future<void> getWishList(BuildContext context) async {
+    loading = true;
     try {
       final data = await _api.getWishList();
 
@@ -211,7 +219,8 @@ class ProductListProvider extends ChangeNotifier {
             .toList();
         if (prodlist != null) {
           wishlist.clear();
-          wishlist.addAll(prodlist);}
+          wishlist.addAll(prodlist);
+        }
         loading = false;
         notify();
         return;
@@ -248,10 +257,9 @@ class ProductListProvider extends ChangeNotifier {
         if (data != null) {
           final List<Items> proItems =
               data["items"].map<Items>((item) => Items.fromJson(item)).toList();
-          print(proItems);
 
           if (proItems != null && proItems.isNotEmpty) {
-             itmes.clear();
+            itmes.clear();
             itmes.addAll(proItems);
           }
           loading = false;

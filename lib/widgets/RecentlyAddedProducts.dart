@@ -10,9 +10,9 @@ class RecentlyAddedProducts extends StatefulWidget {
 }
 
 class _RecentlyAddedProductsState extends State<RecentlyAddedProducts> {
-  bool _bookmarked = false;
-  bool _favorite = false;
-  bool _addedToCart = false;
+  //bool _bookmarked = false;
+  //bool _favorite = false;
+  //bool _addedToCart = false;
 
   @override
   Widget build(BuildContext context) {

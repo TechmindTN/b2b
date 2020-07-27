@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -82,6 +83,10 @@ class MyApp extends StatelessWidget {
     Locale locale = MyApp.list.indexOf(ui.window.locale) != -1
         ? ui.window.locale
         : Locale('en', 'US');
+        SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
 
     return EasyLocalizationProvider(
         data: data,

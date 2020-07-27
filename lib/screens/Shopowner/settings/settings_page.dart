@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:siyou_b2b/screens/Shopowner/settings/change_country.dart';
 import 'package:siyou_b2b/utlis/utils.dart';
 import 'package:siyou_b2b/widgets/Costum_backgroud.dart';
@@ -54,22 +55,36 @@ class SettingsPage extends StatelessWidget {
                             ),
                             ListTile(
                               title: Text('Language A / 语言'),
-                              leading: Image.asset('assets/icons/language.png'),
+                              leading: SvgPicture.asset(
+                                'assets/svg/Language.svg',
+                                width: 30,
+                                height: 30,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
                               onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (_) => ChangeLanguagePage())),
                             ),
                             ListTile(
-                              title: Text('Change Country'),
-                              leading: Image.asset('assets/icons/country.png'),
+                              title: Text(lang.tr('shopOwner.Country')),
+                              leading: SvgPicture.asset(
+                                'assets/svg/changecountry.svg',
+                                width: 30,
+                                height: 30,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
                               onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (_) => ChangeCountryPage())),
                             ),
                             ListTile(
                               title: Text(lang.tr('shopOwner.notifications')),
-                              leading:
-                                  Image.asset('assets/icons/notifications.png'),
+                              leading: SvgPicture.asset(
+                                'assets/svg/notification.svg',
+                                width: 30,
+                                height: 30,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
                               onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (_) =>
@@ -77,14 +92,24 @@ class SettingsPage extends StatelessWidget {
                             ),
                             ListTile(
                               title: Text(lang.tr('shopOwner.legal')),
-                              leading: Image.asset('assets/icons/legal.png'),
+                              leading: SvgPicture.asset(
+                                'assets/svg/Legal&About.svg',
+                                width: 30,
+                                height: 30,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
                               onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (_) => LegalAboutPage())),
                             ),
                             ListTile(
                               title: Text(lang.tr('shopOwner.aboutus')),
-                              leading: Image.asset('assets/icons/about_us.png'),
+                              leading: SvgPicture.asset(
+                                'assets/svg/about-us.svg',
+                                width: 30,
+                                height: 30,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
                               onTap: () {},
                             ),
                             Padding(
@@ -99,17 +124,25 @@ class SettingsPage extends StatelessWidget {
                               ),
                             ),
                             ListTile(
-                              title: Text('Change Password'),
-                              leading:
-                                  Image.asset('assets/icons/change_pass.png'),
+                              title: Text(lang.tr('shopOwner.Password')),
+                              leading: SvgPicture.asset(
+                                'assets/svg/changepassword.svg',
+                                width: 30,
+                                height: 30,
+                                color: Theme.of(context).primaryColorDark,
+                              ),
                               onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (_) => ChangePasswordPage())),
                             ),
                             ListTile(
                                 title: Text(lang.tr('shopOwner.signout')),
-                                leading:
-                                    Image.asset('assets/icons/sign_out.png'),
+                                leading: SvgPicture.asset(
+                                  'assets/svg/logout.svg',
+                                  width: 30,
+                                  height: 30,
+                                  color: Theme.of(context).primaryColorDark,
+                                ),
                                 onTap: () {
                                   logoutUser(context);
                                 }),

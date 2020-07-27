@@ -17,7 +17,8 @@ class MyProfile extends StatefulWidget {
   _MyProfileState createState() => _MyProfileState();
 }
 
-class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMixin {
+class _MyProfileState extends State<MyProfile>
+    with SingleTickerProviderStateMixin {
   AppLocalizations lang;
   HomeProvider userProvider;
   Completer<GoogleMapController> _controller = Completer();
@@ -179,10 +180,11 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
         },
 
         // Floating Action button Icon color
-        iconColor: Colors.red,
+        iconColor: Colors.white,
 
         // Flaoting Action button Icon
-        icon: Typicons.chat,
+        iconData: Typicons.chat,
+        backGroundColor: Theme.of(context).primaryColorDark,
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -224,7 +226,9 @@ class _MyProfileState extends State<MyProfile> with SingleTickerProviderStateMix
                             width: 90.0,
                             child: CircleAvatar(
                               backgroundImage: NetworkImage(
-                                  userProvider.user.avatar
+                                  userProvider.user.avatar == null
+                                      ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X"
+                                      : userProvider.user.avatar
                                   //widget.supplier['image'],
                                   //"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X",
                                   /*"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X"*/

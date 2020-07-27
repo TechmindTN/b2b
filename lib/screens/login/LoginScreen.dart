@@ -24,15 +24,22 @@ class _LogInScreenState extends State<LogInScreen> {
 
   TextEditingController loginEmailController = new TextEditingController();
   TextEditingController loginPasswordController = new TextEditingController();
+  bool rememberme = true;
   final _formKey = GlobalKey<FormState>();
 
   LoginProvider loginModel;
- // final flutterWebViewPlugin = FlutterWebviewPlugin();
+  // final flutterWebViewPlugin = FlutterWebviewPlugin();
 
   @override
   void initState() {
     super.initState();
     _checkUser();
+    _getusersaveddata();
+  }
+
+  void _getusersaveddata() async {
+    loginEmailController.text = await getUserEmail();
+    loginPasswordController.text = await getUserPW();
   }
 
   void _checkUser() async {
@@ -40,30 +47,24 @@ class _LogInScreenState extends State<LogInScreen> {
       loginModel = Provider.of<LoginProvider>(context, listen: false);
       bool login = await loginModel.userSignedIn();
       var role = await getUserRole();
-     // var token = await getUserToken();
+      // var token = await getUserToken();
       if (login) {
         if (role == 3)
           Navigator.pushNamedAndRemoveUntil(
               context, "/owner/home", (Route<dynamic> route) => false);
-        else if (role==2){
+        else if (role == 2) {
           Navigator.pushNamedAndRemoveUntil(
               context, "/supplier/home", (Route<dynamic> route) => false);
-         // print(token.toString());
+          // print(token.toString());
           //webwiew(token);
           ///supplier/home
-        }
-        else {
+        } else {
           Navigator.pushNamedAndRemoveUntil(
               context, "/manager/home", (Route<dynamic> route) => false);
-         // print(token.toString());
-          //webwiew(token);
-          ///supplier/home
         }
       }
     });
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -221,22 +222,33 @@ class _LogInScreenState extends State<LogInScreen> {
                 ),
               ],
             ),
-            Padding(
+            Center(
+                child: Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: FlatButton(
-                onPressed: () {
-                  if (loginModel.status != Status.Authenticating) {}
-                },
-                child: Text(
-                  lang.tr('loginScreen.forgot_password'),
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.white,
-                    fontSize: 16.0,
-                  ),
-                ),
-              ),
-            ),
+                  onPressed: () {
+                    if (loginModel.status != Status.Authenticating) {}
+                  },
+                  child: CheckboxListTile(
+                    title: Text(
+                      lang.tr('loginScreen.Remember Me'),
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    value: rememberme,
+                    onChanged: (newValue) {
+                      print(newValue);
+                      setState(() {
+                        rememberme = newValue;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity
+                        .leading, //  <-- leading Checkbox
+                  )),
+            )),
           ],
         ),
       ),
@@ -290,6 +302,7 @@ class _LogInScreenState extends State<LogInScreen> {
     }
 
     final map = await loginModel.signInUser(
+        context,
         loginEmailController.value.text.trim(),
         loginPasswordController.value.text);
 
@@ -303,13 +316,13 @@ class _LogInScreenState extends State<LogInScreen> {
         case 1:
           // Manager
           Navigator.pushNamedAndRemoveUntil(
-             context, "/manager/home", (Route<dynamic> route) => false);
+              context, "/manager/home", (Route<dynamic> route) => false);
           // webwiew(map["token"]);
           break;
         case 2:
           Navigator.pushNamedAndRemoveUntil(
-             context, "/supplier/home", (Route<dynamic> route) => false);
-           // webwiew(map["token"]);
+              context, "/supplier/home", (Route<dynamic> route) => false);
+          // webwiew(map["token"]);
           break;
         case 3:
           //
@@ -384,7 +397,16 @@ class _LogInScreenState extends State<LogInScreen> {
             ),
           ),
         ),
-        onPressed: onPress,
+        onPressed: () {
+          onPress();
+          if (rememberme) {
+            saveUserEmail(loginEmailController.text);
+            saveUserPW(loginPasswordController.text);
+          } else {
+            saveUserEmail('');
+            saveUserPW('');
+          }
+        },
       );
 
   final loginLoading = Padding(

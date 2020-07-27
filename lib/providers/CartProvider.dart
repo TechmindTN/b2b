@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:siyou_b2b/models/OrderList.dart';
 import 'package:siyou_b2b/models/Productitems.dart';
 import 'package:siyou_b2b/models/order.dart';
+import 'package:siyou_b2b/models/suppliers.dart';
 import 'package:siyou_b2b/network/ApiProvider.dart';
 import 'package:siyou_b2b/utlis/utils.dart';
 
@@ -27,6 +28,17 @@ class CartProvider extends ChangeNotifier {
   bool error = false;
   bool loading = true;
   String errorMsg = "";
+
+  Future<void> resetshoopOrders(BuildContext context) async {
+    loading = true;
+    error = false;
+    errorMsg = "";
+    invalidorders.clear();
+    vaildorders.clear();
+    paidorders.clear();
+    await getOrders(context);
+    notify();
+  }
 
   bool check(Items item) {
     bool t = false;
@@ -51,28 +63,68 @@ class CartProvider extends ChangeNotifier {
     return x;
   }
 
-  void addCartItems(Items item, int quantity, int supplieridd) {
+  int checkinCart(Items itemcart) {
+    int check = -1;
+    if (itmes.isNotEmpty)
+      check = itmes.indexWhere((item) => item.id == itemcart.id);
+    return check;
+  }
+
+  searchItems(BuildContext context, keyword) async {
+    try {
+      loading = true;
+      final data = await _api.searchProductItems(barcode: keyword);
+      if (checkServerResponse(data, context)) {
+        final List<Items> s =
+            data["items"].map<Items>((item) => Items.fromJson(item)).toList();
+        if (s != null && s.isNotEmpty) {
+          print('supplierid  ' + s[0].product.supplierId.toString());
+          addCartItems(s[0], s[0].itemPackage, s[0].product.supplierId,
+              s[0].product.supplier);
+        }
+        loading = false;
+        notify();
+        return;
+      } else {
+        errorMsg = getServerErrorMsg(data, context);
+        error = true;
+        loading = false;
+        notify();
+        return;
+      }
+
+      // suppliers.clear();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void addCartItems(
+      Items item, int quantity, int supplieridd, Suppliers supplier) {
     try {
       var i = item;
 
       i.supplierid = supplieridd;
-      // print("id te3 supplier   " + i.supplierid.toString());
+      i.supplier = supplier;
+
       if (itmes.isNotEmpty && itmes != null) {
         if (check(i)) {
           itmes[getIndex(i)].quantity += quantity;
-
-          total += i.itemOfflinePrice * quantity;
-          //i.supplierId=id;
+          total += i.itemDiscountPrice == null
+              ? i.itemOfflinePrice * quantity
+              : i.itemDiscountPrice * quantity;
         } else {
-          total += i.itemOfflinePrice * quantity;
-          // i.supplierId = id;
+          total += i.itemDiscountPrice == null
+              ? i.itemOfflinePrice * quantity
+              : i.itemDiscountPrice * quantity;
           i.quantity = quantity;
           itmes.add(i);
         }
       } else {
-        total += i.itemOfflinePrice * quantity;
+        total += i.itemDiscountPrice == null
+            ? i.itemOfflinePrice * quantity
+            : i.itemDiscountPrice * quantity;
 
-        // i.supplierId = id;
         i.quantity = quantity;
         print(total);
         itmes.add(i);
@@ -83,6 +135,25 @@ class CartProvider extends ChangeNotifier {
       return;
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  void removeCartItem(Items item) {
+    int index = getIndex(item);
+    if (itmes[index].quantity == itmes[index].itemPackage) {
+      total -= itmes[index].itemDiscountPrice == null
+          ? itmes[index].itemOfflinePrice * itmes[index].quantity
+          : itmes[index].itemDiscountPrice * itmes[index].quantity;
+      itmes[index].quantity = 0;
+
+      itmes.removeAt(index);
+      notify();
+    } else {
+      total -= itmes[index].itemDiscountPrice == null
+          ? itmes[index].itemOfflinePrice * itmes[index].quantity
+          : itmes[index].itemDiscountPrice * itmes[index].quantity;
+      itmes[index].quantity -= itmes[index].itemPackage;
+      notify();
     }
   }
 
@@ -100,24 +171,29 @@ class CartProvider extends ChangeNotifier {
             orders[x].orderWeight+=double.parse(v.criteriaBase[0].pivot.criteriaValue) * v.quantity;*/
             print("condition 1.0 ");
           } else {
-            orders[x].orderTotalPrice += v.itemOfflinePrice * v.quantity;
-            orders[x].orderWeight +=
-                double.parse(v.criteriaBase[0].pivot.criteriaValue) *
-                    v.quantity;
+            orders[x].orderTotalPrice += v.itemDiscountPrice == null
+                ? v.itemOfflinePrice * v.quantity
+                : v.itemDiscountPrice * v.quantity;
+            orders[x].orderWeight += 10.00;
+            // double.parse(v.criteriaBase[0].pivot.criteriaValue) *
+            // v.quantity;
             orders[x].orderProductsList.add(pl);
-            print("condition 1.2 ");
+            print("condition 1.1 ");
           }
         } else {
           var o = new Order();
-          print(v.toMap());
+
           o.orderProductsList = [];
           o.orderProductsList.add(Productlist.fromJson(v.toMap()));
           o.supplierId = v.supplierid;
-          o.orderTotalPrice = v.itemOfflinePrice * v.quantity;
-          o.orderWeight =
-              double.parse(v.criteriaBase[0].pivot.criteriaValue) * v.quantity;
+          o.supplier = v.supplier == null ? v.product.supplier : v.supplier;
+          o.orderTotalPrice = v.itemDiscountPrice == null
+              ? v.itemOfflinePrice * v.quantity
+              : v.itemDiscountPrice * v.quantity;
+          o.orderWeight = 10.00;
+          // double.parse(v.criteriaBase[0].pivot.criteriaValue) * v.quantity;
           o.logisticCompanyId = 2;
-          o.logisticTarif = 2;
+          o.logisticTarif = 0;
 
           orders.add(o);
           print('Condition 2 ');
@@ -127,16 +203,6 @@ class CartProvider extends ChangeNotifier {
     print(orders.toString());
   }
 
-  /*int checkitemorder(Items item) {
-    int t = -1;
-    for (var x in orders.) {
-      if (x.itemBarcode == item.itemBarcode) {
-        t = orders.;
-        break;
-      }
-    }
-    return t;
-  }*/
   int checkorder(Productlist pl, int x) {
     int t = -1;
 
@@ -207,6 +273,21 @@ class CartProvider extends ChangeNotifier {
     return;
   }
 
+  Future<void> resetList(BuildContext context) async {
+    loading = true;
+    error = false;
+    errorMsg = "";
+    suppinvalidorders.clear();
+    suppvaildorders.clear();
+    supppaidorders.clear();
+
+    await getSupplierOrders(
+      context,
+    );
+
+    notify();
+  }
+
   Future<void> getSupplierOrders(BuildContext context) async {
     try {
       final data = await _api.getSupplierOrders();
@@ -222,9 +303,18 @@ class CartProvider extends ChangeNotifier {
             .map<OrderList>((item) => OrderList.fromJson(item))
             .toList();
 
-        if (invalid != null) suppinvalidorders.addAll(invalid);
-        if (vaild != null) suppvaildorders.addAll(vaild);
-        if (paid != null) supppaidorders.addAll(paid);
+        if (invalid != null) {
+          suppinvalidorders.clear();
+          suppinvalidorders.addAll(invalid);
+        }
+        if (vaild != null) {
+          suppvaildorders.clear();
+          suppvaildorders.addAll(vaild);
+        }
+        if (paid != null) {
+          supppaidorders.clear();
+          supppaidorders.addAll(paid);
+        }
 
         loading = false;
         notify();

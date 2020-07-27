@@ -266,15 +266,15 @@ class _SearchViewState extends State<SearchView> {
                   child: Container(
                     height: 85.0,
                     width: 100.0,
-                    child: _productProvide.searchsuppliers[index].image == null ||
-                            _productProvide.searchsuppliers[index].image == ""
+                    child: _productProvide.searchsuppliers[index].imgUrl == null ||
+                            _productProvide.searchsuppliers[index].imgUrl == ""
                         ? Image.asset(
                             "assets/png/empty_cart.png",
                             fit: BoxFit.contain,
                             alignment: Alignment.center,
                           )
                         : CachedNetworkImage(
-                            imageUrl: _productProvide.searchsuppliers[index].image,
+                            imageUrl: _productProvide.searchsuppliers[index].imgUrl,
                             fit: BoxFit.contain,
                           ),
                   ),

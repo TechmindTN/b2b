@@ -104,6 +104,7 @@ class DropdownSearchField extends FormField<String> {
                         size: 30.0, color: Colors.black),
                     onPressed: () {
                       SystemChannels.textInput.invokeMethod('TextInput.hide');
+                      // ignore: invalid_use_of_protected_member
                       state.setState(() {
                         state._showdropdown = !state._showdropdown;
                       });
@@ -266,6 +267,7 @@ class DropDownFieldState extends FormFieldState<String> {
         childItems.add(_getListTile(item));
       }
     }
+    // ignore: unnecessary_statements
     _isSearching ? childItems : List();
     return childItems;
   }

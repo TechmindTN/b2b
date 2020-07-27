@@ -8,8 +8,9 @@ import 'package:siyou_b2b/screens/supplierSpace/orders/OrdersScreen.dart';
 import '../main.dart';
 import 'faq_page.dart';
 
+// ignore: must_be_immutable
 class SupplierProfilePage extends StatelessWidget {
-  HomeProvider userProvider; 
+  HomeProvider userProvider;
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context);
@@ -20,22 +21,30 @@ class SupplierProfilePage extends StatelessWidget {
         top: true,
         child: SingleChildScrollView(
           child: Padding(
-            padding:
-                EdgeInsets.only(left: 16.0, right: 16.0, top: 56),
+            padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 56),
             child: Column(
               children: <Widget>[
-                 CircleAvatar(
+                CircleAvatar(
+                  backgroundImage: NetworkImage(userProvider.user.avatar == null
+                          ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X"
+                          : userProvider.user.avatar
+                      //widget.supplier['image'],
+                      //"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X",
+                      /*"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAkLchV5ooSMweRpJpBycL8I-_PjGVtXhm62tVCJdw-FGb_y5X"*/
+                      ),
+                  backgroundColor: Colors.white,
                   maxRadius: 48,
-                  backgroundImage: NetworkImage(userProvider.user.avatar),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    userProvider.user.userNickname+' '+userProvider.user.userAccount,
+                    userProvider.user.userNickname +
+                        ' ' +
+                        userProvider.user.userAccount,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-               /* Container(
+                /* Container(
                   margin: EdgeInsets.symmetric(vertical: 16.0),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
@@ -121,22 +130,21 @@ class SupplierProfilePage extends StatelessWidget {
                     ),
                   ),
                 ),*/
-                
+
                 ListTile(
-                    title: Text(lang.tr('shopOwner.orders')),
-                    subtitle: Text(lang.tr('shopOwner.orderlist')),
-                    leading: Image.asset(
-                      'assets/icons/orders.png',
-                      fit: BoxFit.scaleDown,
-                      width: 30,
-                      height: 30,
-                    ),
-                    trailing: Icon(Icons.chevron_right,
-                        color: Theme.of(context).primaryColor),
-                    onTap: () =>
-                        Navigator.of(context).push(
+                  title: Text(lang.tr('shopOwner.orders')),
+                  subtitle: Text(lang.tr('shopOwner.orderlist')),
+                  leading: Image.asset(
+                    'assets/icons/orders.png',
+                    fit: BoxFit.scaleDown,
+                    width: 30,
+                    height: 30,
+                  ),
+                  trailing: Icon(Icons.chevron_right,
+                      color: Theme.of(context).primaryColor),
+                  onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => SuppOrdersScreen())),
-                    ),
+                ),
                 Divider(),
                 ListTile(
                   title: Text(lang.tr('shopOwner.Settings')),
@@ -152,18 +160,14 @@ class SupplierProfilePage extends StatelessWidget {
                   onTap: () => Navigator.of(context)
                       .push(MaterialPageRoute(builder: (_) => SettingsPage())),
                 ),
-                
                 Divider(),
-
                 ListTile(
-                  title: Text('Help & Support'),
-                  subtitle: Text('Help center and legal support'),
+                  title: Text(lang.tr('shopOwner.Help')),
+                  subtitle: Text(lang.tr('shopOwner.helpc')),
                   leading: Image.asset('assets/icons/support.png'),
                   trailing: Icon(
                     Icons.chevron_right,
                     color: Theme.of(context).primaryColor,
-                    
-
                   ),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => LanguageProvider(

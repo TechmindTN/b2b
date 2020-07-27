@@ -1,19 +1,35 @@
 class OrderList {
   int id;
+  String orderRef;
+  String createdAt;
+  String updatedAt;
+  String orderDate;
+  dynamic requiredDate;
+  dynamic shippingDate;
+  dynamic shippingType;
+  dynamic shippingPrice;
+  dynamic shippingAdresse;
+  dynamic shippingCountry;
   dynamic orderPrice;
-  dynamic orderWeight;
-  String orderref;
+  dynamic commission;
   int supplierId;
+  int shopOwnerId;
   int statutId;
-  Supplier supplier;
+  dynamic logisticCompanyId;
+  dynamic companyId;
+  int orderWeight;
+  int paymentMethodId;
+  dynamic logisticTarif;
+  ShopOwner shopOwner;
   Statut statut;
   List<ProductItem> productItem;
-  ShopOwner shopOwner;
+
+  Supplier supplier;
 
   OrderList(
       {this.id,
       this.orderPrice,
-      this.orderref,
+      this.orderRef,
       this.orderWeight,
       this.supplierId,
       this.statutId,
@@ -24,13 +40,28 @@ class OrderList {
 
   OrderList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    orderref= json['order_ref'];
+    orderRef = json['order_ref'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    orderDate = json['order_date'];
+    requiredDate = json['required_date'];
+    shippingDate = json['shipping_date'];
+    shippingType = json['shipping_type'];
+    shippingPrice = json['shipping_price'];
+    shippingAdresse = json['shipping_adresse'];
+    shippingCountry = json['shipping_country'];
     orderPrice = json['order_price'];
-    orderWeight = json['order_weight'];
+    commission = json['commission'];
     supplierId = json['supplier_id'];
+    shopOwnerId = json['shop_owner_id'];
     statutId = json['statut_id'];
-    supplier = json['supplier'] != null
-        ? new Supplier.fromJson(json['supplier'])
+    logisticCompanyId = json['logistic_company_id'];
+    companyId = json['company_id'];
+    orderWeight = json['order_weight'];
+    paymentMethodId = json['payment_method_id'];
+    logisticTarif = json['logistic_tarif'];
+    shopOwner = json['shop_owner'] != null
+        ? new ShopOwner.fromJson(json['shop_owner'])
         : null;
     statut =
         json['statut'] != null ? new Statut.fromJson(json['statut']) : null;
@@ -40,8 +71,8 @@ class OrderList {
         productItem.add(new ProductItem.fromJson(v));
       });
     }
-    shopOwner = json['shop_owner'] != null
-        ? new ShopOwner.fromJson(json['shop_owner'])
+    supplier = json['supplier'] != null
+        ? new Supplier.fromJson(json['supplier'])
         : null;
   }
 

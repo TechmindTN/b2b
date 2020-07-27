@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,6 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
     _orderProvide?.getManagerOrders(context);
   }
 
- 
   Widget getWidget() {
     return Consumer<CartProvider>(
       builder: (context, provider, widget) {
@@ -88,7 +86,8 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              _orderProvide.suppvaildorders[index].shopOwner.firstName,
+                              _orderProvide
+                                  .suppvaildorders[index].shopOwner.firstName,
                               style: TextStyle(
                                   fontSize: 18.0, fontWeight: FontWeight.w700),
                             ),
@@ -107,7 +106,7 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                 /* if (item["orderStatus"] != "Done")
+                  /* if (item["orderStatus"] != "Done")
                     Expanded(
                       child: IconButton(
                         onPressed: () => null,
@@ -136,27 +135,26 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                       child: Text("Purchase date - "),
                       flex: 3,
                     ),
-                    
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xff3ed3d3),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(16.0)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 2.0),
-                            child: Text(
-                              _orderProvide.suppvaildorders[index].statut.statutName,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.black,fontSize: 10),
-                            ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xff3ed3d3),
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 2.0),
+                          child: Text(
+                            _orderProvide
+                                .suppvaildorders[index].statut.statutName,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black, fontSize: 10),
                           ),
                         ),
-                      )
-                    
-                     /* Padding(
+                      ),
+                    )
+
+                    /* Padding(
                         child: Icon(
                           Icons.check_circle,
                           color: Color(0xff3ed3d3),
@@ -184,7 +182,8 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      for (var i in _orderProvide.suppvaildorders[index].productItem)
+                      for (var i
+                          in _orderProvide.suppvaildorders[index].productItem)
                         Padding(
                           padding: EdgeInsets.only(bottom: 10),
                           child: Row(
@@ -192,12 +191,12 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
                               Expanded(
                                 flex: 3,
                                 child: ListTile(
-                                  title: Text(i.itemBarcode),
-                                  leading: Text(i.product.productName)
-                                  /*CachedNetworkImage(
+                                    title: Text(i.itemBarcode),
+                                    leading: Text(i.product.productName)
+                                    /*CachedNetworkImage(
                                     imageUrl: i.product.productName,
                                   ),*/
-                                ),
+                                    ),
                               ),
                               Expanded(
                                 child: Text("${i.pivot.quantity}"),
@@ -232,15 +231,5 @@ class _ArchivedOrdersState extends State<SuppArchivedOrders> {
   @override
   Widget build(BuildContext context) {
     return getWidget();
-    /*ListView(
-      children: <Widget>[
-        OrderItem(
-          item: item,
-        ),
-        OrderItem(
-          item: item,
-        ),
-      ],
-    );*/
   }
 }
