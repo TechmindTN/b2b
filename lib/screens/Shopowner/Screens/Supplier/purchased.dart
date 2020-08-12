@@ -1,8 +1,10 @@
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:gzx_dropdown_menu/gzx_dropdown_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/models/Categorys.dart';
 import 'package:siyou_b2b/models/suppliers.dart';
@@ -10,17 +12,17 @@ import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/Product/Itemdetails.dart';
-import 'package:siyou_b2b/utlis/utils.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/cart.dart';
 import 'package:siyou_b2b/widgets/ErrorWidget.dart';
-import 'package:siyou_b2b/widgets/ScanbarcodeWidget.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
-
 import '../../../../main.dart';
 
 class Purchased extends StatefulWidget {
   final int supplierid;
   final Suppliers supplier;
-  const Purchased({Key key, this.supplierid, this.supplier}) : super(key: key);
+  final List<Categories> categorylist;
+  const Purchased({Key key, this.supplierid, this.supplier, this.categorylist})
+      : super(key: key);
   @override
   _PurchasedState createState() => _PurchasedState();
 }
@@ -32,20 +34,89 @@ class _PurchasedState extends State<Purchased> {
   int categoryid;
   ScrollController _scrollController = new ScrollController();
   int id;
+  String category = '';
+  String sort = '';
+  GlobalKey _stackKey = GlobalKey();
+  int _selectTempFirstLevelIndex = -1;
+  GZXDropdownMenuController _dropdownMenuController =
+      GZXDropdownMenuController();
 
   @override
   void initState() {
     super.initState();
+    purchased = Provider.of<HomeProvider>(context, listen: false);
     id = widget.supplierid;
+    purchased?.getpurchased(context, id: widget.supplierid);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
-    purchased = Provider.of<HomeProvider>(context, listen: false);
+    category = lang.tr('shopOwner.Category');
+    sort = lang.tr('shopOwner.Sort');
     cartProvider = Provider.of<CartProvider>(context);
-    // purchased?.getpurchased(context,id:widget.supplierid);
+  }
+
+  Widget basketWidget() {
+    return Consumer<CartProvider>(
+      builder: (context, provider, widget) {
+        return SizedBox(
+            //height: 25,
+            width: 25,
+            child: Badge(
+              animationDuration: Duration(milliseconds: 250),
+              animationType: BadgeAnimationType.scale,
+              badgeContent: Text(cartProvider.itmes.length.toString(),
+                  style: new TextStyle(color: Colors.white)),
+              child: IconButton(
+                icon: Icon(
+                  Icons.shopping_cart,
+                  color: Colors.black,
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => LanguageProvider(child: Cart()),
+                  ),
+                ),
+              ),
+            ));
+      },
+    );
+  }
+
+  Widget isGridWidget() {
+    return Consumer<HomeProvider>(
+      builder: (context, provider, widget) {
+        if (provider.isGrid)
+          return SizedBox(
+            //width: 25,
+            child: IconButton(
+                icon: Icon(
+                  FontAwesome.th_large,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  provider.isGrid = !provider.isGrid;
+                  provider.notify();
+                }),
+          );
+        else
+          return SizedBox(
+            // width: 25,
+            child: IconButton(
+                icon: Icon(
+                  FontAwesome.th_list,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  provider.isGrid = !provider.isGrid;
+                  provider.notify();
+                }),
+          );
+      },
+    );
   }
 
   Widget getWidget() {
@@ -58,13 +129,25 @@ class _PurchasedState extends State<Purchased> {
         else if (provider.loading)
           return ProgressIndicatorWidget();
         else if (provider.purchased != null && provider.purchased.isNotEmpty) {
-          return ListView.builder(
-            //scrollDirection: Axis.horizontal,
-            // shrinkWrap: true,
-            controller: _scrollController,
-            itemCount: provider.purchased.length,
-            itemBuilder: (context, index) => _getItemWidget(index),
-          );
+          if (!provider.isGrid)
+            return ListView.builder(
+              //scrollDirection: Axis.horizontal,
+              // shrinkWrap: true,
+              controller: _scrollController,
+              itemCount: provider.purchased.length,
+              itemBuilder: (context, index) => _getItemWidget(index),
+            );
+          else
+            return StaggeredGridView.countBuilder(
+              shrinkWrap: true,
+              controller: _scrollController,
+              itemCount: provider.purchased.length,
+              itemBuilder: (context, index) => _getItemWidgetGrid(index),
+              staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+              mainAxisSpacing: 0.0,
+              crossAxisSpacing: 0.0,
+              crossAxisCount: 4,
+            );
         } else
           return Container(
             child: Center(
@@ -75,16 +158,271 @@ class _PurchasedState extends State<Purchased> {
     );
   }
 
-  Widget _getItemWidget(
-    int index,
-  ) {
+  Widget _getItemWidgetGrid(int index) {
+    return Card(
+        elevation: 0.0,
+        shape: RoundedRectangleBorder(
+            //side: new BorderSide(color: Colors.blue, width: 2.0),
+            borderRadius: BorderRadius.circular(10.0)),
+        child: Stack(
+          children: <Widget>[
+            Container(
+                padding: EdgeInsets.only(left: 5, right: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (ctx) => LanguageProvider(
+                                child: ChangeNotifierProvider(
+                                  child: ItemDetailsScreen(
+                                    product: purchased.purchased[index],
+                                    supplierid: widget.supplierid,
+                                    description: purchased.purchased[index]
+                                        .product.productDescription,
+                                  ),
+                                  create: (_) => ProductListProvider(),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: new EdgeInsets.all(10.0),
+                          child: Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15.0),
+                              ),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height / 4,
+                                child:
+                                    purchased.purchased[index].images == null ||
+                                            purchased
+                                                .purchased[index].images.isEmpty
+                                        ? Image.asset(
+                                            "assets/png/empty_cart.png",
+                                            fit: BoxFit.contain,
+                                            alignment: Alignment.center,
+                                          )
+                                        : CachedNetworkImage(
+                                            imageUrl: purchased.purchased[index]
+                                                .images[0].imageUrl
+                                                .toString(),
+                                            fit: BoxFit.scaleDown,
+                                          ),
+                              ),
+                            ),
+                          ),
+                        )),
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width / 2.3,
+                        child: Text(
+                          purchased.purchased[index].product.productName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 12.0,
+                          ),
+                        )),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text: purchased.purchased[index].id.toString() +
+                                  '/' +
+                                  purchased.purchased[index].itemBarcode
+                                      .toString(),
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 9)),
+                        ],
+                      ),
+                    ),
+                    purchased.purchased[index].itemDiscountPrice == null
+                        ? Text(
+                            purchased.purchased[index].itemOfflinePrice
+                                    .toStringAsFixed(2) +
+                                ' €',
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .primaryColorDark, //Color(0xFFB7B7B7),
+                              fontWeight: FontWeight.w500,
+                              // fontFamily: 'NunitoSans',
+                              fontSize: 15.0,
+                            ),
+                          )
+                        : Row(
+                            children: <Widget>[
+                              Text(
+                                purchased.purchased[index].itemDiscountPrice
+                                        .toString() +
+                                    ' €',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .primaryColorDark, //Color(0xFFB7B7B7),
+                                  fontWeight: FontWeight.w500,
+
+                                  // fontFamily: 'NunitoSans',
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                purchased.purchased[index].itemOfflinePrice
+                                        .toString() +
+                                    ' €',
+                                style: TextStyle(
+                                  color: Colors.black, //Color(0xFFB7B7B7),
+                                  fontWeight: FontWeight.w500,
+                                  decoration: TextDecoration.lineThrough,
+                                  // fontFamily: 'NunitoSans',
+                                  fontSize: 15.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                  ],
+                )),
+            purchased.purchased[index].itemQuantity >=
+                    purchased.purchased[index].itemPackage
+                ? Positioned(
+                    child: Container(
+                      height: 90,
+                      child: Row(
+                        children: <Widget>[
+                          SizedBox(width: 5),
+                          Container(
+                            //width: 135,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 3.0, vertical: 9.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Colors.transparent, width: 1),
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            child: Center(
+                                child: Row(
+                              children: <Widget>[
+                                if (cartProvider.checkinCart(
+                                        purchased.purchased[index]) >
+                                    -1)
+                                  GestureDetector(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5.0),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color:
+                                            Theme.of(context).primaryColorDark,
+                                      ),
+                                      child: cartProvider
+                                                  .itmes[cartProvider
+                                                      .checkinCart(purchased
+                                                          .purchased[index])]
+                                                  .quantity >
+                                              cartProvider
+                                                  .itmes[cartProvider
+                                                      .checkinCart(purchased
+                                                          .purchased[index])]
+                                                  .itemPackage
+                                          ? Icon(
+                                              Icons.remove,
+                                              color: Colors.white,
+                                              size: 18,
+                                            )
+                                          : Icon(
+                                              Icons.delete_forever,
+                                              color: Colors.white,
+                                              size: 18,
+                                            ),
+                                    ),
+                                    onTap: () => cartProvider.removeCartItem(
+                                        purchased.purchased[index]),
+                                  ),
+                                SizedBox(width: 15),
+                                GestureDetector(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(5.0),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Theme.of(context).primaryColorDark,
+                                    ),
+                                    child: Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    cartProvider.addCartItems(
+                                        purchased.purchased[index],
+                                        purchased.purchased[index].itemPackage,
+                                        widget.supplierid,
+                                        widget.supplier);
+                                    purchased.notify();
+                                  },
+                                ),
+                              ],
+                            )),
+                          ),
+                        ],
+                      ),
+                    ),
+                    right: 0,
+                    bottom: -20,
+                  )
+                : Positioned(
+                    child: Text(
+                      lang.tr('shopOwner.outofstock'),
+                      style:
+                          TextStyle(color: Theme.of(context).primaryColorDark),
+                    ),
+                    //right: 20,
+                    bottom: 15,
+                  ),
+            Positioned(
+                left: 10,
+                top: 10,
+                child:
+                    cartProvider.checkinCart(purchased.purchased[index]) == -1
+                        ? Container()
+                        : Container(
+                            padding: EdgeInsets.all(2.0),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColorDark,
+                                borderRadius: BorderRadius.all(Radius.circular(
+                                        5.0) //         <--- border radius here
+                                    )),
+                            child: Text(
+                              cartProvider
+                                  .itmes[cartProvider
+                                      .checkinCart(purchased.purchased[index])]
+                                  .quantity
+                                  .toString(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .title
+                                  .copyWith(color: Colors.white, fontSize: 12),
+                            ),
+                          )),
+          ],
+        ));
+  }
+
+  Widget _getItemWidget(int index) {
     return Column(children: <Widget>[
       Stack(
         children: <Widget>[
           Row(
-            //mainAxisAlignment:MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
-
             children: <Widget>[
               InkWell(
                   onTap: () {
@@ -108,8 +446,6 @@ class _PurchasedState extends State<Purchased> {
                   child: Container(
                     padding: new EdgeInsets.all(10.0),
                     child: Material(
-                      // borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      // elevation: 10.0,
                       child: ClipRRect(
                         borderRadius: BorderRadius.all(
                           Radius.circular(15.0),
@@ -134,9 +470,6 @@ class _PurchasedState extends State<Purchased> {
                     ),
                   )),
               Row(
-                //mainAxisAlignment: MainAxisAlignment.s,
-                // crossAxisAlignment: CrossAxisAlignment.end,
-
                 children: <Widget>[
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -152,9 +485,7 @@ class _PurchasedState extends State<Purchased> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
                               fontWeight: FontWeight.bold,
-                              // fontFamily: 'NunitoSans',
                               fontSize: 16.0,
                             ),
                           )),
@@ -192,11 +523,6 @@ class _PurchasedState extends State<Purchased> {
                                 width: 20,
                               ),
                             ),
-                            /*TextSpan(
-                          text: Purchased.suppliers[index].country +
-                              ',' +
-                              Purchased.suppliers[index].region,
-                          style: TextStyle(color: Color(0xFF959ca6))),*/
                           ],
                         ),
                       ),
@@ -206,20 +532,50 @@ class _PurchasedState extends State<Purchased> {
               )
             ],
           ),
-          Positioned(
-            child: Text(
-              '€ ' + purchased.purchased[index].itemOfflinePrice.toString(),
-              //.toStringAsFixed(2),
-              style: TextStyle(
-                color: Theme.of(context).primaryColorDark, //Color(0xFFB7B7B7),
-                fontWeight: FontWeight.w500,
-                // fontFamily: 'NunitoSans',
-                fontSize: 17.0,
+          if (purchased.purchased[index].itemDiscountPrice == null)
+            Positioned(
+              child: Text(
+                '€ ' + purchased.purchased[index].itemOfflinePrice.toString(),
+                style: TextStyle(
+                  color: Theme.of(context).primaryColorDark,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 17.0,
+                ),
               ),
+              right: 15,
+              top: 15,
             ),
-            right: 15,
-            top: 15,
-          ),
+          if (purchased.purchased[index].itemDiscountPrice != null)
+            Positioned(
+              child: Text(
+                '€ ' + purchased.purchased[index].itemOfflinePrice.toString(),
+                style: TextStyle(
+                  color: Colors.black, //Color(0xFFB7B7B7),
+                  fontWeight: FontWeight.w500,
+                  decoration: TextDecoration.lineThrough,
+                  // fontFamily: 'NunitoSans',
+                  fontSize: 16.0,
+                ),
+              ),
+              right: 15,
+              top: 35,
+            ),
+          if (purchased.purchased[index].itemDiscountPrice != null)
+            Positioned(
+              child: Text(
+                '€ ' + purchased.purchased[index].itemDiscountPrice.toString(),
+                style: TextStyle(
+                  color:
+                      Theme.of(context).primaryColorDark, //Color(0xFFB7B7B7),
+                  fontWeight: FontWeight.w500,
+
+                  // fontFamily: 'NunitoSans',
+                  fontSize: 16.0,
+                ),
+              ),
+              right: 15,
+              top: 15,
+            ),
           purchased.purchased[index].itemQuantity > 0
               ? Positioned(
                   child: Container(
@@ -272,23 +628,6 @@ class _PurchasedState extends State<Purchased> {
                                       purchased.purchased[index]),
                                 ),
                               SizedBox(width: 15),
-                              cartProvider.checkinCart(
-                                          purchased.purchased[index]) ==
-                                      -1
-                                  ? Text(
-                                      purchased.purchased[index].quantity
-                                          .toString(),
-                                      style: Theme.of(context).textTheme.title,
-                                    )
-                                  : Text(
-                                      cartProvider
-                                          .itmes[cartProvider.checkinCart(
-                                              purchased.purchased[index])]
-                                          .quantity
-                                          .toString(),
-                                      style: Theme.of(context).textTheme.title,
-                                    ),
-                              SizedBox(width: 15),
                               GestureDetector(
                                 child: Container(
                                   padding: const EdgeInsets.all(5.0),
@@ -321,7 +660,7 @@ class _PurchasedState extends State<Purchased> {
                     ),
                   ),
                   right: 0,
-                  top: 40,
+                  top: 60,
                 )
               : Positioned(
                   child: Text(
@@ -330,7 +669,31 @@ class _PurchasedState extends State<Purchased> {
                   ),
                   right: 20,
                   top: 60,
-                )
+                ),
+          Positioned(
+              left: 10,
+              top: 10,
+              child: cartProvider.checkinCart(purchased.purchased[index]) == -1
+                  ? Container()
+                  : Container(
+                      padding: EdgeInsets.all(2.0),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColorDark,
+                          borderRadius: BorderRadius.all(Radius.circular(
+                                  5.0) //         <--- border radius here
+                              )),
+                      child: Text(
+                        cartProvider
+                            .itmes[cartProvider
+                                .checkinCart(purchased.purchased[index])]
+                            .quantity
+                            .toString(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .title
+                            .copyWith(color: Colors.white, fontSize: 12),
+                      ),
+                    )),
         ],
       ),
       Divider(
@@ -343,254 +706,6 @@ class _PurchasedState extends State<Purchased> {
           height: 65,
         )
     ]);
-  }
-
-  void _renderFilterDialog() async {
-    final Widget child = FilterDialogWidget1();
-    showPlatformDialog(
-      context,
-      child,
-    );
-  }
-
-  filterWidget() {
-    return Container(
-      width: MediaQuery.of(context).size.width - 25,
-      height: 60,
-      decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).primaryColorDark),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Theme.of(context).primaryColorDark,
-                offset: const Offset(1.1, 1.1),
-                blurRadius: 10.0),
-          ],
-          color: Colors.white,
-          borderRadius: const BorderRadius.all(Radius.circular(8))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          GestureDetector(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(MaterialCommunityIcons.format_list_bulleted_type),
-                Text(
-                  'Category',
-                  style: Theme.of(context)
-                      .textTheme
-                      .body2
-                      .copyWith(color: Colors.black),
-                )
-              ],
-            ),
-            onTap: () => categorypressed(widget.supplierid),
-          ),
-          GestureDetector(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.sort),
-                Text('sort',
-                    style: Theme.of(context)
-                        .textTheme
-                        .body2
-                        .copyWith(color: Colors.black))
-              ],
-            ),
-            onTap: () async {
-              _onSortPressed(context);
-            },
-          ),
-          GestureDetector(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.filter_list),
-                Text('Scan',
-                    style: Theme.of(context)
-                        .textTheme
-                        .body2
-                        .copyWith(color: Colors.black))
-              ],
-            ),
-            onTap: () async {},
-          ),
-        ],
-      ),
-    );
-  }
-
-  void categorypressed(int id) {
-    final edgeInsets = const EdgeInsets.only(left: 8, right: 8, top: 15);
-    int _selectTempFirstLevelIndex = -1;
-    showModalBottomSheet(
-        context: context,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
-        ),
-        builder: (context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, setState) => Padding(
-                    padding: edgeInsets,
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          width: MediaQuery.of(context).size.width / 2.5,
-                          child: ListView(
-                            children: purchased.categories.map((item) {
-                              int index1 = purchased.categories.indexOf(item);
-                              return GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _selectTempFirstLevelIndex = index1;
-                                    });
-                                  },
-                                  child: Container(
-                                      height: 50,
-                                      color:
-                                          _selectTempFirstLevelIndex == index1
-                                              ? Colors.grey[200]
-                                              : Colors.white,
-                                      alignment: Alignment.center,
-                                      child: _selectTempFirstLevelIndex ==
-                                              index1
-                                          ? Row(
-                                              children: <Widget>[
-                                                SizedBox(
-                                                  height: 20,
-                                                  width: 40,
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: item.imgUrl,
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 50,
-                                                  width: 100,
-                                                  child: Text(
-                                                    '${textWidget(item)}',
-                                                    style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .primaryColorDark,
-                                                        fontSize: 15),
-                                                    overflow: TextOverflow.fade,
-                                                    maxLines: 4,
-                                                  ),
-                                                )
-                                              ],
-                                            )
-                                          : Row(
-                                              children: <Widget>[
-                                                SizedBox(
-                                                  height: 20,
-                                                  width: 40,
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: item.imgUrl,
-                                                    fit: BoxFit.contain,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 50,
-                                                  width: 100,
-                                                  child: Text(
-                                                    '${textWidget(item)}',
-                                                    style:
-                                                        TextStyle(fontSize: 15),
-                                                    overflow: TextOverflow.fade,
-                                                    maxLines: 4,
-                                                  ),
-                                                )
-                                              ],
-                                            )));
-                            }).toList(),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            color: Colors.grey[200],
-                            child: _selectTempFirstLevelIndex == -1
-                                ? Container()
-                                : ListView(
-                                    children: purchased
-                                        .categories[_selectTempFirstLevelIndex]
-                                        .subCategories
-                                        .map((item) {
-                                      int index = purchased
-                                          .categories[
-                                              _selectTempFirstLevelIndex]
-                                          .subCategories
-                                          .indexOf(item);
-                                      return GestureDetector(
-                                          onTap: () {
-                                            /* _selectSecondLevelIndex = index;
-                                  _selectFirstLevelIndex =
-                                      _selectTempFirstLevelIndex;
-                                  if (_selectSecondLevelIndex == 0) {
-                                    itemOnTap(
-                                        firstLevels[_selectFirstLevelIndex]);
-                                  } else {
-                                    itemOnTap(item);
-                                  }*/
-                                            Navigator.pop(context);
-                                            purchased.resetList(context,
-                                                supplierid: id,
-                                                category: purchased
-                                                    .categories[
-                                                        _selectTempFirstLevelIndex]
-                                                    .subCategories[index]
-                                                    .id);
-                                          },
-                                          child: Container(
-                                            height: 40,
-                                            alignment: Alignment.centerLeft,
-                                            child: Row(children: <Widget>[
-                                              SizedBox(
-                                                width: 20,
-                                              ),
-                                              //_selectFirstLevelIndex ==
-                                              //      _selectTempFirstLevelIndex &&
-                                              //    _selectSecondLevelIndex == index
-                                              Row(
-                                                children: <Widget>[
-                                                  SizedBox(
-                                                    height: 20,
-                                                    width: 40,
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: item.imgUrl
-                                                              .toString() ??
-                                                          ' ',
-                                                      fit: BoxFit.contain,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 50,
-                                                    width: 100,
-                                                    child: Text(
-                                                      '${textSubWidget(item)}',
-                                                      style: TextStyle(
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .primaryColorDark,
-                                                          fontSize: 15),
-                                                      overflow:
-                                                          TextOverflow.fade,
-                                                      maxLines: 4,
-                                                    ),
-                                                  )
-                                                ],
-                                              )
-                                              //: Text('${item.categoryName}'),
-                                            ]),
-                                          ));
-                                    }).toList(),
-                                  ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ));
-        });
   }
 
   String textWidget(Categories categories) {
@@ -625,138 +740,296 @@ class _PurchasedState extends State<Purchased> {
       return categories.categoryName.toString();
   }
 
-  void _onSortPressed(BuildContext context) {
-    showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
-        ),
-        context: context,
-        builder: (BuildContext context) {
-          return Material(
-            shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(25.0))),
-            child: Wrap(children: <Widget>[
-              Stack(children: <Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(8.0)),
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(FontAwesome.sort_alpha_asc),
-                        title: Text(
-                          ' Name A-Z',
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          purchased.purchased.sort((a, b) => Comparable.compare(
-                              a.product.productName, b.product.productName));
-                          purchased.notify();
-                        },
-                      ),
-                      Divider(),
-                      ListTile(
-                        leading: Icon(FontAwesome.sort_alpha_desc),
-                        title: Text(
-                          ' Name Z-A',
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          purchased.purchased.sort((b, a) => Comparable.compare(
-                              a.product.productName, b.product.productName));
-                          purchased.notify();
-                        },
-                      ),
-                      Divider(),
-                      ListTile(
-                        leading: Icon(FontAwesome.sort_amount_asc),
-                        title: Text(
-                          ' Price Low-High',
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          purchased.purchased.sort((b, a) => Comparable.compare(
-                              a.itemOfflinePrice, b.itemOfflinePrice));
-
-                          purchased.notify();
-                        },
-                      ),
-                      Divider(),
-                      ListTile(
-                        leading: Icon(FontAwesome.sort_amount_desc),
-                        title: Text(
-                          ' Price High-Low',
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          purchased.purchased.sort((a, b) => Comparable.compare(
-                              a.itemOfflinePrice, b.itemOnlinePrice));
-                          purchased.notify();
-                        },
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                    ],
-                  ),
+  _onSortPressed(void itemOnTap()) {
+    return Material(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+      child: Wrap(children: <Widget>[
+        Stack(children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(8.0)),
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(FontAwesome.sort_alpha_asc),
+                  title: Text(lang.tr('shopOwner.NameA-Z')),
+                  onTap: () {
+                    sort = lang.tr('shopOwner.NameA-Z');
+                    itemOnTap();
+                    purchased.purchased.sort((a, b) => Comparable.compare(
+                        a.product.productName.toLowerCase(),
+                        b.product.productName.toLowerCase()));
+                    purchased.notify();
+                  },
                 ),
-              ]),
-            ]),
-          );
-        });
+                Divider(),
+                ListTile(
+                  leading: Icon(FontAwesome.sort_alpha_desc),
+                  title: Text(
+                    lang.tr('shopOwner.NameZ-A'),
+                  ),
+                  onTap: () {
+                    sort = lang.tr('shopOwner.NameZ-A');
+                    itemOnTap();
+                    purchased.purchased.sort((b, a) => Comparable.compare(
+                        a.product.productName.toLowerCase(),
+                        b.product.productName.toLowerCase()));
+                    purchased.notify();
+                  },
+                ),
+                Divider(),
+                ListTile(
+                  leading: Icon(FontAwesome.sort_amount_asc),
+                  title: Text(
+                    lang.tr('shopOwner.pricelow-hight'),
+                  ),
+                  onTap: () {
+                    sort = lang.tr('shopOwner.pricelow-hight');
+                    itemOnTap();
+                    purchased.purchased.sort((a, b) => Comparable.compare(
+                        a.itemOfflinePrice, b.itemOfflinePrice));
+
+                    purchased.notify();
+                  },
+                ),
+                Divider(),
+                ListTile(
+                  leading: Icon(FontAwesome.sort_amount_desc),
+                  title: Text(
+                    lang.tr('shopOwner.pricehigh-low'),
+                  ),
+                  onTap: () {
+                    sort = lang.tr('shopOwner.pricehigh-low');
+                    itemOnTap();
+                    purchased.purchased.sort((b, a) => Comparable.compare(
+                        a.itemOfflinePrice, b.itemOnlinePrice));
+                    purchased.notify();
+                  },
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+              ],
+            ),
+          ),
+        ]),
+      ]),
+    );
+  }
+
+  _buildCategoryWidget(void itemOnTap()) {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          Container(
+            width: MediaQuery.of(context).size.width / 2.5,
+            child: ListView(
+              children: widget.categorylist.map((item) {
+                int index1 = widget.categorylist.indexOf(item);
+                return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectTempFirstLevelIndex = index1;
+                      });
+                    },
+                    child: Container(
+                        height: 50,
+                        color: _selectTempFirstLevelIndex == index1
+                            ? Colors.grey[200]
+                            : Colors.white,
+                        alignment: Alignment.center,
+                        child: _selectTempFirstLevelIndex == index1
+                            ? Row(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 20,
+                                    width: 30,
+                                    child: CachedNetworkImage(
+                                      imageUrl: item.imgUrl.toString(),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 50,
+                                    width: 100,
+                                    child: Text(
+                                      '${textWidget(item)}',
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .primaryColorDark,
+                                          fontSize: 12),
+                                      overflow: TextOverflow.fade,
+                                      maxLines: 4,
+                                    ),
+                                  )
+                                ],
+                              )
+                            : Row(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 20,
+                                    width: 40,
+                                    child: CachedNetworkImage(
+                                      imageUrl: item.imgUrl.toString(),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 50,
+                                    width: 100,
+                                    child: Text(
+                                      '${textWidget(item)}',
+                                      style: TextStyle(fontSize: 15),
+                                      overflow: TextOverflow.fade,
+                                      maxLines: 4,
+                                    ),
+                                  )
+                                ],
+                              )));
+              }).toList(),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: Colors.grey[200],
+              child: _selectTempFirstLevelIndex == -1
+                  ? Container()
+                  : ListView(
+                      children: widget.categorylist[_selectTempFirstLevelIndex]
+                          .subCategories
+                          .map((item) {
+                        int index = widget
+                            .categorylist[_selectTempFirstLevelIndex]
+                            .subCategories
+                            .indexOf(item);
+                        return GestureDetector(
+                            onTap: () {
+                              purchased.resetList(context,
+                                  supplierid: id,
+                                  category: widget
+                                      .categorylist[_selectTempFirstLevelIndex]
+                                      .subCategories[index]
+                                      .id);
+                              category = textSubWidget(widget
+                                  .categorylist[_selectTempFirstLevelIndex]
+                                  .subCategories[index]);
+                              itemOnTap();
+                            },
+                            child: Container(
+                              height: 40,
+                              alignment: Alignment.centerLeft,
+                              child: Row(children: <Widget>[
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    SizedBox(
+                                      height: 20,
+                                      width: 40,
+                                      child: CachedNetworkImage(
+                                        imageUrl: item.imgUrl.toString() ?? ' ',
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 50,
+                                      width: 100,
+                                      child: Text(
+                                        '${textSubWidget(item)}',
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .primaryColorDark,
+                                            fontSize: 15),
+                                        overflow: TextOverflow.fade,
+                                        maxLines: 4,
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ]),
+                            ));
+                      }).toList(),
+                    ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      bottomNavigationBar: FloatingNavbar(
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.red,
-        unselectedItemColor: Colors.red,
-        //itemBorderRadius:200,
-        iconSize: 20,
-        borderRadius: 20,
-        onTap: (int val) {
-          switch (val) {
-            case 0:
-              {
-                categorypressed(widget.supplierid);
-              }
-              break;
-
-            case 1:
-              {
-                _onSortPressed(context);
-              }
-              break;
-            case 2:
-              {
-                _renderFilterDialog();
-              }
-              break;
-          }
-        },
-        currentIndex: -1,
-        items: [
-          FloatingNavbarItem(
-              icon: MaterialCommunityIcons.format_list_bulleted_type,
-              title: lang.tr('shopOwner.Category')),
-          FloatingNavbarItem(
-            icon: Icons.sort,
-            title: lang.tr('shopOwner.Sort'),
+        appBar: AppBar(
+          elevation: 0.0,
+          title: Text(
+            lang.tr('shopOwner.Purchased'),
+            style: TextStyle(color: Colors.black),
           ),
-          FloatingNavbarItem(
-              icon: FontAwesome.barcode, title: lang.tr('shopOwner.Scan')),
-        ],
-      ),
-      body: getWidget(),
-    );
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 20, top: 5),
+              child: isGridWidget(),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 20, top: 5),
+              child: basketWidget(),
+            )
+          ],
+        ),
+        body: Stack(key: _stackKey, children: <Widget>[
+          Column(
+            children: <Widget>[
+              GZXDropDownHeader(
+                items: [
+                  GZXDropDownHeaderItem(category),
+                  GZXDropDownHeaderItem(sort),
+                ],
+                stackKey: _stackKey,
+                controller: _dropdownMenuController,
+                onItemTap: (index) {},
+                style: TextStyle(color: Color(0xFF666666), fontSize: 14),
+                dropDownStyle: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              Expanded(child: getWidget()),
+            ],
+          ),
+          GZXDropDownMenu(
+            controller: _dropdownMenuController,
+            animationMilliseconds: 300,
+            dropdownMenuChanging: (isShow, index) {},
+            dropdownMenuChanged: (isShow, index) {},
+            menus: [
+              GZXDropdownMenuBuilder(
+                  dropDownHeight: 40 * 8.0,
+                  dropDownWidget: _buildCategoryWidget(() {
+                    _dropdownMenuController.hide();
+
+                    setState(() {});
+                  })),
+              GZXDropdownMenuBuilder(
+                  dropDownHeight: 40 * 8.0,
+                  dropDownWidget: _onSortPressed(() {
+                    _dropdownMenuController.hide();
+
+                    setState(() {});
+                  })),
+            ],
+          ),
+        ]));
   }
 }

@@ -73,10 +73,11 @@ class ProductListProvider extends ChangeNotifier {
     if (page != -1) {
       try {
         final data = await _api.getProducts(
-            page: page,
-            supplierid: supplierid,
-            category: category,
-            brand: brand);
+          page: page,
+          supplierid: supplierid,
+          category: category,
+          brand: brand,
+        );
 
         if (checkServerResponse(data, context)) {
           final List<Product> prodlist = data["data"]
@@ -314,6 +315,7 @@ class ProductListProvider extends ChangeNotifier {
 
   getCategories(BuildContext context) async {
     try {
+      loading = true;
       final data = await _api.getCategorys();
 
       if (data != null) {
@@ -327,17 +329,21 @@ class ProductListProvider extends ChangeNotifier {
           }
           print('toule lista = ' + categories.length.toString());
         }
+        loading = false;
+        notifyListeners();
         return;
       }
-
-      suppliers.clear();
     } catch (e) {
       print(e);
+      loading = false;
+      error = true;
+      errorMsg = e.toString();
     }
   }
 
   getBrands(BuildContext context) async {
     try {
+      loading = true;
       final data = await _api.getBrands();
 
       if (data != null) {
@@ -351,19 +357,22 @@ class ProductListProvider extends ChangeNotifier {
           }
           print('toule lista = ' + brands.length.toString());
         }
+        loading = false;
+        notify();
         return;
       }
-
-      suppliers.clear();
     } catch (e) {
       print(e);
+      error = true;
+      errorMsg = e.toString();
+      loading = false;
     }
   }
 
   Future<void> getLists(BuildContext context) async {
-    await getSuppliers(context);
+    //await getSuppliers(context);
     await getCategories(context);
-    await getBrands(context);
+    //await getBrands(context);
 
     notify();
   }

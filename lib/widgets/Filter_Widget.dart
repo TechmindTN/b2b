@@ -265,8 +265,7 @@ class _FilterDialogsideState extends State<FilterDialogsideWidget> {
   @override
   void initState() {
     super.initState();
-    //widget.productProvider.getLists(context);
-    //intil();
+  
   }
 
   @override
@@ -312,9 +311,6 @@ class _FilterDialogsideState extends State<FilterDialogsideWidget> {
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context);
-    final currentlang = lang.locale.languageCode;
-    print(currentlang);
-
     final edgeInsets = const EdgeInsets.all(8.0);
     return new Drawer(
         child: ListView(children: <Widget>[
@@ -323,8 +319,8 @@ class _FilterDialogsideState extends State<FilterDialogsideWidget> {
         child: Text(lang.tr('shopOwner.Category'),
             style: Theme.of(context).textTheme.display1.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontSize: 25)),
+                color: Colors.black45,
+                fontSize: 20)),
       ),
       ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
@@ -394,7 +390,7 @@ class _FilterDialogsideState extends State<FilterDialogsideWidget> {
                                     .subCategories[i].id
                             ? Icon(
                                 Icons.check_circle,
-                                color: yellow,
+                                color: Theme.of(context).primaryColorDark,
                                 size: 23,
                               )
                             : SizedBox(),

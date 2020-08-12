@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launch/flutter_launch.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:fluttericon/typicons_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,6 +11,9 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:siyou_b2b/main.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/Categorys.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/Supplier/SupplierList.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/orders/OrdersScreen.dart';
 import 'package:siyou_b2b/widgets/LoadingWidget.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:carousel_slider/carousel_slider.dart';
@@ -119,6 +123,143 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
     );
   }
 
+  // ignore: non_constant_identifier_names
+  Widget _headerpart() {
+    return ListView(
+      scrollDirection: Axis.horizontal,
+      children: <Widget>[
+        FlatButton(
+          onPressed: () => {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => Category())),
+          },
+          //color: Colors.orange,
+          padding: EdgeInsets.only(
+            top: 10.0,
+            left: 5.0,
+            right: 5.0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/svg/category.svg',
+                fit: BoxFit.scaleDown,
+                width: MediaQuery.of(context).size.width / 5,
+                height: 25,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 5,
+                child: Text(
+                  lang.tr('shopOwner.allcat'),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black45),
+                ),
+              ),
+            ],
+          ),
+        ),
+        FlatButton(
+          onPressed: () => {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => SupplierListScreen()))
+          },
+          padding: EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/svg/shop-2.svg',
+                fit: BoxFit.scaleDown,
+                width: MediaQuery.of(context).size.width / 5,
+                height: 25,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 4.5,
+                child: Text(
+                  lang.tr('shopOwner.allsupp'),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black45),
+                ),
+              ),
+            ],
+          ),
+        ),
+        FlatButton(
+          onPressed: () => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => BrandScreen())),
+          padding: EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/svg/brand.svg',
+                fit: BoxFit.scaleDown,
+                width: MediaQuery.of(context).size.width / 5,
+                height: 25,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 5.2,
+                child: Text(
+                  lang.tr('shopOwner.allbrand'),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black45),
+                ),
+              ),
+            ],
+          ),
+        ),
+        FlatButton(
+          onPressed: () => {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => OrdersScreen()))
+          },
+          //color: Colors.orange,
+          padding: EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/svg/cartorder.svg',
+                fit: BoxFit.scaleDown,
+                width: MediaQuery.of(context).size.width / 5,
+                height: 25,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 5.2,
+                child: Text(
+                  lang.tr('shopOwner.allorders'),
+                  maxLines: 3,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black45),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget getWidget() {
     return Consumer<HomeProvider>(
       builder: (context, provider, widget) {
@@ -176,161 +317,167 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
     int index,
   ) {
     return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (ctx) => LanguageProvider(
-                child: ChangeNotifierProvider(
-                  child: SupplierScreen(
-                      supplier: _productProvide.suppliers[index]),
-                  create: (_) => HomeProvider(),
-                ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (ctx) => LanguageProvider(
+              child: ChangeNotifierProvider(
+                child:
+                    SupplierScreen(supplier: _productProvide.suppliers[index]),
+                create: (_) => HomeProvider(),
               ),
             ),
-          );
-        },
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          child: Row(
-            //mainAxisAlignment:MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-
-            children: <Widget>[
-              Container(
-                // width: MediaQuery.of(context).size.width,
-                padding: new EdgeInsets.all(10.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15.0),
-                  ),
-                  child: Container(
-                    height: 85.0,
-                    width: 100.0,
-                    child: _productProvide.suppliers[index].imgUrl == null ||
-                            _productProvide.suppliers[index].imgUrl == ""
-                        ? Image.asset(
-                            "assets/png/empty_cart.png",
-                            fit: BoxFit.contain,
-                            alignment: Alignment.center,
-                          )
-                        : CachedNetworkImage(
-                            imageUrl: _productProvide.suppliers[index].imgUrl,
-                            fit: BoxFit.fill,
-                            placeholder: (context, url) => placeholder(context),
-                          ),
-                  ),
-                ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    _productProvide.suppliers[index].firstName +
-                        ' ' +
-                        _productProvide.suppliers[index].lastName,
-                    style: TextStyle(
-                      //color: Theme.of(context).primaryColor, //Color(0xFFB7B7B7),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17.0,
-                    ),
-                  ),
-                  if (_productProvide.suppliers[index].description != null)
+          ),
+        );
+      },
+      child: Stack(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     Container(
-                      padding: EdgeInsets.only(top: 5),
-                      width: MediaQuery.of(context).size.width / 1.6,
-                      child: Text(
-                        _productProvide.suppliers[index].description,
-                        style:
-                            TextStyle(color: Color(0xFFB7B7B7), fontSize: 10),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
+                      // width: MediaQuery.of(context).size.width,
+                      padding: new EdgeInsets.only(
+                        left: 5,
+                        right: 5,
                       ),
-                    ),
-                  //if (_productProvide.suppliers[index].minorder > 0)
-                  SizedBox(
-                    height: 10,
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        /* WidgetSpan(
-                        child: Icon(
-                          Icons.star,
-                          size: 18,
-                          color: Colors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(15.0),
+                        ),
+                        child: Container(
+                          height: 40.0,
+                          width: 40.0,
+                          child: _productProvide.suppliers[index].imgUrl ==
+                                      null ||
+                                  _productProvide.suppliers[index].imgUrl == ""
+                              ? Image.asset(
+                                  "assets/png/empty_cart.png",
+                                  fit: BoxFit.contain,
+                                  alignment: Alignment.center,
+                                )
+                              : CachedNetworkImage(
+                                  imageUrl:
+                                      _productProvide.suppliers[index].imgUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      placeholder(context),
+                                ),
                         ),
                       ),
-                      TextSpan(
-                          text: "  ", style: TextStyle(color: Colors.grey)),
-                      WidgetSpan(
-                        child: SizedBox(
-                          width: 20,
-                        ),
-                      ),*/
-                        if (_productProvide.suppliers[index].minorder > 0)
-                          TextSpan(
-                              text: "Min Order € " +
-                                  _productProvide.suppliers[index].minorder
-                                      .toString(),
-                              style: TextStyle(color: Colors.red)),
-                      ],
                     ),
-                  ),
-                  if (_productProvide.suppliers[index].minorder > 0)
-                    SizedBox(
-                      height: 10,
-                    ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 140,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              WidgetSpan(
-                                child: Icon(
-                                  Icons.timer,
-                                  size: 18,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              TextSpan(
-                                  text: _productProvide
-                                          .suppliers[index].distance +
-                                      " Km",
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w500)),
-                            ],
+                        Text(
+                          _productProvide.suppliers[index].firstName +
+                              ' ' +
+                              _productProvide.suppliers[index].lastName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.0,
                           ),
                         ),
-                        Spacer(),
-                        Container(
-                          width: 100,
-                          child: Text(
-                              _productProvide.suppliers[index].country +
-                                  ',' +
-                                  _productProvide.suppliers[index].region,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: Color(0xFF959ca6))),
-                        )
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          lang.tr('shopOwner.phone') +
+                              _productProvide.suppliers[index].phoneNum1
+                                  .toString(),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 10.0,
+                          ),
+                        ),
                       ],
-                    ),
+                    )
+                  ],
+                ),
+                Divider(),
+                Container(
+                  padding: EdgeInsets.only(left: 10),
+                  width: MediaQuery.of(context).size.width,
+                  child: Text(
+                    _productProvide.suppliers[index].description == null ||
+                            _productProvide.suppliers[index].description
+                                    .toString()
+                                    .length <
+                                10
+                        ? 'We are **company, which have enough experience on market of selling *products and research ** product.'
+                        : _productProvide.suppliers[index].description,
+                    style: TextStyle(color: Color(0xFFB7B7B7), fontSize: 10),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  Divider()
-                ],
-              )
-            ],
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: Row(
+                    children: <Widget>[
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            WidgetSpan(
+                              child: Icon(
+                                Icons.timer,
+                                size: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            TextSpan(
+                                text:
+                                    _productProvide.suppliers[index].distance +
+                                        " Km",
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                      ),
+                      Spacer(),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: _productProvide.suppliers[index].region +
+                                    ', ' +
+                                    _productProvide.suppliers[index].country,
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12))
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
-        ));
+          Positioned(
+              top: -10,
+              right: 2,
+              child: Image.asset(
+                "assets/png/New.png",
+                fit: BoxFit.contain,
+                alignment: Alignment.topRight,
+                width: 50,
+                height: 90,
+              ))
+        ],
+      ),
+    );
   }
 
   @override
@@ -388,7 +535,7 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
               //_animationController.reverse();
             },
           ),
-          //Floating action menu item
+
           Bubble(
             title: "",
             iconColor: Colors.white,
@@ -416,25 +563,19 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
           ),
         ],
 
-        // animation controller
         animation: _animation,
 
-        // On pressed change animation state
         onPress: () {
           _animationController.isCompleted
               ? _animationController.reverse()
               : _animationController.forward();
         },
-
-        // Floating Action button Icon color
         iconColor: Colors.white,
         backGroundColor: Theme.of(context).primaryColorDark,
-
-        // Flaoting Action button Icon
         iconData: Typicons.chat,
       ),
-      //backgroundColor: Theme.of(context).primaryColorDark,
       body: Container(
+        color: Colors.grey[100],
         child: Column(
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -479,6 +620,14 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
             ),
             SizedBox(
               height: 5,
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 10, left: 5, right: 5),
+              color: Colors.white,
+              height: MediaQuery.of(context).size.height / 9.5,
+              child: Center(
+                child: _headerpart(),
+              ),
             ),
             Expanded(child: getWidget())
           ],

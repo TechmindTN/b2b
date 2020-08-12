@@ -75,7 +75,7 @@ class ApiProvider {
         },
         //data: data
       );
-      //print(res.data);
+      print(res.data);
       return res.data;
     } catch (e) {
       print(e);
@@ -317,12 +317,12 @@ class ApiProvider {
     }
   }
 
-  Future<Map<String, dynamic>> getOrders() async {
+  Future<Map<String, dynamic>> getOrders({DateTime date}) async {
     final String token = await getUserToken();
 
     try {
-      final res =
-          await dio.request("/orders/shop", queryParameters: {"token": token});
+      final res = await dio.request("/orders/shop",
+          queryParameters: {"token": token, "date": date});
       print(res.data);
       return res.data;
     } catch (e) {

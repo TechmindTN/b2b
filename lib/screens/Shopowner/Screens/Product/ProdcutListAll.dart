@@ -5,18 +5,27 @@ import 'package:provider/provider.dart';
 import 'package:siyou_b2b/providers/ProductProvider.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/product/productlist.dart';
 
-import 'package:siyou_b2b/widgets/Filter_Widget.dart';
-
-class ProductsListScreen extends StatefulWidget {
+class ALLCategoriesScreen extends StatefulWidget {
   final ProductListProvider productProvider;
+  final int categorieid;
+  final int brandid;
+  final int suppid;
+  final String appbarName;
 
-  const ProductsListScreen({Key key, this.productProvider}) : super(key: key);
+  const ALLCategoriesScreen(
+      {Key key,
+      this.productProvider,
+      this.categorieid,
+      this.brandid,
+      this.suppid,
+      this.appbarName})
+      : super(key: key);
 
   @override
-  _ProductsListScreenState createState() => _ProductsListScreenState();
+  _ALLCategoriesScreenState createState() => _ALLCategoriesScreenState();
 }
 
-class _ProductsListScreenState extends State<ProductsListScreen> {
+class _ALLCategoriesScreenState extends State<ALLCategoriesScreen> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   ProductListProvider _productProvider;
   AppLocalizations lang;
@@ -35,8 +44,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
   @override
   Widget build(BuildContext context) {
     final lang = AppLocalizations.of(context);
-    //var width = 300;
-    //var _theme = Theme.of(context);
+
     var iconSize = 24.0;
     //var thirdWidth = (width - iconSize * 3) / 3;
     return Scaffold(
@@ -46,20 +54,24 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
           color: Colors.black,
         ),
         title: Row(
-          //crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              lang.tr('shopOwner.Discovery'),
-              style: TextStyle(color: Colors.black),
-            ),
+            widget.appbarName == null
+                ? Text(
+                    lang.tr('shopOwner.Discovery'),
+                    style: TextStyle(color: Colors.black),
+                  )
+                : Text(
+                    widget.appbarName,
+                    style: TextStyle(color: Colors.black),
+                  ),
             Spacer(),
             InkWell(
               onTap: (() => {
-                    //_renderFilterDialog()
-                    _productProvider.resetList(
-                      context,
-                    )
+                    _productProvider.resetList(context,
+                        supplierid: widget.suppid,
+                        category: widget.categorieid,
+                        brand: widget.brandid)
                   }),
               child: Icon(Icons.refresh, size: iconSize),
             ),
@@ -67,22 +79,20 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
         ),
       ),
       key: scaffoldKey,
-      drawer: Container(
-          width: MediaQuery.of(context).size.width * 0.75,
-          child: FilterDialogsideWidget(productProvider: _productProvider)),
       body: Padding(
         padding: const EdgeInsets.all(5.0),
         child: Column(
-          //crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Expanded(flex: 1, child: ProductList()),
+            Expanded(
+                flex: 1,
+                child: ProductList(
+                  suppid: widget.suppid,
+                  categ: widget.categorieid,
+                  brand: widget.brandid,
+                )),
           ],
         ),
       ),
     );
   }
-
-
-
-  
 }

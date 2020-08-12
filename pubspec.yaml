@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+5
+version: 1.0.0+7
 
 environment:
   sdk: ">=2.5.0 <3.0.0"
@@ -55,7 +55,8 @@ dependencies:
   barcode_scan_fix: ^1.0.2
   shimmer: ^1.1.1
   rflutter_alert: ^1.0.3
-  animated_text_kit: ^2.2.0
+  flutter_holo_date_picker: ^0.1.4
+  gzx_dropdown_menu: ^2.1.0
   
 
 
@@ -88,9 +89,8 @@ flutter:
     - assets/svg/
     - assets/png/
     - assets/jpg/
-    - assets/flare/
     - assets/
-    - assets/icons/
+    
   #    - assets/png/
   #    - assets/jpg/
   #    - assets/fonts/
@@ -111,19 +111,8 @@ fonts:
     fonts:
       - asset: assets/fonts/MyFlutterApp.ttf
 
-  - family: Oxygen
-    fonts:
-        - asset: assets/fonts/Oxygen-Regular.ttf
-        - asset: assets/fonts/Oxygen-Light.ttf
-        - asset: assets/fonts/Oxygen-Bold.ttf
-  - family: Montserrat
-    fonts:
-    - asset: fonts/Montserrat-Regular.ttf
-  - family: NunitoSans
-    fonts:
-        - asset: assets/fonts/NunitoSans-Regular.ttf  
-  - family: Siyou
-    fonts:
-        - asset: assets/fonts/Raleway-SemiBold.ttf        
+     
+
+        
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

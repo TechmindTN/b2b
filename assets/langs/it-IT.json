@@ -59,6 +59,10 @@
     "Purchased": "Cronologia acquisti",
     "Discovery": "Scoperta",
     "Sort": "Tipo",
+    "NameA-Z":"Name A-Z",
+    "NameZ-A":"Name Z-A",
+    "pricelow-hight":"Price low-hight",
+    "pricehigh-low":"Price high-low",
     "Scan": "Scansione",
     "Country":"Change Country",
     "Password":"Change Password",
@@ -78,8 +82,27 @@
     "tryagain":"Tocca per riprovare",
     "emptywish":"La tua lista di desideri è vuota",
     "wishexplor":" Cerca e scegli altri prodotti desiderati",
+    "allcat":"All categories",
+    "allsupp":"All suppliers",
+    "allbrand":"All brands",
+    "allorders":"All orders",
+    "Showall":"Show all products",
     "Total ":"totale"
     
+
+  },
+  "ConfirmOrder":{
+    "shippingprice":"Costo di spedizione: ",
+    "negotiated":"Da negoziare ! ",
+    "purchasedate":"Data di Aquisto : ",
+    "Minimumorder":"Importo minimo dell'ordine : ",
+    "confirmorder":"Conferma l'ordine",
+    "product":"Elenco Prodotti",
+    "credit ":"Credit Card",
+    "paypal":"PayPal",
+    "bank":"Bank Transfers",
+    "bankcheck":"Bank Check",
+    "delivery":"Payment on delivery"
 
   },
   "serverError": {

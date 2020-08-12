@@ -13,8 +13,11 @@ import 'package:siyou_b2b/widgets/progressindwidget.dart';
 
 class ProductList extends StatefulWidget {
   final int suppid;
+  final int categ;
+  final int brand;
 
-  const ProductList({Key key, this.suppid}) : super(key: key);
+  const ProductList({Key key, this.suppid, this.categ, this.brand})
+      : super(key: key);
   @override
   _ProductListState createState() => _ProductListState();
 }
@@ -28,12 +31,17 @@ class _ProductListState extends State<ProductList> {
   @override
   void initState() {
     super.initState();
+
     _productProvider = Provider.of<ProductListProvider>(context, listen: false);
+    intil();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         if (_productProvider.page != -1)
-          _productProvider.getProducts(context, supplierid: widget.suppid);
+          _productProvider.getProducts(context,
+              supplierid: widget.suppid,
+              category: widget.categ,
+              brand: widget.brand);
       }
     });
   }
@@ -41,7 +49,8 @@ class _ProductListState extends State<ProductList> {
   intil() async {
     await _productProvider.getLists(context);
     //await _productProvider.resetList(context);
-    print('intial');
+    await _productProvider.resetList(context,
+        supplierid: widget.suppid, category: widget.categ, brand: widget.brand);
   }
 
   @override
@@ -49,8 +58,6 @@ class _ProductListState extends State<ProductList> {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
     // _productProvider = Provider.of<ProductListProvider>(context, listen: false);
-    _productProvider?.getProducts(context, supplierid: widget.suppid);
-    intil();
   }
 
   @override
@@ -64,7 +71,10 @@ class _ProductListState extends State<ProductList> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () => _productProvider.resetList(context),
+        onRefresh: () => _productProvider.resetList(context,
+            supplierid: widget.suppid,
+            category: widget.categ,
+            brand: widget.brand),
         child: getWidget(),
       ),
     );
@@ -87,6 +97,7 @@ class _ProductListState extends State<ProductList> {
                 child: Image.asset(
                   "assets/jpg/MonkeyLoading.gif",
                   fit: BoxFit.contain,
+                  height: MediaQuery.of(context).size.height * 0.50,
                   width: double.infinity,
                 ),
               ),
@@ -102,21 +113,14 @@ class _ProductListState extends State<ProductList> {
             mainAxisSpacing: 0.0,
             crossAxisSpacing: 0.0,
             crossAxisCount: 4,
-            /*gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 2.0,
-              mainAxisSpacing: 2.0,
-              childAspectRatio: MediaQuery.of(context).size.width /
-                  (MediaQuery.of(context).size.height * 0.70),
-            ),*/
           );
         } else
           return RefreshIndicator(
-            onRefresh: () => _productProvider.resetList(context),
-            child: Center(
-              child: Text("No data found"),
-            ),
-          );
+              onRefresh: () => _productProvider.resetList(context),
+              child: Container(
+                  child: Center(
+                child: Text("No data found"),
+              )));
       },
     );
   }
@@ -139,30 +143,124 @@ class _ProductListState extends State<ProductList> {
         );
       },
       child: Card(
-        elevation: 0.0,
-        //margin: EdgeInsets.all(value),
-
-        child: Container(
-          //color: Colors.grey[200],
-          padding: new EdgeInsets.all(2.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          elevation: 0.0,
+          shape: RoundedRectangleBorder(
+              //side: new BorderSide(color: Colors.blue, width: 2.0),
+              borderRadius: BorderRadius.circular(10.0)),
+          child: Stack(
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  SizedBox(
-                      width: 140,
-                      child: Text(
-                        _productProvider.products[index].productName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold),
-                      )),
-                  SizedBox.fromSize(
+              Container(
+                padding: new EdgeInsets.only(left: 5, right: 5, bottom: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20.0),
+                        ),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height/4,
+                          //width: MediaQuery.of(context).size.width / 2.3,
+                          child:
+                              _productProvider.products[index].productImage ==
+                                          null ||
+                                      _productProvider
+                                              .products[index].productImage ==
+                                          ""
+                                  ? Image.asset(
+                                      "assets/png/empty_cart.png",
+                                      fit: BoxFit.contain,
+                                      alignment: Alignment.center,
+                                    )
+                                  : CachedNetworkImage(
+                                      imageUrl: _productProvider
+                                          .products[index].productImage,
+                                      fit: BoxFit.contain,
+                                    ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width / 2.3,
+                        child: Text(
+                          _productProvider.products[index].productName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w300),
+                        )),
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              _productProvider
+                                      .products[index].supplier.firstName +
+                                  ' ' +
+                                  _productProvider
+                                      .products[index].supplier.lastName,
+                              style: TextStyle(
+                                color: Color(0xFFB7B7B7),
+                                fontSize: 10.0,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 1.0,
+                            ),
+                            Text(
+                              _productProvider
+                                          .products[index].category.categoryName
+                                          .toString()
+                                          .length >
+                                      18
+                                  ? _productProvider
+                                      .products[index].category.categoryName
+                                      .substring(0, 18)
+                                  : _productProvider
+                                      .products[index].category.categoryName
+                                      .toString(),
+                              style: TextStyle(
+                                color: Color(0xFFB7B7B7),
+                                fontSize: 10.0,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 4.0,
+                            ),
+                          ],
+                        ),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                _productProvider
+                                    .products[index].brand.brandName,
+                                style: TextStyle(
+                                  color: Color(0xFFB7B7B7),
+                                  fontSize: 10.0,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5.0,
+                              ),
+                            ]),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                  right: 2,
+                  top: 2,
+                  child: SizedBox.fromSize(
                     size: Size(20, 20),
                     child: ClipOval(
                       child: Material(
@@ -186,113 +284,9 @@ class _ProductListState extends State<ProductList> {
                             )),
                       ),
                     ),
-                  )
-                ],
-              ),
-              SizedBox(
-                height: 4.0,
-              ),
-              Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20.0),
-                  ),
-                  child: Container(
-                    height: 125.0,
-                    width: 170.0,
-                    child: _productProvider.products[index].productImage ==
-                                null ||
-                            _productProvider.products[index].productImage == ""
-                        ? Image.asset(
-                            "assets/png/empty_cart.png",
-                            fit: BoxFit.contain,
-                            alignment: Alignment.center,
-                          )
-                        : CachedNetworkImage(
-                            imageUrl:
-                                _productProvider.products[index].productImage,
-                            fit: BoxFit.contain,
-                          ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        _productProvider.products[index].supplier.firstName +
-                            ' ' +
-                            _productProvider.products[index].supplier.lastName,
-                        style: TextStyle(
-                          color: Color(0xFFB7B7B7),
-                          fontSize: 10.0,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 1.0,
-                      ),
-                      Text(
-                        _productProvider.products[index].category.categoryName
-                                    .toString()
-                                    .length >
-                                18
-                            ? _productProvider
-                                .products[index].category.categoryName
-                                .substring(0, 18)
-                            : _productProvider
-                                .products[index].category.categoryName
-                                .toString(),
-                        style: TextStyle(
-                          color: Color(0xFFB7B7B7),
-                          fontSize: 10.0,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 4.0,
-                      ),
-                    ],
-                  ),
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          _productProvider.products[index].brand.brandName,
-                          style: TextStyle(
-                            color: Color(0xFFB7B7B7),
-                            fontSize: 10.0,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 1.0,
-                        ),
-                        /*Text(
-                          'P/B:' +
-                              _productProvider.products[index].productPackage
-                                  .toString() +
-                              '/' +
-                              _productProvider.products[index].productBox
-                                  .toString(),
-                          style: TextStyle(
-                            color: Color(0xFFB7B7B7),
-                            fontSize: 10.0,
-                          ),
-                        ),*/
-                        SizedBox(
-                          height: 4.0,
-                        ),
-                      ]),
-                ],
-              ),
+                  ))
             ],
-          ),
-        ),
-      ),
+          )),
     );
   }
 

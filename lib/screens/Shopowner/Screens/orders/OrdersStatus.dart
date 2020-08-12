@@ -23,7 +23,7 @@ class _OrdersStatusState extends State<OrdersStatus> {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
     _orderProvide = Provider.of<CartProvider>(context, listen: false);
-    _orderProvide?.getOrders(context);
+   // _orderProvide?.getOrders(context);
   }
 
   Widget getWidget() {
@@ -98,7 +98,7 @@ class _OrdersStatusState extends State<OrdersStatus> {
                   child: Column(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(0.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -118,7 +118,7 @@ class _OrdersStatusState extends State<OrdersStatus> {
                                   Expanded(
                                     //flex: 5,
                                     child: Text(
-                                        '${lang.tr('shopOwner.orderno')} :  ${_orderProvide.invalidorders[index].orderRef}',
+                                        '${_orderProvide.invalidorders[index].orderRef}',
                                         textAlign: TextAlign.left,
                                         style: Theme.of(context)
                                             .textTheme
@@ -142,11 +142,11 @@ class _OrdersStatusState extends State<OrdersStatus> {
                                 .invalidorders[index].supplier.lastName,
                         title: '${lang.tr('shopOwner.Supplier')} :',
                       ),
-                      TransactionNoTextWidget(
+                      /* TransactionNoTextWidget(
                         transationInfoText:
                             '€ ${_orderProvide.invalidorders[index].orderPrice.toString()}',
                         title: '${lang.tr('shopOwner.Total')} :',
-                      ),
+                      ),*/
                       TransactionNoTextWidget(
                         transationInfoText: _orderProvide
                             .invalidorders[index].statut.statutName
@@ -164,19 +164,34 @@ class _OrdersStatusState extends State<OrdersStatus> {
                       const SizedBox(
                         height: 12,
                       ),
-                      // _dividerWidget,
-                      /*Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+
+                      Row(
                         children: <Widget>[
-                          FlatButton(
-                            child: Text('View Details'),
-                            //color: Colors.blueAccent,
-                            //textColor: Colors.white,
-                            onPressed: () {},
+                          Spacer(),
+                          Text('${lang.tr('shopOwner.Total')}: ',
+                              // textAlign: TextAlign.left,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subhead
+                                  .copyWith(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                          Text(
+                              '€ ${_orderProvide.invalidorders[index].orderPrice.toString()}',
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subhead
+                                  .copyWith(
+                                      fontSize: 15,
+                                      color: Theme.of(context).primaryColorDark,
+                                      fontWeight: FontWeight.w400)),
+                          const SizedBox(
+                            width: 12,
                           ),
                         ],
-                      ),*/
-                      _dividerWidget
+                      ),
+                      //_dividerWidget,
                     ],
                   )),
               ScrollOnExpand(

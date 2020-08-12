@@ -44,9 +44,9 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.siyoutech.siyou_b2b"
+        applicationId "com.siyoutech.siyou_retail_b2b"
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

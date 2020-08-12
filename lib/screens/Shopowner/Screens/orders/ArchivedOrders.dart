@@ -8,7 +8,6 @@ import 'package:siyou_b2b/widgets/ErrorWidget.dart';
 import 'package:siyou_b2b/widgets/TransactionWidget.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 
-
 class ArchivedOrders extends StatefulWidget {
   @override
   _ArchivedOrdersState createState() => _ArchivedOrdersState();
@@ -24,7 +23,7 @@ class _ArchivedOrdersState extends State<ArchivedOrders> {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
     _orderProvide = Provider.of<CartProvider>(context, listen: false);
-    _orderProvide?.getOrders(context);
+    //_orderProvide?.getOrders(context);
   }
 
   Widget getWidget() {
@@ -99,7 +98,7 @@ class _ArchivedOrdersState extends State<ArchivedOrders> {
                   child: Column(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(0.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -119,11 +118,12 @@ class _ArchivedOrdersState extends State<ArchivedOrders> {
                                   Expanded(
                                     //flex: 5,
                                     child: Text(
-                                        '${lang.tr('shopOwner.orderno')} :  ${_orderProvide.vaildorders[index].orderRef}',
+                                        '${_orderProvide.vaildorders[index].orderRef}',
                                         textAlign: TextAlign.left,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .subhead.copyWith(fontSize: 12)),
+                                            .subhead
+                                            .copyWith(fontSize: 12)),
                                   ),
                                 ],
                               ),
@@ -142,11 +142,6 @@ class _ArchivedOrdersState extends State<ArchivedOrders> {
                         title: '${lang.tr('shopOwner.Supplier')} :',
                       ),
                       TransactionNoTextWidget(
-                        transationInfoText:
-                            '€ ${_orderProvide.vaildorders[index].orderPrice.toString()}',
-                        title: '${lang.tr('shopOwner.Total')} :',
-                      ),
-                      TransactionNoTextWidget(
                         transationInfoText: _orderProvide
                             .vaildorders[index].statut.statutName
                             .toUpperCase(),
@@ -163,19 +158,32 @@ class _ArchivedOrdersState extends State<ArchivedOrders> {
                       const SizedBox(
                         height: 12,
                       ),
-                      // _dividerWidget,
-                      /*Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      Row(
                         children: <Widget>[
-                          FlatButton(
-                            child: Text('View Details'),
-                            //color: Colors.blueAccent,
-                            //textColor: Colors.white,
-                            onPressed: () {},
+                          Spacer(),
+                          Text('${lang.tr('shopOwner.Total')}: ',
+                              // textAlign: TextAlign.left,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subhead
+                                  .copyWith(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                          Text(
+                              '€ ${_orderProvide.vaildorders[index].orderPrice.toString()}',
+                              textAlign: TextAlign.left,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subhead
+                                  .copyWith(
+                                      fontSize: 15,
+                                      color: Theme.of(context).primaryColorDark,
+                                      fontWeight: FontWeight.w400)),
+                          const SizedBox(
+                            width: 12,
                           ),
                         ],
-                      ),*/
-                      _dividerWidget
+                      ),
                     ],
                   )),
               ScrollOnExpand(

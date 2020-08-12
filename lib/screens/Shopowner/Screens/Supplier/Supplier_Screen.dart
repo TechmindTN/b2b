@@ -1,18 +1,20 @@
-import 'package:barcode_flutter/barcode_flutter.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 //import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:siyou_b2b/main.dart';
+import 'package:siyou_b2b/models/Categorys.dart';
 import 'package:siyou_b2b/models/suppliers.dart';
 import 'package:siyou_b2b/providers/CartProvider.dart';
-import 'package:siyou_b2b/providers/ProductProvider.dart';
+import 'package:siyou_b2b/screens/Shopowner/Screens/Product/ProdcutListAll.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/Supplier/purchased.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/cart.dart';
-import 'package:siyou_b2b/screens/Shopowner/Screens/product/productlist.dart';
 import 'package:siyou_b2b/widgets/CarouselProductimages.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:badges/badges.dart';
+import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 import 'Discount.dart';
 import 'NewArrivals.dart';
 
@@ -33,12 +35,12 @@ class _DetailsScreenState extends State<SupplierScreen>
   AppLocalizations lang;
   HomeProvider _productProvider;
   CartProvider cartProvider;
+  int categoryid = 0;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int id;
   @override
   void initState() {
     super.initState();
-    tabController = new TabController(length: 4, vsync: this);
     id = widget.supplier.id;
     _productProvider = Provider.of<HomeProvider>(context, listen: false);
     cartProvider = Provider.of<CartProvider>(context, listen: false);
@@ -46,7 +48,7 @@ class _DetailsScreenState extends State<SupplierScreen>
   }
 
   void intil() async {
-    await _productProvider?.getProducts(context, id);
+    //await _productProvider?.getProducts(context, id);
 
     await _productProvider?.getCategories(context, id);
   }
@@ -98,14 +100,9 @@ class _DetailsScreenState extends State<SupplierScreen>
 
   @override
   Widget build(BuildContext context) {
-    /* if (widget.supplier.image != '' ||
-        widget.supplier.image != null) {
-      imglist.clear();
-      imglist.add(widget.supplier.image);
-    }*/
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         brightness: Brightness.light,
         backgroundColor: Colors.white,
@@ -130,10 +127,11 @@ class _DetailsScreenState extends State<SupplierScreen>
                 _productProvider.resetList(context, supplierid: id);
               },
             ),
-            basketWidget(),
-            SizedBox(
-              width: 15,
+            Padding(
+              padding: EdgeInsets.only(right: 20),
+              child: basketWidget(),
             )
+
             // Spacer(),
           ],
         ),
@@ -145,14 +143,19 @@ class _DetailsScreenState extends State<SupplierScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Expanded(
-                  child: CarouselProductsList(
+              CarouselProductsList(
                 productsList: imglist,
                 type: CarouselTypes.home,
-              )),
+              ),
+              Container(
+                padding: EdgeInsets.only(bottom: 5),
+                margin: EdgeInsets.only(bottom: 5),
+                color: Colors.white,
+                child: _headerpart(),
+              ),
               Expanded(
                 flex: 5,
-                child: _buildDetailsAndMaterialWidgets(),
+                child: getWidget(),
               ),
             ],
           ),
@@ -161,7 +164,310 @@ class _DetailsScreenState extends State<SupplierScreen>
     );
   }
 
-  _buildDetailsAndMaterialWidgets() {
+  Widget _headerpart() {
+    return Row(
+      children: <Widget>[
+        FlatButton(
+          onPressed: () => {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => NewArrivals(
+                supplierid: id,
+                supplier: widget.supplier,
+                categorylist: _productProvider.categories,
+              ),
+            )),
+          },
+          //color: Colors.orange,
+          padding: EdgeInsets.only(
+            top: 10.0,
+            left: 2.0,
+            right: 2.0,
+          ),
+          child: Column(
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/svg/Newarrivals.svg',
+                fit: BoxFit.scaleDown,
+                width: MediaQuery.of(context).size.width / 5,
+                height: 25,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 5,
+                child: Text(
+                  lang.tr('shopOwner.New Arrivals'),
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black45, fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+        FlatButton(
+          onPressed: () => {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => ALLCategoriesScreen(
+                    suppid: widget.supplier.id,
+                    appbarName: lang.tr('shopOwner.recommended'))))
+          },
+          padding: EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+          child: Column(
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/svg/Recommend.svg',
+                fit: BoxFit.scaleDown,
+                width: MediaQuery.of(context).size.width / 5,
+                height: 25,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 4.5,
+                child: Text(
+                  lang.tr('shopOwner.recommended'),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black45, fontSize: 11),
+                ),
+              ),
+            ],
+          ),
+        ),
+        FlatButton(
+          onPressed: () => {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => Discount(
+                supplierid: id,
+                supplier: widget.supplier,
+                categorylist: _productProvider.categories,
+              ),
+            )),
+          },
+          padding: EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+          child: Column(
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/svg/Promotion.svg',
+                fit: BoxFit.scaleDown,
+                width: MediaQuery.of(context).size.width / 5,
+                height: 25,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 5.2,
+                child: Text(
+                  lang.tr('shopOwner.Discounts'),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black45, fontSize: 11),
+                ),
+              ),
+            ],
+          ),
+        ),
+        FlatButton(
+          onPressed: () => {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => Purchased(
+                supplierid: id,
+                supplier: widget.supplier,
+                categorylist: _productProvider.categories,
+              ),
+            ))
+          },
+          //color: Colors.orange,
+          padding: EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+          child: Column(
+            children: <Widget>[
+              SvgPicture.asset(
+                'assets/svg/history.svg',
+                fit: BoxFit.scaleDown,
+                width: MediaQuery.of(context).size.width / 5,
+                height: 25,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 5.2,
+                child: Text(
+                  lang.tr('shopOwner.Purchased'),
+                  maxLines: 3,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black45, fontSize: 11),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getWidget() {
+    return Consumer<HomeProvider>(
+      builder: (context, provider, widget) {
+        if (provider.error) {
+          // provider.resetsupp(context);
+          return ServerErrorWidget(
+            errorText: provider.errorMsg,
+          );
+        } else if (provider.loading)
+          return Container(
+            color: Colors.white,
+            child: Center(
+              child: Container(
+                width: double.infinity,
+                //height: 250,
+                child: Image.asset(
+                  "assets/jpg/MonkeyLoading.gif",
+                  fit: BoxFit.contain,
+                  height: MediaQuery.of(context).size.height * 0.50,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+          );
+        else if (provider.categories != null &&
+            provider.categories.isNotEmpty) {
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            //shrinkWrap: true,
+            //controller: _scrollController,
+            itemCount: provider.categories.length,
+            itemBuilder: (context, index) => _getItemWidget(index),
+          );
+        } else
+          return Container(
+            child: Text(
+              "No data found",
+              textAlign: TextAlign.center,
+            ),
+          );
+      },
+    );
+  }
+
+  Widget _getItemWidget(int index) {
+    final edgeInsets = const EdgeInsets.only(bottom: 5);
+    return Container(
+        height: MediaQuery.of(context).size.height * 0.65,
+        child: ListView(children: <Widget>[
+          Container(
+            color: Colors.white,
+            child: ListTile(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => ALLCategoriesScreen(
+                          suppid: widget.supplier.id,
+                          appbarName: widget.supplier.firstName +
+                              ' ' +
+                              widget.supplier.lastName,
+                        )));
+              },
+              title: Text(lang.tr('shopOwner.Showall'),
+                  style: Theme.of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(fontSize: 14)),
+              trailing: Icon(Icons.chevron_right, color: Colors.black45),
+            ),
+          ),
+          Container(
+            padding: edgeInsets,
+          ),
+          Container(
+              color: Colors.white,
+              child: ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _productProvider.categories.length,
+                  itemBuilder: (_, index) {
+                    return ExpansionTile(
+                      leading: SizedBox(
+                        height: 45,
+                        width: 60,
+                        child: CachedNetworkImage(
+                          imageUrl: _productProvider.categories[index].imgUrl
+                                  .toString() ??
+                              ' ',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      title: Text(
+                          textWidget(_productProvider.categories[index]),
+                          style: Theme.of(context)
+                              .textTheme
+                              .subhead
+                              .copyWith(fontSize: 12)),
+                      children: [
+                        ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: _productProvider
+                                .categories[index].subCategories.length,
+                            itemBuilder: (_, i) {
+                              return ListTile(
+                                  onTap: () {
+                                    setState(() {
+                                      categoryid ==
+                                              _productProvider.categories[index]
+                                                  .subCategories[i].id
+                                          ? categoryid = null
+                                          : categoryid = categoryid =
+                                              _productProvider.categories[index]
+                                                  .subCategories[i].id;
+                                    });
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (_) => ALLCategoriesScreen(
+                                                  suppid: widget.supplier.id,
+                                                  categorieid: categoryid,
+                                                  appbarName: textSubWidget(
+                                                      _productProvider
+                                                          .categories[index]
+                                                          .subCategories[i]),
+                                                )));
+                                  },
+                                  leading: SizedBox(
+                                    height: 40,
+                                    width: 55,
+                                    child: CachedNetworkImage(
+                                      imageUrl: _productProvider
+                                              .categories[index]
+                                              .subCategories[i]
+                                              .imgUrl
+                                              .toString() ??
+                                          ' ',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    textSubWidget(_productProvider
+                                        .categories[index].subCategories[i]),
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                  trailing: Icon(Icons.chevron_right,
+                                      color: Colors.black45));
+                            })
+                      ],
+                    );
+                  }))
+        ]));
+  }
+
+  // ignore: unused_element
+  /* _buildDetailsAndMaterialWidgets() {
     //TabController tabController = new TabController(length: 4, vsync: this);
     return Container(
       child: Column(
@@ -229,59 +535,37 @@ class _DetailsScreenState extends State<SupplierScreen>
         ],
       ),
     );
+  }*/
+
+  String textWidget(Categories categories) {
+    if (lang.locale.languageCode.toUpperCase() == 'EN')
+      return categories.categoryName.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'ZH' &&
+        categories.categoryCn != null)
+      return categories.categoryCn.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'FR' &&
+        categories.categoryFr != null)
+      return categories.categoryFr.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'IT' &&
+        categories.categoryIt != null)
+      return categories.categoryIt.toString();
+    else
+      return categories.categoryName.toString();
   }
 
-  // ignore: unused_element
-  void _onItemPressed(BuildContext context, String barcode) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Center(
-            child: Wrap(children: <Widget>[
-              Stack(children: <Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8.0)),
-                  padding: EdgeInsets.all(32.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      BarCodeImage(
-                        params: EAN13BarCodeParams(
-                          barcode,
-                          lineWidth: 2.0,
-                          barHeight: 80.0,
-                          withText: true,
-                        ),
-                        onError: (error) {
-                          // Error handler
-                          print('error = $error');
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  top: 4.0,
-                  right: 4.0,
-                  child: GestureDetector(
-                    child: Container(
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                      ),
-                      decoration: BoxDecoration(
-                          color: Colors.black87, shape: BoxShape.circle),
-                    ),
-                    onTap: () => Navigator.pop(context),
-                  ),
-                ),
-              ]),
-            ]),
-          );
-        });
+  String textSubWidget(SubCategories categories) {
+    if (lang.locale.languageCode.toUpperCase() == 'EN')
+      return categories.categoryName.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'ZH' &&
+        categories.categoryCn != null)
+      return categories.categoryCn.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'FR' &&
+        categories.categoryFr != null)
+      return categories.categoryFr.toString();
+    else if (lang.locale.languageCode.toUpperCase() == 'IT' &&
+        categories.categoryIt != null)
+      return categories.categoryIt.toString();
+    else
+      return categories.categoryName.toString();
   }
 }

@@ -29,14 +29,14 @@ class CartProvider extends ChangeNotifier {
   bool loading = true;
   String errorMsg = "";
 
-  Future<void> resetshoopOrders(BuildContext context) async {
+  Future<void> resetshoopOrders(BuildContext context, {DateTime date}) async {
     loading = true;
     error = false;
     errorMsg = "";
     invalidorders.clear();
     vaildorders.clear();
     paidorders.clear();
-    await getOrders(context);
+    await getOrders(context, date: date);
     notify();
   }
 
@@ -228,9 +228,10 @@ class CartProvider extends ChangeNotifier {
     return t;
   }
 
-  Future<void> getOrders(BuildContext context) async {
+  Future<void> getOrders(BuildContext context, {DateTime date}) async {
+    loading = true;
     try {
-      final data = await _api.getOrders();
+      final data = await _api.getOrders(date: date);
 
       if (checkServerResponse(data, context)) {
         final List<OrderList> invalid = data["invalid"]

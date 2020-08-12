@@ -225,8 +225,9 @@ class _CartState extends State<ConOrder> {
                                   child: Row(
                                     children: <Widget>[
                                       Expanded(
-                                        child: Text(
-                                            'Shipping Price :To be negotiated !'),
+                                        child: Text(lang.tr(
+                                                'ConfirmOrder.shippingprice') +
+                                            lang.tr('ConfirmOrder.negotiated')),
                                         flex: 3,
                                       ),
                                       Expanded(
@@ -271,7 +272,7 @@ class _CartState extends State<ConOrder> {
                                     children: <Widget>[
                                       Expanded(
                                         child: Text(
-                                            "Purchase date - ${DateTime.now().toString().substring(0, 10)}"),
+                                            "${lang.tr('ConfirmOrder.purchasedate')} - ${DateTime.now().toString().substring(0, 10)}"),
                                         flex: 3,
                                       ),
                                       Expanded(
@@ -315,7 +316,8 @@ class _CartState extends State<ConOrder> {
                                                         horizontal: 8.0,
                                                         vertical: 2.0),
                                                 child: Text(
-                                                  "Confirm Order",
+                                                  lang.tr(
+                                                      'ConfirmOrder.confirmorder'),
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
                                                       color: Colors.white),
@@ -334,7 +336,7 @@ class _CartState extends State<ConOrder> {
                                     horizontal: 8.0,
                                   ),
                                   child: Text(
-                                    "Minimum Order Amount: € ${provider.orders[i].supplier.minorder}",
+                                    "${lang.tr('ConfirmOrder.Minimumorder')} € ${provider.orders[i].supplier.minorder}",
                                     style: TextStyle(color: Colors.red),
                                   ),
                                 ),
@@ -362,7 +364,7 @@ class _CartState extends State<ConOrder> {
                                     header: Padding(
                                         padding: EdgeInsets.all(10),
                                         child: Text(
-                                          "Products List" +
+                                          lang.tr('ConfirmOrder.product') +
                                               '  (' +
                                               provider.orders[i]
                                                   .orderProductsList.length

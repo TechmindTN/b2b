@@ -19,8 +19,7 @@ class _CarouselProductsListState extends State<CarouselProductsList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: widget.type == CarouselTypes.details ? 200 : 120,
-        
+        height: widget.type == CarouselTypes.details ? 200 : 140,
         child: Stack(
           children: <Widget>[
             Column(
@@ -73,22 +72,23 @@ class _CarouselProductsListState extends State<CarouselProductsList> {
               ],
             ),
             Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              widget.productsList.length,
-              (i) {
-                return Container(
-                  width: 9,
-                  height: 9,
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: i == _currentIndex ? Colors.black : Colors.grey,
-                  ),
-                );
-              },
-            ),
-          )
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                widget.productsList.length,
+                (i) {
+                  return Container(
+                    width: 9,
+                    height: 9,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color:
+                          i == _currentIndex ? Colors.transparent : Colors.grey,
+                    ),
+                  );
+                },
+              ),
+            )
           ],
         ));
   }

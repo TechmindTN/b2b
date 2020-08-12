@@ -36,6 +36,7 @@ class HomeProvider extends ChangeNotifier {
   UserProfil user = UserProfil();
   Position lastKnownPosition;
   Position currentPosition;
+  bool isGrid = true;
 
   int page = 1;
   bool error = false;
@@ -98,7 +99,6 @@ class HomeProvider extends ChangeNotifier {
       await _initCurrentLocation();
 
       final data = await _api.getSuppliers();
-      
 
       if (checkServerResponse(data, context)) {
         final List<Suppliers> s = data["suppliers"]
@@ -224,10 +224,11 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  getCategories(BuildContext context, id) async {
+  getCategories(BuildContext context, int id) async {
     try {
       loading = true;
       final data = await _api.getSuppCategorys(id);
+      print(data);
 
       if (data != null) {
         final List<Categories> s = data["categories"]
