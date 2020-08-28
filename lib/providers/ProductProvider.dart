@@ -71,6 +71,7 @@ class ProductListProvider extends ChangeNotifier {
   Future<void> getProducts(BuildContext context,
       {int supplierid, int brand, int category}) async {
     if (page != -1) {
+      loading = true;
       try {
         final data = await _api.getProducts(
           page: page,

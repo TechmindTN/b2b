@@ -65,7 +65,10 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
     _productProvide = Provider.of<HomeProvider>(context, listen: false);
-    _productProvide?.getSuppliers(context);
+    if (_productProvide.suppliers.isEmpty || _productProvide.error) {
+      _productProvide.error = false;
+      _productProvide?.getSuppliers(context);
+    }
     _productProvide?.getUserinfo();
   }
 

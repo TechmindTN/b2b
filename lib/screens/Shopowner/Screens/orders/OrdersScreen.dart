@@ -6,7 +6,8 @@ import 'package:siyou_b2b/widgets/appprop.dart';
 import 'ArchivedOrders.dart';
 import 'OrdersStatus.dart';
 import 'PaidOrders.dart';
-import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
+
+import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 
 class OrdersScreen extends StatefulWidget {
   @override
@@ -33,7 +34,7 @@ class _OrderScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     final AppLocalizations lang = AppLocalizations.of(context);
     final date = DateTime.now();
-    selectedDate = date;
+    // selectedDate = date;
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -50,10 +51,28 @@ class _OrderScreenState extends State<OrdersScreen> {
                 children: <Widget>[
                   Text(lang.tr('shopOwner.orders'),
                       style: TextStyle(color: darkGrey)),
+                  if (selectedDate != null)
+                    Text('  ' + selectedDate.toString().substring(0, 10),
+                        style: TextStyle(color: darkGrey)),
                   Spacer(),
                   IconButton(
                       icon: Icon(Icons.calendar_today),
-                      onPressed: () => _datepickerModalBottomSheet(context))
+                      onPressed: () async {
+                        DateTime newDateTime = await showRoundedDatePicker(
+                            context: context,
+                            theme: ThemeData.dark(),
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(DateTime.now().year - 5),
+                            lastDate: DateTime.now(),
+                            locale: lang.locale);
+                        if (newDateTime != null) {
+                          setState(() {
+                            selectedDate = newDateTime;
+                          });
+                          _orderProvide.resetshoopOrders(context,
+                              date: newDateTime);
+                        }
+                      })
                 ],
               ),
               bottom: TabBar(
@@ -90,7 +109,7 @@ class _OrderScreenState extends State<OrdersScreen> {
     );
   }
 
-  Widget datepicker() {
+  /* Widget datepickerIOS() {
     return DatePickerWidget(
       looping: false, // default is not looping
       firstDate: DateTime(2019),
@@ -117,7 +136,7 @@ class _OrderScreenState extends State<OrdersScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          datepicker(),
+                          datepickerIOS(),
                           SizedBox(
                             height: 12,
                           ),
@@ -127,7 +146,6 @@ class _OrderScreenState extends State<OrdersScreen> {
                               Navigator.pop(context);
                               _orderProvide.resetshoopOrders(context,
                                   date: selectedDate);
-                              print(selectedDate);
                             },
                             child: Text(
                               'Filter',
@@ -139,5 +157,5 @@ class _OrderScreenState extends State<OrdersScreen> {
                     ),
                   ));
         });
-  }
+  }*/
 }

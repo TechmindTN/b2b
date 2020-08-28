@@ -2,11 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:siyou_b2b/models/Categorys.dart';
+import 'package:siyou_b2b/network/ApiProvider.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/Product/SupplierCategoryScreen.dart';
+import 'package:siyou_b2b/widgets/DataSearchSupplier.dart';
 import 'package:siyou_b2b/widgets/progressindwidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
+
 
 class SupplierListScreen extends StatefulWidget {
   @override
@@ -16,6 +18,7 @@ class SupplierListScreen extends StatefulWidget {
 class _CategoryState extends State<SupplierListScreen> {
   AppLocalizations lang;
   HomeProvider supplierProvider;
+  ApiProvider apiProvider = ApiProvider();
 
   @override
   void initState() {
@@ -29,28 +32,38 @@ class _CategoryState extends State<SupplierListScreen> {
     super.didChangeDependencies();
     lang = AppLocalizations.of(context);
     supplierProvider = Provider.of<HomeProvider>(context, listen: false);
-    //supplierProvider?.getCategories(context);
-    if (supplierProvider.suppliers.isEmpty)
+
+    if (supplierProvider.suppliers.isEmpty || supplierProvider.error) {
+      supplierProvider.error = false;
       supplierProvider?.getSuppliers(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
-          ),
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-          centerTitle: true,
-          title: Text(
-            lang.tr('shopOwner.Supplier'),
-            style: Theme.of(context).textTheme.title,
-          ),
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.black, //change your color here
         ),
         backgroundColor: Colors.white,
-        body: getWidget());
+        elevation: 0.0,
+        centerTitle: true,
+        title: Text(
+          lang.tr('shopOwner.Supplier'),
+          style: Theme.of(context).textTheme.title,
+        ),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(context: context, delegate: DataSearchSupplier());
+              })
+        ],
+      ),
+      backgroundColor: Colors.white,
+      body: getWidget(),
+    );
   }
 
   Widget getWidget() {
@@ -77,9 +90,7 @@ class _CategoryState extends State<SupplierListScreen> {
     );
   }
 
-  Widget _getItemWidget(
-    int index,
-  ) {
+  Widget _getItemWidget(int index) {
     return ListTile(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -104,7 +115,7 @@ class _CategoryState extends State<SupplierListScreen> {
     );
   }
 
-  String textWidget(Categories categories) {
+  /*String textWidget(Categories categories) {
     if (lang.locale.languageCode.toUpperCase() == 'EN')
       return categories.categoryName.toString();
     else if (lang.locale.languageCode.toUpperCase() == 'ZH' &&
@@ -118,5 +129,5 @@ class _CategoryState extends State<SupplierListScreen> {
       return categories.categoryIt.toString();
     else
       return categories.categoryName.toString();
-  }
+  }*/
 }

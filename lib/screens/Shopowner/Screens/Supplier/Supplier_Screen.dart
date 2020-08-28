@@ -11,9 +11,11 @@ import 'package:siyou_b2b/providers/CartProvider.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/Product/ProdcutListAll.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/Supplier/purchased.dart';
 import 'package:siyou_b2b/screens/Shopowner/Screens/cart.dart';
+import 'package:siyou_b2b/utlis/utils.dart';
 import 'package:siyou_b2b/widgets/CarouselProductimages.dart';
 import 'package:siyou_b2b/providers/HomeProvider.dart';
 import 'package:badges/badges.dart';
+import 'package:siyou_b2b/widgets/ScanbarcodeWidget.dart';
 import 'package:siyou_b2b/widgets/servererrorwidget.dart';
 import 'Discount.dart';
 import 'NewArrivals.dart';
@@ -98,6 +100,14 @@ class _DetailsScreenState extends State<SupplierScreen>
     );
   }
 
+  void _renderFilterDialog() async {
+    final Widget child = FilterDialogWidget1();
+    showPlatformDialog(
+      context,
+      child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +127,19 @@ class _DetailsScreenState extends State<SupplierScreen>
               style: TextStyle(color: Colors.black),
             ),
             Spacer(),
-            IconButton(
+            Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: InkWell(
+                onTap: () => _renderFilterDialog(),
+                child: Image.asset(
+                  'assets/png/barcode.png',
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            /* IconButton(
               icon: Icon(
                 Icons.refresh,
                 color: Colors.black,
@@ -126,9 +148,10 @@ class _DetailsScreenState extends State<SupplierScreen>
               onPressed: () {
                 _productProvider.resetList(context, supplierid: id);
               },
-            ),
+            ),*/
+
             Padding(
-              padding: EdgeInsets.only(right: 20),
+              padding: EdgeInsets.only(right: 25),
               child: basketWidget(),
             )
 

@@ -33,7 +33,7 @@ dependencies:
   expandable: ^3.0.0+1
   cached_network_image: ^2.2.0+1
   flutter_rating_bar: ^3.0.0
-  flutter_svg: ^0.17.4
+  flutter_svg: ^0.18.1
   flare_flutter: ^1.5.9
   bottom_navy_bar: ^5.2.0
   popup_menu: ^1.0.3
@@ -55,8 +55,10 @@ dependencies:
   barcode_scan_fix: ^1.0.2
   shimmer: ^1.1.1
   rflutter_alert: ^1.0.3
-  flutter_holo_date_picker: ^0.1.4
+  #flutter_holo_date_picker: ^0.1.4
   gzx_dropdown_menu: ^2.1.0
+  flutter_rounded_date_picker: ^1.0.4
+  
   
 
 

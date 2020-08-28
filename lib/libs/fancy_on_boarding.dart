@@ -1,4 +1,4 @@
-library fancy_on_boarding;
+/*library fancy_on_boarding;
 
 import 'dart:async';
 
@@ -190,4 +190,4 @@ class _FancyOnBoardingState extends State<FancyOnBoarding>
     slideUpdateStream?.close();
     super.dispose();
   }
-}
+}*/

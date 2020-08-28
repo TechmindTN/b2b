@@ -132,8 +132,8 @@ class MyApp extends StatelessWidget {
                       "/login": (_) => LanguageProvider(
                             child: LoginPage(),
                           ),
-                      '/onboarding': (_) =>
-                          LanguageProvider(child: OnboardingScreen()),
+                     /* '/onboarding': (_) =>
+                          LanguageProvider(child: OnboardingScreen()),*/
                       ...ownerRoutes,
                       ...supplierRoutes
                     },

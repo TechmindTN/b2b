@@ -175,8 +175,9 @@ class HomeProvider extends ChangeNotifier {
   }
 
   searchSuppliers(BuildContext context, keyword) async {
+    searchsuppliers.clear();
+    loading = true;
     try {
-      loading = true;
       await _initLastKnownLocation(context);
       await _initCurrentLocation();
 
@@ -187,7 +188,6 @@ class HomeProvider extends ChangeNotifier {
             .map<Suppliers>((item) => Suppliers.fromJson(item))
             .toList();
         if (s != null && s.isNotEmpty) {
-          searchsuppliers.clear();
           for (var x in s) {
             if (lastKnownPosition == null) {
               x.distance = calculateDistance(

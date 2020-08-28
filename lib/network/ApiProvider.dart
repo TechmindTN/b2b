@@ -75,7 +75,7 @@ class ApiProvider {
         },
         //data: data
       );
-      print(res.data);
+      //print(res.data);
       return res.data;
     } catch (e) {
       print(e);
